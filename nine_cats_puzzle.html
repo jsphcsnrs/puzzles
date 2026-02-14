@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nine Cats Puzzle</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 900px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        color: #667eea;
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 1.1em;
+      }
+
+      .rules {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+      }
+
+      .rules h3 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+      }
+
+      .rules p {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+
+      .rules ol {
+        margin-left: 20px;
+        color: #555;
+        line-height: 1.8;
+      }
+
+      .rules ol li {
+        margin-bottom: 8px;
+      }
+
+      .rules .cats-names {
+        background: #e3f2fd;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .validation-feedback {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 5px;
+        display: none;
+      }
+
+      .validation-feedback.show {
+        display: block;
+      }
+
+      .validation-feedback.success {
+        background: #d4edda;
+        border-left-color: #28a745;
+      }
+
+      .validation-feedback.error {
+        background: #f8d7da;
+        border-left-color: #dc3545;
+      }
+
+      .validation-feedback h4 {
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .validation-feedback ul {
+        margin-left: 20px;
+        color: #555;
+      }
+
+      .validation-feedback ul li {
+        margin-bottom: 5px;
+      }
+
+      .grid-cell.rule-violation {
+        border-color: #ffc107;
+        border-width: 3px;
+        animation: pulse 1s ease-in-out;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .timer {
+        text-align: center;
+        font-size: 1.5em;
+        color: #764ba2;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        font-weight: 600;
+        font-family: "Courier New", monospace;
+      }
+
+      .cats-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+      }
+
+      .cat-chip {
+        padding: 10px 15px;
+        background: #667eea;
+        color: white;
+        border-radius: 20px;
+        font-weight: 600;
+        cursor: grab;
+        transition: all 0.3s ease;
+        user-select: none;
+      }
+
+      .cat-chip:hover {
+        background: #5568d3;
+        transform: scale(1.05);
+      }
+
+      .cat-chip.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+      }
+
+      .cat-chip.placed {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background: #999;
+      }
+
+      .cat-chip.placed:hover {
+        background: #999;
+        transform: none;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .grid-cell {
+        aspect-ratio: 1;
+        border: 3px dashed #ddd;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2em;
+        font-weight: 600;
+        color: #667eea;
+        background: #fafafa;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .grid-cell.drag-over {
+        background: #e3f2fd;
+        border-color: #667eea;
+        border-style: solid;
+      }
+
+      .grid-cell.filled {
+        background: #667eea;
+        color: white;
+        border-style: solid;
+        border-color: #667eea;
+      }
+
+      .grid-cell.correct {
+        background: #4caf50;
+        border-color: #4caf50;
+      }
+
+      .grid-cell.incorrect {
+        background: #f44336;
+        border-color: #f44336;
+      }
+
+      .grid-cell .remove-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+        color: #667eea;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        transition: all 0.2s ease;
+      }
+
+      .grid-cell .remove-btn:hover {
+        background: white;
+        color: #f44336;
+        transform: scale(1.1);
+      }
+
+      .grid-cell.filled:hover .remove-btn {
+        display: flex;
+      }
+
+      .controls {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      button {
+        padding: 12px 24px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        transition: background 0.3s ease;
+      }
+
+      button:hover {
+        background: #5568d3;
+      }
+
+      button.secondary {
+        background: #764ba2;
+      }
+
+      button.secondary:hover {
+        background: #643a8a;
+      }
+
+      .winner-modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+      }
+
+      .winner-modal.show {
+        display: flex;
+      }
+
+      .winner-content {
+        background: white;
+        padding: 50px;
+        border-radius: 20px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        animation: celebrate 0.5s ease;
+      }
+
+      @keyframes celebrate {
+        0%,
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+        25% {
+          transform: scale(1.1) rotate(-5deg);
+        }
+        75% {
+          transform: scale(1.1) rotate(5deg);
+        }
+      }
+
+      .winner-content h2 {
+        color: #4caf50;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+      }
+
+      .winner-content .trophy {
+        font-size: 5em;
+        margin-bottom: 20px;
+      }
+
+      .winner-content .time {
+        font-size: 1.5em;
+        color: #764ba2;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .winner-content .message {
+        font-size: 1.2em;
+        color: #555;
+        margin-bottom: 30px;
+      }
+
+      .winner-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+      }
+
+      .play-again-btn {
+        padding: 15px 40px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.2em;
+        font-weight: 600;
+        transition: background 0.3s ease;
+      }
+
+      .play-again-btn:hover {
+        background: #45a049;
+      }
+
+      .close-btn {
+        padding: 15px 40px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.2em;
+        font-weight: 600;
+        transition: background 0.3s ease;
+      }
+
+      .close-btn:hover {
+        background: #5568d3;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 1.8em;
+        }
+
+        .grid-container {
+          gap: 10px;
+        }
+
+        .controls {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Winner Modal -->
+    <div class="winner-modal" id="winnerModal">
+      <div class="winner-content">
+        <div class="trophy">🏆</div>
+        <h2>Purr-fect!</h2>
+        <div class="time">Time: <span id="finalTime">00:00</span></div>
+        <div class="message">You've positioned all the cats correctly!</div>
+        <div class="winner-buttons">
+          <button class="close-btn" onclick="closeWinnerModal()">Close</button>
+          <button class="play-again-btn" onclick="playAgain()">Reset & Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <h1>🐱 Nine Cats Puzzle</h1>
+      <p class="subtitle">Position nine cats in a 3×3 grid following the rules below</p>
+
+      <div class="rules">
+        <h3>The Rules</h3>
+        <ol>
+          <li><strong>Balak</strong>, the leader, always sits in the <strong>top left</strong>.</li>
+          <li><strong>Erec</strong>, the kitten, never sits in the <strong>top row</strong>.</li>
+          <li>
+            <strong>None of the adjacent cats</strong> (even diagonal)
+            <strong>share a single letter</strong>.
+          </li>
+        </ol>
+        <div class="cats-names">
+          The cats: Andar, Balak, Collo, Erec, Indan, Kyft, Meva, Qupuwu, Yitsim
+        </div>
+
+        <div class="validation-feedback" id="validationFeedback">
+          <h4 id="feedbackTitle"></h4>
+          <ul id="feedbackList"></ul>
+        </div>
+      </div>
+
+      <div class="timer">⏱️ Time: <span id="timer">00:00</span></div>
+
+      <div class="cats-list" id="catsList">
+        <!-- Cats will be generated here -->
+      </div>
+
+      <div class="grid-container" id="grid">
+        <!-- Grid cells will be generated here -->
+      </div>
+
+      <div class="controls">
+        <button onclick="checkSolution()">Check Solution</button>
+        <button class="secondary" onclick="clearGrid()">Clear Grid</button>
+      </div>
+    </div>
+
+    <script>
+      const cats = ["Andar", "Balak", "Collo", "Erec", "Indan", "Kyft", "Meva", "Qupuwu", "Yitsim"]
+      const solution = [
+        "Balak",
+        "Yitsim",
+        "Andar",
+        "Erec",
+        "Qupuwu",
+        "Collo",
+        "Indan",
+        "Kyft",
+        "Meva",
+      ]
+
+      let timerInterval = null
+      let startTime = null
+      let elapsedSeconds = 0
+      let selectedCat = null
+      let gridState = Array(9).fill(null)
+
+      // Initialize game on page load
+      window.addEventListener("DOMContentLoaded", () => {
+        initializeGame()
+        startTimer()
+      })
+
+      function initializeGame() {
+        // Create cat chips
+        const catsList = document.getElementById("catsList")
+        catsList.innerHTML = ""
+        cats.forEach((cat) => {
+          const chip = document.createElement("div")
+          chip.className = "cat-chip"
+          chip.textContent = cat
+          chip.draggable = true
+          chip.dataset.cat = cat
+
+          chip.addEventListener("dragstart", handleDragStart)
+          chip.addEventListener("dragend", handleDragEnd)
+          chip.addEventListener("click", () => selectCat(cat))
+
+          catsList.appendChild(chip)
+        })
+
+        // Create grid
+        const grid = document.getElementById("grid")
+        grid.innerHTML = ""
+        for (let i = 0; i < 9; i++) {
+          const cell = document.createElement("div")
+          cell.className = "grid-cell"
+          cell.dataset.index = i
+
+          cell.addEventListener("dragover", handleDragOver)
+          cell.addEventListener("drop", handleDrop)
+          cell.addEventListener("dragleave", handleDragLeave)
+          cell.addEventListener("dragstart", handleCellDragStart)
+          cell.addEventListener("dragend", handleDragEnd)
+          cell.addEventListener("click", () => handleCellClick(i))
+
+          // Add remove button
+          const removeBtn = document.createElement("button")
+          removeBtn.className = "remove-btn"
+          removeBtn.textContent = "×"
+          removeBtn.onclick = (e) => {
+            e.stopPropagation()
+            removeCatFromCell(i)
+          }
+          cell.appendChild(removeBtn)
+
+          grid.appendChild(cell)
+        }
+      }
+
+      function selectCat(cat) {
+        // Check if cat is already placed
+        if (gridState.includes(cat)) return
+
+        selectedCat = cat
+      }
+
+      function handleCellClick(index) {
+        if (selectedCat && !gridState[index]) {
+          placeCatInCell(selectedCat, index)
+          selectedCat = null
+        }
+      }
+
+      function handleDragStart(e) {
+        e.target.classList.add("dragging")
+        e.dataTransfer.effectAllowed = "move"
+        e.dataTransfer.setData("text/plain", e.target.dataset.cat)
+        e.dataTransfer.setData("source", "chip")
+      }
+
+      function handleCellDragStart(e) {
+        const cell = e.currentTarget
+        const index = parseInt(cell.dataset.index)
+        const cat = gridState[index]
+
+        if (!cat) return
+
+        e.dataTransfer.effectAllowed = "move"
+        e.dataTransfer.setData("text/plain", cat)
+        e.dataTransfer.setData("source", "grid")
+        e.dataTransfer.setData("sourceIndex", index)
+
+        cell.classList.add("dragging")
+        cell.style.opacity = "0.5"
+      }
+
+      function handleDragEnd(e) {
+        e.target.classList.remove("dragging")
+        e.target.style.opacity = "1"
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = "move"
+        const cell = e.currentTarget
+        cell.classList.add("drag-over")
+      }
+
+      function handleDragLeave(e) {
+        e.currentTarget.classList.remove("drag-over")
+      }
+
+      function handleDrop(e) {
+        e.preventDefault()
+        const cell = e.currentTarget
+        cell.classList.remove("drag-over")
+
+        const cat = e.dataTransfer.getData("text/plain")
+        const targetIndex = parseInt(cell.dataset.index)
+        const source = e.dataTransfer.getData("source")
+        const sourceIndex = e.dataTransfer.getData("sourceIndex")
+
+        // If dropping on the same cell, do nothing
+        if (source === "grid" && parseInt(sourceIndex) === targetIndex) {
+          return
+        }
+
+        // If target cell is already filled, swap the cats
+        if (gridState[targetIndex]) {
+          if (source === "grid") {
+            // Swap cats between two grid cells
+            const targetCat = gridState[targetIndex]
+            const srcIndex = parseInt(sourceIndex)
+
+            // Remove both cats
+            removeCatFromCell(srcIndex)
+            removeCatFromCell(targetIndex)
+
+            // Place them in swapped positions
+            placeCatInCell(cat, targetIndex)
+            placeCatInCell(targetCat, srcIndex)
+          }
+          // If dragging from chip list to filled cell, don't do anything
+          return
+        }
+
+        // Target cell is empty
+        if (source === "grid") {
+          // Moving from one grid cell to another
+          removeCatFromCell(parseInt(sourceIndex))
+          placeCatInCell(cat, targetIndex)
+        } else {
+          // Placing from chip list
+          if (!gridState.includes(cat)) {
+            placeCatInCell(cat, targetIndex)
+          }
+        }
+      }
+
+      function placeCatInCell(cat, index) {
+        const cell = document.querySelectorAll(".grid-cell")[index]
+        const chip = document.querySelector(`.cat-chip[data-cat="${cat}"]`)
+
+        gridState[index] = cat
+        cell.textContent = cat
+        cell.classList.add("filled")
+        cell.draggable = true // Make the cell draggable
+
+        // Re-add the remove button (it gets cleared by textContent)
+        const removeBtn = document.createElement("button")
+        removeBtn.className = "remove-btn"
+        removeBtn.textContent = "×"
+        removeBtn.onclick = (e) => {
+          e.stopPropagation()
+          removeCatFromCell(index)
+        }
+        cell.appendChild(removeBtn)
+
+        chip.classList.add("placed")
+      }
+
+      function removeCatFromCell(index) {
+        const cat = gridState[index]
+        if (!cat) return
+
+        const cell = document.querySelectorAll(".grid-cell")[index]
+        const chip = document.querySelector(`.cat-chip[data-cat="${cat}"]`)
+
+        gridState[index] = null
+        cell.textContent = ""
+        cell.classList.remove("filled", "correct", "incorrect")
+        cell.draggable = false // Make cell not draggable when empty
+
+        // Re-add the remove button
+        const removeBtn = document.createElement("button")
+        removeBtn.className = "remove-btn"
+        removeBtn.textContent = "×"
+        removeBtn.onclick = (e) => {
+          e.stopPropagation()
+          removeCatFromCell(index)
+        }
+        cell.appendChild(removeBtn)
+
+        chip.classList.remove("placed")
+      }
+
+      function clearGrid() {
+        for (let i = 0; i < 9; i++) {
+          removeCatFromCell(i)
+        }
+
+        // Clear validation feedback
+        const feedback = document.getElementById("validationFeedback")
+        feedback.classList.remove("show")
+      }
+
+      function checkSolution() {
+        // Clear previous feedback
+        document.querySelectorAll(".grid-cell").forEach((cell) => {
+          cell.classList.remove("correct", "incorrect", "rule-violation")
+        })
+
+        const feedback = document.getElementById("validationFeedback")
+        const feedbackTitle = document.getElementById("feedbackTitle")
+        const feedbackList = document.getElementById("feedbackList")
+        feedbackList.innerHTML = ""
+
+        let violations = []
+        let violatingCells = new Set()
+
+        // Check if all cells are filled
+        if (gridState.some((cell) => cell === null)) {
+          violations.push("Not all cells are filled yet")
+          feedback.className = "validation-feedback show error"
+          feedbackTitle.textContent = "❌ Incomplete"
+          const li = document.createElement("li")
+          li.textContent = "Fill all cells before checking"
+          feedbackList.appendChild(li)
+          return
+        }
+
+        // Rule 1: Balak in top left (position 0)
+        if (gridState[0] !== "Balak") {
+          violations.push("Rule 1: Balak must be in the top left corner")
+          violatingCells.add(0)
+        }
+
+        // Rule 2: Erec not in top row (positions 0, 1, 2)
+        const erecIndex = gridState.indexOf("Erec")
+        if (erecIndex >= 0 && erecIndex <= 2) {
+          violations.push("Rule 2: Erec cannot be in the top row")
+          violatingCells.add(erecIndex)
+        }
+
+        // Rule 3: No adjacent cats share a letter (including diagonals)
+        // Grid layout:
+        // 0 1 2
+        // 3 4 5
+        // 6 7 8
+        const adjacentPairs = [
+          // Position 0 neighbors: 1, 3, 4
+          [0, 1],
+          [0, 3],
+          [0, 4],
+          // Position 1 neighbors: 0, 2, 3, 4, 5
+          [1, 2],
+          [1, 3],
+          [1, 4],
+          [1, 5],
+          // Position 2 neighbors: 1, 4, 5
+          [2, 4],
+          [2, 5],
+          // Position 3 neighbors: 0, 1, 4, 6, 7
+          [3, 4],
+          [3, 6],
+          [3, 7],
+          // Position 4 neighbors: 0, 1, 2, 3, 5, 6, 7, 8 (center has all 8)
+          [4, 5],
+          [4, 6],
+          [4, 7],
+          [4, 8],
+          // Position 5 neighbors: 1, 2, 4, 7, 8
+          [5, 7],
+          [5, 8],
+          // Position 6 neighbors: 3, 4, 7
+          [6, 7],
+          // Position 7 neighbors: 3, 4, 5, 6, 8
+          [7, 8],
+          // Position 8 neighbors: 4, 5, 7 (already covered above)
+        ]
+
+        function shareAnyLetter(cat1, cat2) {
+          const letters1 = cat1.toLowerCase().split("")
+          const letters2 = cat2.toLowerCase().split("")
+          return letters1.some((letter) => letters2.includes(letter))
+        }
+
+        adjacentPairs.forEach(([pos1, pos2]) => {
+          const cat1 = gridState[pos1]
+          const cat2 = gridState[pos2]
+          if (cat1 && cat2 && shareAnyLetter(cat1, cat2)) {
+            violations.push(`Rule 3: ${cat1} and ${cat2} are adjacent and share a letter`)
+            violatingCells.add(pos1)
+            violatingCells.add(pos2)
+          }
+        })
+
+        // Display results
+        if (violations.length === 0) {
+          // Perfect solution!
+          feedback.className = "validation-feedback show success"
+          feedbackTitle.textContent = "✅ Perfect!"
+          const li = document.createElement("li")
+          li.textContent = "All rules satisfied! Well done!"
+          feedbackList.appendChild(li)
+
+          setTimeout(() => {
+            showWinnerModal()
+          }, 500)
+        } else {
+          // Show violations
+          feedback.className = "validation-feedback show error"
+          feedbackTitle.textContent = `❌ ${violations.length} Rule Violation${violations.length > 1 ? "s" : ""}`
+
+          violations.forEach((violation) => {
+            const li = document.createElement("li")
+            li.textContent = violation
+            feedbackList.appendChild(li)
+          })
+
+          // Highlight violating cells
+          violatingCells.forEach((index) => {
+            const cell = document.querySelectorAll(".grid-cell")[index]
+            cell.classList.add("rule-violation")
+          })
+
+          // Remove highlighting after 3 seconds
+          setTimeout(() => {
+            document.querySelectorAll(".grid-cell").forEach((cell) => {
+              cell.classList.remove("rule-violation")
+            })
+          }, 3000)
+        }
+      }
+
+      function startTimer() {
+        startTime = Date.now()
+        timerInterval = setInterval(() => {
+          elapsedSeconds = Math.floor((Date.now() - startTime) / 1000)
+          updateTimerDisplay()
+        }, 1000)
+      }
+
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval)
+          timerInterval = null
+        }
+      }
+
+      function updateTimerDisplay() {
+        const minutes = Math.floor(elapsedSeconds / 60)
+        const seconds = elapsedSeconds % 60
+        const display = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+        document.getElementById("timer").textContent = display
+      }
+
+      function showWinnerModal() {
+        stopTimer()
+        const minutes = Math.floor(elapsedSeconds / 60)
+        const seconds = elapsedSeconds % 60
+        const timeDisplay = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+        document.getElementById("finalTime").textContent = timeDisplay
+        document.getElementById("winnerModal").classList.add("show")
+      }
+
+      function closeWinnerModal() {
+        document.getElementById("winnerModal").classList.remove("show")
+      }
+
+      function playAgain() {
+        document.getElementById("winnerModal").classList.remove("show")
+        clearGrid()
+        elapsedSeconds = 0
+        updateTimerDisplay()
+        startTimer()
+      }
+    </script>
+  </body>
+</html>
