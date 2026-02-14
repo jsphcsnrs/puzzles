@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Safe Code Puzzle</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 800px;
+        width: 100%;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 1.8em;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 0.85em;
+      }
+
+      .code-wrapper {
+        margin-bottom: 30px;
+      }
+
+      .code-container {
+        width: 100%;
+      }
+
+      .position-labels {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 6px;
+        margin-bottom: 5px;
+      }
+
+      .position-label {
+        text-align: center;
+        font-size: 0.75em;
+        color: #666;
+        font-weight: 600;
+        padding: 0 2px;
+      }
+
+      .code-input {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 6px;
+      }
+
+      .digit-box {
+        width: 100%;
+        height: 60px;
+        font-size: 1.8em;
+        text-align: center;
+        border: 3px solid #ddd;
+        border-radius: 10px;
+        transition: all 0.3s;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .digit-box:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+      }
+
+      .digit-box.valid {
+        background-color: #d4edda;
+        border-color: #28a745;
+      }
+
+      .digit-box.invalid {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+      }
+
+      .digit-box.pending {
+        background-color: #fff3cd;
+        border-color: #ffc107;
+      }
+
+      .rules {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+
+      .rule {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        transition: all 0.3s;
+      }
+
+      .rule-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin-right: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        flex-shrink: 0;
+        font-size: 0.9em;
+      }
+
+      .rule.satisfied {
+        background: #d4edda;
+      }
+
+      .rule.satisfied .rule-icon {
+        background: #28a745;
+        color: white;
+      }
+
+      .rule.unsatisfied {
+        background: #fff3cd;
+      }
+
+      .rule.unsatisfied .rule-icon {
+        background: #ffc107;
+        color: white;
+      }
+
+      .rule.violated {
+        background: #f8d7da;
+      }
+
+      .rule.violated .rule-icon {
+        background: #dc3545;
+        color: white;
+      }
+
+      .rule-text {
+        flex: 1;
+        font-size: 0.85em;
+        color: #333;
+        line-height: 1.4;
+      }
+
+      .success-message {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-top: 20px;
+        display: none;
+        animation: slideIn 0.5s;
+      }
+
+      .success-message.show {
+        display: block;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .button-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 600;
+      }
+
+      .reset-btn {
+        background: #dc3545;
+        color: white;
+      }
+
+      .reset-btn:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+      }
+
+      .hint-btn {
+        background: #667eea;
+        color: white;
+      }
+
+      .hint-btn:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      /* Mobile optimizations */
+      @media (max-width: 600px) {
+        .container {
+          padding: 15px;
+          border-radius: 15px;
+        }
+
+        h1 {
+          font-size: 1.5em;
+        }
+
+        .subtitle {
+          font-size: 0.8em;
+          margin-bottom: 15px;
+        }
+
+        .code-wrapper {
+          margin-bottom: 20px;
+        }
+
+        .position-labels,
+        .code-input {
+          gap: 4px;
+        }
+
+        .digit-box {
+          height: 50px;
+          font-size: 1.5em;
+          border-width: 2px;
+          border-radius: 8px;
+        }
+
+        .position-label {
+          font-size: 0.65em;
+        }
+
+        .rules {
+          padding: 12px;
+        }
+
+        .rule {
+          padding: 8px;
+        }
+
+        .rule-icon {
+          width: 20px;
+          height: 20px;
+          font-size: 0.8em;
+          margin-right: 10px;
+        }
+
+        .rule-text {
+          font-size: 0.8em;
+        }
+
+        button {
+          padding: 10px 20px;
+          font-size: 0.95em;
+        }
+
+        .success-message {
+          font-size: 1em;
+          padding: 15px;
+        }
+      }
+
+      @media (max-width: 400px) {
+        body {
+          padding: 5px;
+        }
+
+        .container {
+          padding: 12px;
+        }
+
+        h1 {
+          font-size: 1.3em;
+          margin-bottom: 8px;
+        }
+
+        .subtitle {
+          font-size: 0.75em;
+        }
+
+        .position-labels,
+        .code-input {
+          gap: 3px;
+        }
+
+        .digit-box {
+          height: 45px;
+          font-size: 1.3em;
+          border-radius: 6px;
+        }
+
+        .position-label {
+          font-size: 0.6em;
+        }
+
+        .rule-text {
+          font-size: 0.75em;
+        }
+
+        button {
+          padding: 8px 16px;
+          font-size: 0.9em;
+        }
+      }
+
+      @media (max-width: 350px) {
+        .position-labels,
+        .code-input {
+          gap: 2px;
+        }
+
+        .digit-box {
+          height: 40px;
+          font-size: 1.2em;
+          border-width: 2px;
+        }
+
+        .position-label {
+          font-size: 0.55em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔐 Safe Code Puzzle</h1>
+      <p class="subtitle">Enter digits 0-9, each used exactly once</p>
+
+      <div class="code-wrapper">
+        <div class="code-container">
+          <div class="position-labels">
+            <div class="position-label">1st</div>
+            <div class="position-label">2nd</div>
+            <div class="position-label">3rd</div>
+            <div class="position-label">4th</div>
+            <div class="position-label">5th</div>
+            <div class="position-label">6th</div>
+            <div class="position-label">7th</div>
+            <div class="position-label">8th</div>
+            <div class="position-label">9th</div>
+            <div class="position-label">10th</div>
+          </div>
+
+          <div class="code-input" id="codeInput">
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="0"
+            />
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="1"
+            />
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="2"
+            />
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="3"
+            />
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="4"
+            />
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="5"
+            />
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="6"
+            />
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="7"
+            />
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="8"
+            />
+            <input
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]"
+              class="digit-box"
+              maxlength="1"
+              data-index="9"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="rules">
+        <div class="rule" id="rule1">
+          <div class="rule-icon">?</div>
+          <div class="rule-text">All digits from 0 to 9 are used exactly once</div>
+        </div>
+        <div class="rule" id="rule2">
+          <div class="rule-icon">?</div>
+          <div class="rule-text">
+            The sum of the 2nd, 5th, 6th, and 8th digits is a single-digit number
+          </div>
+        </div>
+        <div class="rule" id="rule3">
+          <div class="rule-icon">?</div>
+          <div class="rule-text">The 4th digit is a perfect square (0, 1, 4, or 9)</div>
+        </div>
+        <div class="rule" id="rule4">
+          <div class="rule-icon">?</div>
+          <div class="rule-text">The 3rd digit is 1</div>
+        </div>
+        <div class="rule" id="rule5">
+          <div class="rule-icon">?</div>
+          <div class="rule-text">The sum of the 4th and 7th digits is a perfect square</div>
+        </div>
+        <div class="rule" id="rule6">
+          <div class="rule-icon">?</div>
+          <div class="rule-text">The value of the 10th digit is twice that of the 2nd</div>
+        </div>
+        <div class="rule" id="rule7">
+          <div class="rule-icon">?</div>
+          <div class="rule-text">
+            The product of the 4th and 6th digits equals the product of the 10th and 2nd digits
+          </div>
+        </div>
+        <div class="rule" id="rule8">
+          <div class="rule-icon">?</div>
+          <div class="rule-text">The 5 is next to the 6 but not the 4</div>
+        </div>
+      </div>
+
+      <div class="button-container">
+        <button class="reset-btn" onclick="resetCode()">Reset</button>
+        <button class="hint-btn" onclick="showHint()">Show Hint</button>
+      </div>
+
+      <div class="success-message" id="successMessage">
+        🎉 Congratulations! You've cracked the safe! 🎉
+      </div>
+    </div>
+
+    <script>
+      const inputs = document.querySelectorAll(".digit-box")
+
+      // Handle input and navigation
+      inputs.forEach((input, index) => {
+        input.addEventListener("input", (e) => {
+          const value = e.target.value
+
+          // Only allow digits 0-9
+          if (value && !/^[0-9]$/.test(value)) {
+            e.target.value = ""
+            validateCode()
+            return
+          }
+
+          // Move to next input if value entered
+          if (value && index < inputs.length - 1) {
+            inputs[index + 1].focus()
+          }
+
+          validateCode()
+        })
+
+        input.addEventListener("keydown", (e) => {
+          // Move to previous input on backspace if empty
+          if (e.key === "Backspace" && !e.target.value && index > 0) {
+            inputs[index - 1].focus()
+          }
+          // Arrow key navigation
+          if (e.key === "ArrowLeft" && index > 0) {
+            inputs[index - 1].focus()
+          }
+          if (e.key === "ArrowRight" && index < inputs.length - 1) {
+            inputs[index + 1].focus()
+          }
+        })
+
+        // Validate on keyup to catch deletions
+        input.addEventListener("keyup", (e) => {
+          validateCode()
+        })
+
+        // Validate on change as a fallback
+        input.addEventListener("change", (e) => {
+          validateCode()
+        })
+
+        // Select all on focus for easy replacement
+        input.addEventListener("focus", (e) => {
+          e.target.select()
+        })
+      })
+
+      function getDigits() {
+        return Array.from(inputs).map((input) => (input.value ? parseInt(input.value) : null))
+      }
+
+      function isPerfectSquare(n) {
+        if (n === null || n < 0) return false
+        const sqrt = Math.sqrt(n)
+        return sqrt === Math.floor(sqrt)
+      }
+
+      function validateCode() {
+        const digits = getDigits()
+        const rules = []
+
+        // Rule 1: All digits 0-9 used exactly once
+        const filledDigits = digits.filter((d) => d !== null)
+        const uniqueDigits = new Set(filledDigits)
+        const rule1 =
+          filledDigits.length === 10 &&
+          uniqueDigits.size === 10 &&
+          filledDigits.every((d) => d >= 0 && d <= 9)
+        rules.push(rule1)
+
+        // Rule 2: Sum of 2nd, 5th, 6th, 8th is single digit
+        const sum2568 = [digits[1], digits[4], digits[5], digits[7]]
+        const rule2 = sum2568.every((d) => d !== null)
+          ? sum2568.reduce((a, b) => a + b, 0) < 10
+          : null
+        rules.push(rule2)
+
+        // Rule 3: 4th digit is perfect square
+        const rule3 = digits[3] !== null ? isPerfectSquare(digits[3]) : null
+        rules.push(rule3)
+
+        // Rule 4: 3rd digit is 1
+        const rule4 = digits[2] !== null ? digits[2] === 1 : null
+        rules.push(rule4)
+
+        // Rule 5: Sum of 4th and 7th is perfect square
+        const rule5 =
+          digits[3] !== null && digits[6] !== null ? isPerfectSquare(digits[3] + digits[6]) : null
+        rules.push(rule5)
+
+        // Rule 6: 10th digit is twice the 2nd
+        const rule6 = digits[1] !== null && digits[9] !== null ? digits[9] === 2 * digits[1] : null
+        rules.push(rule6)
+
+        // Rule 7: Product of 4th and 6th equals product of 10th and 2nd
+        const rule7 =
+          digits[3] !== null && digits[5] !== null && digits[9] !== null && digits[1] !== null
+            ? digits[3] * digits[5] === digits[9] * digits[1]
+            : null
+        rules.push(rule7)
+
+        // Rule 8: 5 is next to 6 but not 4
+        let rule8 = null
+        if (filledDigits.length === 10) {
+          const pos5 = digits.indexOf(5)
+          const pos6 = digits.indexOf(6)
+          const pos4 = digits.indexOf(4)
+
+          if (pos5 !== -1 && pos6 !== -1 && pos4 !== -1) {
+            const nextTo6 = Math.abs(pos5 - pos6) === 1
+            const notNextTo4 = Math.abs(pos5 - pos4) !== 1
+            rule8 = nextTo6 && notNextTo4
+          }
+        }
+        rules.push(rule8)
+
+        // Update UI for each rule
+        rules.forEach((result, index) => {
+          const ruleElement = document.getElementById(`rule${index + 1}`)
+          const icon = ruleElement.querySelector(".rule-icon")
+
+          ruleElement.classList.remove("satisfied", "unsatisfied", "violated")
+
+          if (result === true) {
+            ruleElement.classList.add("satisfied")
+            icon.textContent = "✓"
+          } else if (result === false) {
+            ruleElement.classList.add("violated")
+            icon.textContent = "✗"
+          } else {
+            ruleElement.classList.add("unsatisfied")
+            icon.textContent = "?"
+          }
+        })
+
+        // Update input styling based on rules
+        inputs.forEach((input, index) => {
+          input.classList.remove("valid", "invalid", "pending")
+        })
+
+        // Track which positions are involved in violations or pending rules
+        const violatedPositions = new Set()
+        const pendingPositions = new Set()
+
+        // Rule 1 check - highlight duplicates or invalid digits
+        if (!rule1 && filledDigits.length === 10) {
+          inputs.forEach((input, index) => {
+            if (digits[index] !== null) {
+              // Check if this digit is duplicated
+              const count = digits.filter((d) => d === digits[index]).length
+              if (count > 1) {
+                violatedPositions.add(index)
+              }
+            }
+          })
+        }
+
+        // Rule 2: Positions 1, 4, 5, 7 (indices 1, 4, 5, 7)
+        if (rule2 === false) {
+          ;[1, 4, 5, 7].forEach((pos) => violatedPositions.add(pos))
+        } else if (rule2 === null && sum2568.some((d) => d !== null)) {
+          ;[1, 4, 5, 7].forEach((pos) => {
+            if (digits[pos] !== null) pendingPositions.add(pos)
+          })
+        }
+
+        // Rule 3: Position 3 (index 3)
+        if (rule3 === false) {
+          violatedPositions.add(3)
+        } else if (rule3 === null && digits[3] === null) {
+          pendingPositions.add(3)
+        }
+
+        // Rule 4: Position 2 (index 2)
+        if (rule4 === false) {
+          violatedPositions.add(2)
+        } else if (rule4 === null && digits[2] === null) {
+          pendingPositions.add(2)
+        }
+
+        // Rule 5: Positions 3 and 6 (indices 3, 6)
+        if (rule5 === false) {
+          ;[3, 6].forEach((pos) => violatedPositions.add(pos))
+        } else if (rule5 === null && (digits[3] !== null || digits[6] !== null)) {
+          ;[3, 6].forEach((pos) => {
+            if (digits[pos] !== null) pendingPositions.add(pos)
+          })
+        }
+
+        // Rule 6: Positions 1 and 9 (indices 1, 9)
+        if (rule6 === false) {
+          ;[1, 9].forEach((pos) => violatedPositions.add(pos))
+        } else if (rule6 === null && (digits[1] !== null || digits[9] !== null)) {
+          ;[1, 9].forEach((pos) => {
+            if (digits[pos] !== null) pendingPositions.add(pos)
+          })
+        }
+
+        // Rule 7: Positions 3, 5, 1, 9 (indices 3, 5, 1, 9)
+        if (rule7 === false) {
+          ;[3, 5, 1, 9].forEach((pos) => violatedPositions.add(pos))
+        } else if (
+          rule7 === null &&
+          [digits[3], digits[5], digits[1], digits[9]].some((d) => d !== null)
+        ) {
+          ;[3, 5, 1, 9].forEach((pos) => {
+            if (digits[pos] !== null) pendingPositions.add(pos)
+          })
+        }
+
+        // Rule 8: All positions when filled
+        if (rule8 === false) {
+          const pos5 = digits.indexOf(5)
+          const pos6 = digits.indexOf(6)
+          const pos4 = digits.indexOf(4)
+          if (pos5 !== -1) violatedPositions.add(pos5)
+          if (pos6 !== -1) violatedPositions.add(pos6)
+          if (pos4 !== -1) violatedPositions.add(pos4)
+        }
+
+        // Apply styling
+        inputs.forEach((input, index) => {
+          if (violatedPositions.has(index)) {
+            input.classList.add("invalid")
+          } else if (pendingPositions.has(index)) {
+            input.classList.add("pending")
+          } else if (digits[index] !== null && rules.every((r) => r === true || r === null)) {
+            // If no violations and digit is filled
+            input.classList.add("valid")
+          }
+        })
+
+        // If all rules satisfied, mark all as valid
+        const allSatisfied = rules.every((r) => r === true)
+        if (allSatisfied) {
+          inputs.forEach((input) => {
+            input.classList.remove("invalid", "pending")
+            input.classList.add("valid")
+          })
+        }
+
+        // Check if puzzle is solved
+        const successMessage = document.getElementById("successMessage")
+
+        if (allSatisfied) {
+          successMessage.classList.add("show")
+        } else {
+          successMessage.classList.remove("show")
+        }
+      }
+
+      function resetCode() {
+        inputs.forEach((input) => {
+          input.value = ""
+          input.classList.remove("valid", "invalid")
+        })
+        document.getElementById("successMessage").classList.remove("show")
+        validateCode()
+        inputs[0].focus()
+      }
+
+      function showHint() {
+        // Give a helpful hint
+        alert(
+          "Hint: Start with what you know for certain!\n\n" +
+            "• The 3rd digit MUST be 1\n" +
+            "• The 4th digit can only be 0, 1, 4, or 9 (perfect squares)\n" +
+            "• Since digit 1 is used in position 3, the 4th digit must be 0, 4, or 9\n" +
+            "• Think about the relationship between 2nd and 10th digits (one is double the other)",
+        )
+      }
+
+      // Initial validation
+      validateCode()
+      inputs[0].focus()
+    </script>
+  </body>
+</html>
