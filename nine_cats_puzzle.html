@@ -87,9 +87,13 @@
         background: #fff3cd;
         border-left: 4px solid #ffc107;
         padding: 15px;
-        margin-top: 15px;
+        margin-top: 0;
+        margin-bottom: 20px;
         border-radius: 5px;
         display: none;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
       }
 
       .validation-feedback.show {
@@ -167,11 +171,16 @@
         cursor: grab;
         transition: all 0.3s ease;
         user-select: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.95em;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       }
 
       .cat-chip:hover {
-        background: #5568d3;
-        transform: scale(1.05);
+        transform: scale(1.07) translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       }
 
       .cat-chip.dragging {
@@ -180,14 +189,21 @@
       }
 
       .cat-chip.placed {
-        opacity: 0.4;
+        opacity: 1;
         cursor: not-allowed;
-        background: #999;
+        background: #aaa !important;
+        filter: grayscale(1);
+        box-shadow: none;
       }
 
       .cat-chip.placed:hover {
-        background: #999;
         transform: none;
+        box-shadow: none;
+      }
+
+      .chip-emoji {
+        font-size: 1.3em;
+        line-height: 1;
       }
 
       .grid-container {
@@ -223,20 +239,36 @@
       }
 
       .grid-cell.filled {
-        background: #667eea;
         color: white;
         border-style: solid;
-        border-color: #667eea;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 0.85em;
+      }
+
+      .cell-emoji {
+        font-size: 2em;
+        line-height: 1;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+      }
+
+      .cell-name {
+        font-weight: 700;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        font-size: 0.85em;
+        letter-spacing: 0.5px;
       }
 
       .grid-cell.correct {
-        background: #4caf50;
-        border-color: #4caf50;
+        outline: 4px solid #4caf50;
+        outline-offset: -4px;
+        filter: brightness(1.15);
       }
 
       .grid-cell.incorrect {
-        background: #f44336;
-        border-color: #f44336;
+        outline: 4px solid #f44336;
+        outline-offset: -4px;
+        filter: brightness(0.85);
       }
 
       .grid-cell .remove-btn {
@@ -454,11 +486,6 @@
         <div class="cats-names">
           The cats: Andar, Balak, Collo, Erec, Indan, Kyft, Meva, Qupuwu, Yitsim
         </div>
-
-        <div class="validation-feedback" id="validationFeedback">
-          <h4 id="feedbackTitle"></h4>
-          <ul id="feedbackList"></ul>
-        </div>
       </div>
 
       <div class="timer">⏱️ Time: <span id="timer">00:00</span></div>
@@ -471,6 +498,11 @@
         <!-- Grid cells will be generated here -->
       </div>
 
+      <div class="validation-feedback" id="validationFeedback">
+        <h4 id="feedbackTitle"></h4>
+        <ul id="feedbackList"></ul>
+      </div>
+
       <div class="controls">
         <button onclick="checkSolution()">Check Solution</button>
         <button class="secondary" onclick="clearGrid()">Clear Grid</button>
@@ -478,6 +510,18 @@
     </div>
 
     <script>
+      const catData = {
+        Andar: { emoji: "🐈‍⬛", color: "#2c3e50", label: "Shadow" },
+        Balak: { emoji: "👑", color: "#8e44ad", label: "Leader" },
+        Collo: { emoji: "🎀", color: "#e91e8c", label: "Fancy" },
+        Erec: { emoji: "🐾", color: "#e67e22", label: "Kitten" },
+        Indan: { emoji: "🌿", color: "#27ae60", label: "Forest" },
+        Kyft: { emoji: "⚡", color: "#f39c12", label: "Spark" },
+        Meva: { emoji: "🌙", color: "#2980b9", label: "Night" },
+        Qupuwu: { emoji: "🎭", color: "#c0392b", label: "Jester" },
+        Yitsim: { emoji: "❄️", color: "#00bcd4", label: "Frost" },
+      }
+
       const cats = ["Andar", "Balak", "Collo", "Erec", "Indan", "Kyft", "Meva", "Qupuwu", "Yitsim"]
       const solution = [
         "Balak",
@@ -510,9 +554,11 @@
         cats.forEach((cat) => {
           const chip = document.createElement("div")
           chip.className = "cat-chip"
-          chip.textContent = cat
           chip.draggable = true
           chip.dataset.cat = cat
+          const d = catData[cat]
+          chip.style.background = d.color
+          chip.innerHTML = `<span class="chip-emoji">${d.emoji}</span><span>${cat}</span>`
 
           chip.addEventListener("dragstart", handleDragStart)
           chip.addEventListener("dragend", handleDragEnd)
@@ -650,16 +696,188 @@
         }
       }
 
+      // ── Touch drag support ──────────────────────────────────────────────────
+      // State is read dynamically at touch time — no per-element listener re-registration.
+      let touchDragCat = null
+      let touchDragSource = null // "chip" | "grid"
+      let touchDragSrcIndex = null
+      let touchDragOriginEl = null
+      let touchGhost = null
+
+      function createGhost(el) {
+        const ghost = el.cloneNode(true)
+        ghost.style.position = "fixed"
+        ghost.style.pointerEvents = "none"
+        ghost.style.zIndex = "9999"
+        ghost.style.opacity = "0.85"
+        ghost.style.transform = "scale(1.1)"
+        ghost.style.boxShadow = "0 8px 24px rgba(0,0,0,0.35)"
+        ghost.style.borderRadius = "10px"
+        ghost.style.transition = "none"
+        const rect = el.getBoundingClientRect()
+        ghost.style.width = rect.width + "px"
+        ghost.style.height = rect.height + "px"
+        ghost.style.left = rect.left + "px"
+        ghost.style.top = rect.top + "px"
+        ghost.querySelectorAll(".remove-btn").forEach((b) => b.remove())
+        document.body.appendChild(ghost)
+        return ghost
+      }
+
+      function moveGhost(touch) {
+        if (!touchGhost) return
+        const w = parseFloat(touchGhost.style.width)
+        const h = parseFloat(touchGhost.style.height)
+        touchGhost.style.left = touch.clientX - w / 2 + "px"
+        touchGhost.style.top = touch.clientY - h / 2 + "px"
+      }
+
+      function removeGhost() {
+        if (touchGhost) {
+          touchGhost.remove()
+          touchGhost = null
+        }
+      }
+
+      function elementAtPoint(x, y) {
+        if (touchGhost) touchGhost.style.visibility = "hidden"
+        const el = document.elementFromPoint(x, y)
+        if (touchGhost) touchGhost.style.visibility = ""
+        return el
+      }
+
+      function closestGridCell(x, y) {
+        let node = elementAtPoint(x, y)
+        while (node && node !== document.body) {
+          if (node.classList && node.classList.contains("grid-cell")) return node
+          node = node.parentElement
+        }
+        return null
+      }
+
+      // Single touchstart listener on the document — figures out what was touched
+      document.addEventListener(
+        "touchstart",
+        (e) => {
+          if (touchDragCat) return // already dragging
+
+          const target = e.target
+          // Ignore taps on remove buttons
+          if (target.classList.contains("remove-btn")) return
+
+          // Touched a chip?
+          const chip = target.closest(".cat-chip")
+          if (chip) {
+            const cat = chip.dataset.cat
+            if (gridState.includes(cat)) return // already placed, can't drag
+            touchDragCat = cat
+            touchDragSource = "chip"
+            touchDragSrcIndex = null
+            touchDragOriginEl = chip
+            touchGhost = createGhost(chip)
+            chip.style.opacity = "0.4"
+            moveGhost(e.touches[0])
+            return
+          }
+
+          // Touched a filled grid cell?
+          const cell = target.closest(".grid-cell")
+          if (cell && cell.classList.contains("filled")) {
+            const index = parseInt(cell.dataset.index)
+            const cat = gridState[index]
+            if (!cat) return
+            touchDragCat = cat
+            touchDragSource = "grid"
+            touchDragSrcIndex = index
+            touchDragOriginEl = cell
+            touchGhost = createGhost(cell)
+            cell.style.opacity = "0.3"
+            moveGhost(e.touches[0])
+          }
+        },
+        { passive: true },
+      )
+
+      document.addEventListener(
+        "touchmove",
+        (e) => {
+          if (!touchDragCat) return
+          e.preventDefault()
+          moveGhost(e.touches[0])
+
+          document.querySelectorAll(".grid-cell").forEach((c) => c.classList.remove("drag-over"))
+          const cell = closestGridCell(e.touches[0].clientX, e.touches[0].clientY)
+          if (cell) cell.classList.add("drag-over")
+        },
+        { passive: false },
+      )
+
+      document.addEventListener(
+        "touchend",
+        (e) => {
+          if (!touchDragCat) return
+          const touch = e.changedTouches[0]
+          document.querySelectorAll(".grid-cell").forEach((c) => c.classList.remove("drag-over"))
+
+          // Restore origin element opacity before any DOM changes
+          if (touchDragOriginEl) {
+            touchDragOriginEl.style.opacity = ""
+            touchDragOriginEl = null
+          }
+          removeGhost()
+
+          const targetCell = closestGridCell(touch.clientX, touch.clientY)
+          if (targetCell) {
+            const targetIndex = parseInt(targetCell.dataset.index)
+            const cat = touchDragCat
+            const source = touchDragSource
+            const srcIndex = touchDragSrcIndex
+
+            if (source === "grid" && srcIndex === targetIndex) {
+              // same cell — no-op
+            } else if (gridState[targetIndex]) {
+              if (source === "grid") {
+                // swap
+                const targetCat = gridState[targetIndex]
+                removeCatFromCell(srcIndex)
+                removeCatFromCell(targetIndex)
+                placeCatInCell(cat, targetIndex)
+                placeCatInCell(targetCat, srcIndex)
+              }
+              // chip → filled cell: no-op
+            } else {
+              if (source === "grid") {
+                removeCatFromCell(srcIndex)
+                placeCatInCell(cat, targetIndex)
+              } else {
+                if (!gridState.includes(cat)) {
+                  placeCatInCell(cat, targetIndex)
+                }
+              }
+            }
+          }
+
+          touchDragCat = null
+          touchDragSource = null
+          touchDragSrcIndex = null
+        },
+        { passive: true },
+      )
+      // ── End touch drag ──────────────────────────────────────────────────────
+
       function placeCatInCell(cat, index) {
         const cell = document.querySelectorAll(".grid-cell")[index]
         const chip = document.querySelector(`.cat-chip[data-cat="${cat}"]`)
+        const d = catData[cat]
 
         gridState[index] = cat
-        cell.textContent = cat
+        cell.innerHTML = `<span class="cell-emoji">${d.emoji}</span><span class="cell-name">${cat}</span>`
         cell.classList.add("filled")
-        cell.draggable = true // Make the cell draggable
+        cell.style.background = d.color
+        cell.style.borderColor = d.color
+        cell.draggable = true
 
-        // Re-add the remove button (it gets cleared by textContent)
+        // Re-add the remove button
         const removeBtn = document.createElement("button")
         removeBtn.className = "remove-btn"
         removeBtn.textContent = "×"
@@ -680,9 +898,11 @@
         const chip = document.querySelector(`.cat-chip[data-cat="${cat}"]`)
 
         gridState[index] = null
-        cell.textContent = ""
+        cell.innerHTML = ""
         cell.classList.remove("filled", "correct", "incorrect")
-        cell.draggable = false // Make cell not draggable when empty
+        cell.style.background = ""
+        cell.style.borderColor = ""
+        cell.draggable = false
 
         // Re-add the remove button
         const removeBtn = document.createElement("button")
