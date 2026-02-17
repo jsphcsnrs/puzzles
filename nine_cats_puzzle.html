@@ -271,34 +271,40 @@
         filter: brightness(0.85);
       }
 
-      .grid-cell .remove-btn {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: rgba(255, 255, 255, 0.9);
-        border: none;
-        border-radius: 50%;
-        width: 28px;
-        height: 28px;
-        cursor: pointer;
-        font-size: 18px;
-        line-height: 1;
-        color: #667eea;
-        display: none;
+      .remove-zone {
+        display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        transition: all 0.2s ease;
+        gap: 8px;
+        border: 3px dashed #e53935;
+        border-radius: 10px;
+        color: #e53935;
+        font-weight: 700;
+        font-size: 1em;
+        text-align: center;
+        padding: 14px;
+        margin: 0 auto 20px;
+        max-width: 500px;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          opacity 0.2s;
+        user-select: none;
+        letter-spacing: 0.5px;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
       }
 
-      .grid-cell .remove-btn:hover {
-        background: white;
-        color: #f44336;
-        transform: scale(1.1);
+      .remove-zone.visible {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
       }
 
-      .grid-cell.filled:hover .remove-btn {
-        display: flex;
+      .remove-zone.drag-over {
+        background: #ffebee;
+        border-style: solid;
       }
 
       .controls {
@@ -498,6 +504,8 @@
         <!-- Grid cells will be generated here -->
       </div>
 
+      <div class="remove-zone" id="removeZone">🗑️ Drop here to remove</div>
+
       <div class="validation-feedback" id="validationFeedback">
         <h4 id="feedbackTitle"></h4>
         <ul id="feedbackList"></ul>
@@ -512,14 +520,14 @@
     <script>
       const catData = {
         Andar: { emoji: "🐈‍⬛", color: "#2c3e50", label: "Shadow" },
-        Balak: { emoji: "👑", color: "#8e44ad", label: "Leader" },
-        Collo: { emoji: "🎀", color: "#e91e8c", label: "Fancy" },
-        Erec: { emoji: "🐾", color: "#e67e22", label: "Kitten" },
-        Indan: { emoji: "🌿", color: "#27ae60", label: "Forest" },
-        Kyft: { emoji: "⚡", color: "#f39c12", label: "Spark" },
-        Meva: { emoji: "🌙", color: "#2980b9", label: "Night" },
-        Qupuwu: { emoji: "🎭", color: "#c0392b", label: "Jester" },
-        Yitsim: { emoji: "❄️", color: "#00bcd4", label: "Frost" },
+        Balak: { emoji: "😺", color: "#8e44ad", label: "Leader" },
+        Collo: { emoji: "😸", color: "#e91e8c", label: "Fancy" },
+        Erec: { emoji: "🐱", color: "#e67e22", label: "Kitten" },
+        Indan: { emoji: "😻", color: "#27ae60", label: "Forest" },
+        Kyft: { emoji: "😼", color: "#f39c12", label: "Spark" },
+        Meva: { emoji: "🙀", color: "#2980b9", label: "Night" },
+        Qupuwu: { emoji: "😹", color: "#c0392b", label: "Jester" },
+        Yitsim: { emoji: "🐈", color: "#00bcd4", label: "Frost" },
       }
 
       const cats = ["Andar", "Balak", "Collo", "Erec", "Indan", "Kyft", "Meva", "Qupuwu", "Yitsim"]
@@ -545,6 +553,22 @@
       window.addEventListener("DOMContentLoaded", () => {
         initializeGame()
         startTimer()
+
+        const removeZone = document.getElementById("removeZone")
+        removeZone.addEventListener("dragover", (e) => {
+          e.preventDefault()
+          removeZone.classList.add("drag-over")
+        })
+        removeZone.addEventListener("dragleave", () => {
+          removeZone.classList.remove("drag-over")
+        })
+        removeZone.addEventListener("drop", (e) => {
+          e.preventDefault()
+          removeZone.classList.remove("drag-over", "visible")
+          const source = e.dataTransfer.getData("source")
+          const srcIndex = parseInt(e.dataTransfer.getData("sourceIndex"))
+          if (source === "grid") removeCatFromCell(srcIndex)
+        })
       })
 
       function initializeGame() {
@@ -581,16 +605,6 @@
           cell.addEventListener("dragstart", handleCellDragStart)
           cell.addEventListener("dragend", handleDragEnd)
           cell.addEventListener("click", () => handleCellClick(i))
-
-          // Add remove button
-          const removeBtn = document.createElement("button")
-          removeBtn.className = "remove-btn"
-          removeBtn.textContent = "×"
-          removeBtn.onclick = (e) => {
-            e.stopPropagation()
-            removeCatFromCell(i)
-          }
-          cell.appendChild(removeBtn)
 
           grid.appendChild(cell)
         }
@@ -631,11 +645,13 @@
 
         cell.classList.add("dragging")
         cell.style.opacity = "0.5"
+        document.getElementById("removeZone").classList.add("visible")
       }
 
       function handleDragEnd(e) {
         e.target.classList.remove("dragging")
         e.target.style.opacity = "1"
+        document.getElementById("removeZone").classList.remove("visible", "drag-over")
       }
 
       function handleDragOver(e) {
@@ -792,6 +808,7 @@
             touchDragOriginEl = cell
             touchGhost = createGhost(cell)
             cell.style.opacity = "0.3"
+            document.getElementById("removeZone").classList.add("visible")
             moveGhost(e.touches[0])
           }
         },
@@ -806,8 +823,24 @@
           moveGhost(e.touches[0])
 
           document.querySelectorAll(".grid-cell").forEach((c) => c.classList.remove("drag-over"))
-          const cell = closestGridCell(e.touches[0].clientX, e.touches[0].clientY)
-          if (cell) cell.classList.add("drag-over")
+
+          const removeZone = document.getElementById("removeZone")
+          const rz = removeZone.getBoundingClientRect()
+          const tx = e.touches[0].clientX,
+            ty = e.touches[0].clientY
+          if (
+            touchDragSource === "grid" &&
+            tx >= rz.left &&
+            tx <= rz.right &&
+            ty >= rz.top &&
+            ty <= rz.bottom
+          ) {
+            removeZone.classList.add("drag-over")
+          } else {
+            removeZone.classList.remove("drag-over")
+            const cell = closestGridCell(tx, ty)
+            if (cell) cell.classList.add("drag-over")
+          }
         },
         { passive: false },
       )
@@ -819,6 +852,9 @@
           const touch = e.changedTouches[0]
           document.querySelectorAll(".grid-cell").forEach((c) => c.classList.remove("drag-over"))
 
+          const removeZone = document.getElementById("removeZone")
+          removeZone.classList.remove("drag-over", "visible")
+
           // Restore origin element opacity before any DOM changes
           if (touchDragOriginEl) {
             touchDragOriginEl.style.opacity = ""
@@ -826,32 +862,44 @@
           }
           removeGhost()
 
-          const targetCell = closestGridCell(touch.clientX, touch.clientY)
-          if (targetCell) {
-            const targetIndex = parseInt(targetCell.dataset.index)
-            const cat = touchDragCat
-            const source = touchDragSource
-            const srcIndex = touchDragSrcIndex
+          // Check if dropped on remove zone
+          const rz = removeZone.getBoundingClientRect()
+          const tx = touch.clientX,
+            ty = touch.clientY
+          if (
+            touchDragSource === "grid" &&
+            tx >= rz.left &&
+            tx <= rz.right &&
+            ty >= rz.top &&
+            ty <= rz.bottom
+          ) {
+            removeCatFromCell(touchDragSrcIndex)
+          } else {
+            const targetCell = closestGridCell(tx, ty)
+            if (targetCell) {
+              const targetIndex = parseInt(targetCell.dataset.index)
+              const cat = touchDragCat
+              const source = touchDragSource
+              const srcIndex = touchDragSrcIndex
 
-            if (source === "grid" && srcIndex === targetIndex) {
-              // same cell — no-op
-            } else if (gridState[targetIndex]) {
-              if (source === "grid") {
-                // swap
-                const targetCat = gridState[targetIndex]
-                removeCatFromCell(srcIndex)
-                removeCatFromCell(targetIndex)
-                placeCatInCell(cat, targetIndex)
-                placeCatInCell(targetCat, srcIndex)
-              }
-              // chip → filled cell: no-op
-            } else {
-              if (source === "grid") {
-                removeCatFromCell(srcIndex)
-                placeCatInCell(cat, targetIndex)
-              } else {
-                if (!gridState.includes(cat)) {
+              if (source === "grid" && srcIndex === targetIndex) {
+                // same cell — no-op
+              } else if (gridState[targetIndex]) {
+                if (source === "grid") {
+                  const targetCat = gridState[targetIndex]
+                  removeCatFromCell(srcIndex)
+                  removeCatFromCell(targetIndex)
                   placeCatInCell(cat, targetIndex)
+                  placeCatInCell(targetCat, srcIndex)
+                }
+              } else {
+                if (source === "grid") {
+                  removeCatFromCell(srcIndex)
+                  placeCatInCell(cat, targetIndex)
+                } else {
+                  if (!gridState.includes(cat)) {
+                    placeCatInCell(cat, targetIndex)
+                  }
                 }
               }
             }
@@ -877,16 +925,6 @@
         cell.style.borderColor = d.color
         cell.draggable = true
 
-        // Re-add the remove button
-        const removeBtn = document.createElement("button")
-        removeBtn.className = "remove-btn"
-        removeBtn.textContent = "×"
-        removeBtn.onclick = (e) => {
-          e.stopPropagation()
-          removeCatFromCell(index)
-        }
-        cell.appendChild(removeBtn)
-
         chip.classList.add("placed")
       }
 
@@ -903,16 +941,6 @@
         cell.style.background = ""
         cell.style.borderColor = ""
         cell.draggable = false
-
-        // Re-add the remove button
-        const removeBtn = document.createElement("button")
-        removeBtn.className = "remove-btn"
-        removeBtn.textContent = "×"
-        removeBtn.onclick = (e) => {
-          e.stopPropagation()
-          removeCatFromCell(index)
-        }
-        cell.appendChild(removeBtn)
 
         chip.classList.remove("placed")
       }
