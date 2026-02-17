@@ -106,25 +106,6 @@
         background: #5568d3;
       }
 
-      footer {
-        text-align: center;
-        color: rgba(255, 255, 255, 0.8);
-        padding: 30px 0;
-        margin-top: 40px;
-      }
-
-      footer a {
-        color: white;
-        text-decoration: none;
-        font-weight: 600;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-        transition: border-color 0.3s ease;
-      }
-
-      footer a:hover {
-        border-bottom-color: white;
-      }
-
       .coming-soon {
         background: #f8f9fa;
         border: 2px dashed #ddd;
@@ -143,6 +124,25 @@
 
       .coming-soon:hover .play-button {
         background: #999;
+      }
+
+      footer {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.8);
+        padding: 30px 0;
+        margin-top: 40px;
+      }
+
+      footer a {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+        transition: border-color 0.3s ease;
+      }
+
+      footer a:hover {
+        border-bottom-color: white;
       }
 
       @media (max-width: 600px) {
@@ -167,60 +167,102 @@
         <p class="subtitle">Challenge your mind with these fun brain teasers!</p>
       </header>
 
-      <div class="puzzle-grid">
-        <!-- Nine Cats Puzzle Card - Add this to your puzzle grid -->
-        <!-- <a href="nine_cats_puzzle.html" class="puzzle-card">
-          <span class="puzzle-icon">🐱</span>
-          <h2>Nine Cats Puzzle</h2>
-          <div class="puzzle-date">February 20, 2026</div>
-          <p class="puzzle-description">
-            Position nine cats in a 3x3 grid following three simple rules. Use logic and deduction
-            to figure out where each cat belongs. Can you solve the arrangement?
-          </p>
-          <span class="play-button">Play Now →</span>
-        </a> -->
-
-        <!-- Hidden Animals Puzzle -->
-        <a href="hidden_animals.html" class="puzzle-card">
-          <span class="puzzle-icon">🦁</span>
-          <h2>Hidden Animals</h2>
-          <div class="puzzle-date">February 17, 2026</div>
-          <p class="puzzle-description">
-            Can you find the animals concealed within each sentence? Test your word-finding skills
-            as you search for 6 hidden creatures. Race against the clock to find them all!
-          </p>
-          <span class="play-button">Play Now →</span>
-        </a>
-
-        <!-- Safe Code Puzzle -->
-        <a href="safe_code_puzzle.html" class="puzzle-card">
-          <span class="puzzle-icon">🔐</span>
-          <h2>Safe Code Puzzle</h2>
-          <div class="puzzle-date">February 13, 2026</div>
-          <p class="puzzle-description">
-            Crack the code to unlock the safe! Use logic and deduction to solve the mystery and
-            reveal what's hidden inside. Can you break the code?
-          </p>
-          <span class="play-button">Play Now →</span>
-        </a>
-
-        <!-- Coming Soon Placeholder -->
-        <div class="puzzle-card coming-soon">
-          <span class="puzzle-icon">🎯</span>
-          <h2>More Puzzles Coming Soon</h2>
-          <div class="puzzle-date">Stay tuned!</div>
-          <p class="puzzle-description">
-            New puzzles are on the way. Check back periodically for more brain-teasing challenges and
-            fun word games!
-          </p>
-          <span class="play-button">Coming Soon</span>
-        </div>
-      </div>
+      <div class="puzzle-grid" id="puzzleGrid"></div>
 
       <footer>
         <p>Made with 💜 for Daves everywhere</p>
       </footer>
     </div>
+
+    <script>
+      // ============================================================
+      // ADD NEW PUZZLES HERE
+      // releaseDate: "YYYY-MM-DD" — puzzle won't show until this date
+      // ============================================================
+      const puzzles = [
+        {
+          title: "Nine Cats Puzzle",
+          icon: "🐱",
+          description:
+            "Position nine cats in a 3×3 grid following three simple rules. Use logic and deduction to figure out where each cat belongs. Can you solve the arrangement?",
+          file: "nine_cats_puzzle.html",
+          releaseDate: "2026-02-20",
+        },
+        {
+          title: "Hidden Animals",
+          icon: "🦁",
+          description:
+            "Can you find the animals concealed within each sentence? Test your word-finding skills as you search for 6 hidden creatures. Race against the clock to find them all!",
+          file: "hidden_animals.html",
+          releaseDate: "2026-02-17",
+        },
+        {
+          title: "Safe Code Puzzle",
+          icon: "🔐",
+          description:
+            "Crack the code to unlock the safe! Use logic and deduction to solve the mystery and reveal what's hidden inside. Can you break the code?",
+          file: "safe_code_puzzle.html",
+          releaseDate: "2026-02-13",
+        },
+      ]
+      // ============================================================
+
+      function formatDate(dateStr) {
+        const [year, month, day] = dateStr.split("-").map(Number)
+        const date = new Date(year, month - 1, day)
+        return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+      }
+
+      function isReleased(dateStr) {
+        const [year, month, day] = dateStr.split("-").map(Number)
+        const release = new Date(year, month - 1, day)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        return today >= release
+      }
+
+      function renderPuzzles() {
+        const grid = document.getElementById("puzzleGrid")
+        const released = puzzles.filter((p) => isReleased(p.releaseDate))
+        const unreleased = puzzles.filter((p) => !isReleased(p.releaseDate))
+
+        // Render released puzzles, newest first
+        released
+          .sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate))
+          .forEach((puzzle) => {
+            const card = document.createElement("a")
+            card.href = puzzle.file
+            card.className = "puzzle-card"
+            card.innerHTML = `
+              <span class="puzzle-icon">${puzzle.icon}</span>
+              <h2>${puzzle.title}</h2>
+              <div class="puzzle-date">${formatDate(puzzle.releaseDate)}</div>
+              <p class="puzzle-description">${puzzle.description}</p>
+              <span class="play-button">Play Now →</span>
+            `
+            grid.appendChild(card)
+          })
+
+        // Show a coming soon card if there are unreleased puzzles
+        if (unreleased.length > 0) {
+          // Find the soonest upcoming release
+          const next = unreleased.sort(
+            (a, b) => new Date(a.releaseDate) - new Date(b.releaseDate),
+          )[0]
+          const comingSoon = document.createElement("div")
+          comingSoon.className = "puzzle-card coming-soon"
+          comingSoon.innerHTML = `
+            <span class="puzzle-icon">🎯</span>
+            <h2>New Puzzle Coming Soon</h2>
+            <div class="puzzle-date">${formatDate(next.releaseDate)}</div>
+            <p class="puzzle-description">A new puzzle is on the way. Check back soon for another brain-teasing challenge or fun word game!</p>
+            <span class="play-button">Coming Soon</span>
+          `
+          grid.appendChild(comingSoon)
+        }
+      }
+
+      renderPuzzles()
+    </script>
   </body>
 </html>
-
