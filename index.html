@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Puzzle Collection</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%221em%22 font-size=%2286%22>🧩</text></svg>"
+    />
     <style>
       * {
         margin: 0;
@@ -192,7 +196,7 @@
           title: "Hidden Animals",
           icon: "🦁",
           description:
-            "Can you find the animals concealed within each sentence? Test your word-finding skills as you search for 6 hidden creatures. Race against the clock to find them all!",
+            "Can you find the animals concealed within each sentence? Race against the clock to find them all!",
           file: "hidden_animals.html",
           releaseDate: "2026-02-17",
         },
@@ -252,10 +256,8 @@
           const comingSoon = document.createElement("div")
           comingSoon.className = "puzzle-card coming-soon"
           comingSoon.innerHTML = `
-            <span class="puzzle-icon">🎯</span>
             <h2>New Puzzle Coming Soon</h2>
             <div class="puzzle-date">${formatDate(next.releaseDate)}</div>
-            <p class="puzzle-description">A new puzzle is on the way. Check back soon for another brain-teasing challenge or fun word game!</p>
             <span class="play-button">Coming Soon</span>
           `
           grid.appendChild(comingSoon)
