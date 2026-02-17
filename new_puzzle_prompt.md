@@ -18,13 +18,16 @@ Build it to match this style:
 ## 2. A short index card blurb
 
 For adding to my homepage `puzzles` array, in this exact format:
+
+```js
 {
-title: "...",
-icon: "...", // a single relevant emoji
-description: "...", // 1-2 sentences, enticing but no spoilers
-file: "...", // snake_case filename ending in .html
-releaseDate: "YYYY-MM-DD",
+    title: "...",
+    icon: "...", // a single relevant emoji
+    description: "...", // 1-2 sentences, enticing but no spoilers
+    file: "...", // snake_case filename ending in .html
+    releaseDate: "YYYY-MM-DD",
 },
+```
 
 ## Puzzle Rules
 
