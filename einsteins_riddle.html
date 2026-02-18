@@ -12,6 +12,9 @@
       }
 
       body {
+        .hidden {
+          display: none !important;
+        }
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
@@ -754,6 +757,9 @@
           spot.addEventListener("dragleave", handleDragLeave)
         })
 
+        // Ensure houses palette visibility is correct
+        updateHousesPaletteVisibility()
+
         // Start timer
         startTimer()
       }
@@ -890,6 +896,7 @@
         house.addEventListener("drop", handleStreetDrop)
 
         validateRules()
+        updateHousesPaletteVisibility()
       }
 
       // Attribute drag handlers
@@ -1032,6 +1039,17 @@
         })
       }
 
+      function updateHousesPaletteVisibility() {
+        const palette = document.querySelector(".houses-palette")
+        if (!palette) return
+        const allPlaced = streetState.every((c) => c !== null)
+        if (allPlaced) {
+          palette.classList.add("hidden")
+        } else {
+          palette.classList.remove("hidden")
+        }
+      }
+
       // Rule checking functions
       function checkAttribute(state, attr1, attr2) {
         const house = state.find(
@@ -1127,6 +1145,7 @@
         })
 
         validateRules()
+        updateHousesPaletteVisibility()
       }
 
       function startTimer() {
