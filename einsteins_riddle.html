@@ -1,0 +1,1168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Einstein's Riddle</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        color: #667eea;
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 1.1em;
+      }
+
+      .rules {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+      }
+
+      .rules h3 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+      }
+
+      .rules-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .rule-item {
+        background: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.85em;
+        color: #555;
+        line-height: 1.4;
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .rule-item.violated {
+        background: #f8d7da;
+        border-left-color: #dc3545;
+      }
+
+      .rule-item.satisfied {
+        background: #d4edda;
+        border-left-color: #28a745;
+      }
+
+      .timer {
+        text-align: center;
+        font-size: 1.3em;
+        color: #764ba2;
+        margin-bottom: 20px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        font-weight: 600;
+        font-family: "Courier New", monospace;
+      }
+
+      .street-container {
+        background: #e9ecef;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .street-label {
+        text-align: center;
+        font-weight: 600;
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 0.9em;
+        text-transform: uppercase;
+      }
+
+      .street {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+        min-height: 250px;
+      }
+
+      .street-spot {
+        border: 3px dashed #adb5bd;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.5);
+        transition: all 0.3s ease;
+        position: relative;
+        padding: 0;
+      }
+
+      .street-spot .house {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        box-shadow: none;
+      }
+
+      .street-spot.drag-over {
+        background: rgba(255, 255, 255, 0.8);
+        border-color: #667eea;
+        transform: scale(1.05);
+      }
+
+      .street-spot-label {
+        color: #adb5bd;
+        font-weight: 600;
+        font-size: 1.2em;
+      }
+
+      .houses-palette {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .houses-palette h3 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+      }
+
+      .houses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+      }
+
+      .house {
+        border-radius: 10px;
+        padding: 15px;
+        min-height: 200px;
+        cursor: grab;
+        transition: all 0.3s ease;
+        position: relative;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        pointer-events: auto;
+      }
+
+      .house:active {
+        cursor: grabbing;
+      }
+
+      .house:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .house.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+      }
+
+      .house.placed {
+        cursor: grab;
+      }
+
+      .house.drag-over {
+        outline: 3px solid #667eea;
+        outline-offset: 3px;
+      }
+
+      .house.red {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      }
+      .house.green {
+        background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+      }
+      .house.white {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      }
+      .house.yellow {
+        background: linear-gradient(135deg, #ffd93d 0%, #ffc107 100%);
+      }
+      .house.blue {
+        background: linear-gradient(135deg, #74c0fc 0%, #4dabf7 100%);
+      }
+
+      .house-header {
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 12px;
+        color: rgba(0, 0, 0, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .house-attributes {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .house-attribute-slot {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 6px;
+        padding: 6px 10px;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85em;
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      .house-attribute-slot.filled {
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        font-weight: 600;
+        cursor: grab;
+      }
+
+      .house-attribute-slot.filled:active {
+        cursor: grabbing;
+      }
+
+      .attribute-chip {
+        background: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: 600;
+        cursor: grab;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+      }
+
+      .attribute-chip:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .attribute-chip.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+      }
+
+      .attribute-icon {
+        font-size: 1.1em;
+      }
+
+      .palette {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .palette h3 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+      }
+
+      .palette-section {
+        margin-bottom: 15px;
+      }
+
+      .palette-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .palette-label {
+        font-size: 0.85em;
+        color: #666;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+      }
+
+      .chips-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .attribute-chip.placed {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .controls {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 12px 24px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        transition: background 0.3s ease;
+      }
+
+      button:hover {
+        background: #5568d3;
+      }
+
+      button.secondary {
+        background: #764ba2;
+      }
+
+      button.secondary:hover {
+        background: #643a8a;
+      }
+
+      .winner-modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .winner-modal.show {
+        display: flex;
+      }
+
+      .winner-content {
+        background: white;
+        padding: 50px;
+        border-radius: 20px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        animation: celebrate 0.5s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      @keyframes celebrate {
+        0%,
+        100% {
+          transform: scale(1) rotate(0deg);
+        }
+        25% {
+          transform: scale(1.1) rotate(-5deg);
+        }
+        75% {
+          transform: scale(1.1) rotate(5deg);
+        }
+      }
+
+      .winner-content h2 {
+        color: #4caf50;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+      }
+
+      .winner-content .trophy {
+        font-size: 5em;
+        margin-bottom: 20px;
+      }
+
+      .winner-content .time {
+        font-size: 1.5em;
+        color: #764ba2;
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .winner-content .message {
+        font-size: 1.2em;
+        color: #555;
+        margin-bottom: 30px;
+      }
+
+      .winner-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .play-again-btn {
+        padding: 15px 40px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.2em;
+        font-weight: 600;
+        transition: background 0.3s ease;
+      }
+
+      .play-again-btn:hover {
+        background: #45a049;
+      }
+
+      .close-btn {
+        padding: 15px 40px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.2em;
+        font-weight: 600;
+        transition: background 0.3s ease;
+      }
+
+      .close-btn:hover {
+        background: #5568d3;
+      }
+
+      @media (max-width: 1024px) {
+        .street {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .houses-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .rules-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 1.8em;
+        }
+
+        .street {
+          grid-template-columns: 1fr;
+        }
+
+        .houses-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .house {
+          min-height: auto;
+        }
+
+        .winner-content {
+          padding: 30px 20px;
+        }
+
+        .winner-content .trophy {
+          font-size: 3em;
+        }
+
+        .winner-content h2 {
+          font-size: 1.8em;
+        }
+
+        .winner-content .time {
+          font-size: 1.2em;
+        }
+
+        .winner-content .message {
+          font-size: 1em;
+        }
+
+        .play-again-btn,
+        .close-btn {
+          padding: 12px 24px;
+          font-size: 1em;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Winner Modal -->
+    <div class="winner-modal" id="winnerModal">
+      <div class="winner-content">
+        <div class="trophy">🏆</div>
+        <h2>Genius!</h2>
+        <div class="time">Time: <span id="finalTime">00:00</span></div>
+        <div class="message">You've solved Einstein's Riddle!</div>
+        <div class="winner-buttons">
+          <button class="close-btn" onclick="closeWinnerModal()">Close</button>
+          <button class="play-again-btn" onclick="playAgain()">Reset & Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <h1>🧠 Einstein's Riddle</h1>
+      <p class="subtitle">Who owns the fish? Arrange the houses and attributes using logic!</p>
+
+      <div class="timer">⏱️ Time: <span id="timer">00:00</span></div>
+
+      <div class="rules">
+        <h3>The Clues</h3>
+        <div class="rules-grid" id="rulesGrid">
+          <!-- Rules will be populated here -->
+        </div>
+      </div>
+
+      <div class="street-container">
+        <div class="street-label">🏘️ The Street (Drag houses here in order)</div>
+        <div class="street" id="street">
+          <div class="street-spot" data-position="0"><span class="street-spot-label">1</span></div>
+          <div class="street-spot" data-position="1"><span class="street-spot-label">2</span></div>
+          <div class="street-spot" data-position="2"><span class="street-spot-label">3</span></div>
+          <div class="street-spot" data-position="3"><span class="street-spot-label">4</span></div>
+          <div class="street-spot" data-position="4"><span class="street-spot-label">5</span></div>
+        </div>
+      </div>
+
+      <div class="houses-palette">
+        <h3>Houses (Drag to the street above)</h3>
+        <div class="houses-grid" id="housesGrid"></div>
+      </div>
+
+      <div class="palette">
+        <h3>Drag these attributes to the houses:</h3>
+
+        <div class="palette-section">
+          <div class="palette-label">Nationalities</div>
+          <div class="chips-container" id="nationalityPalette"></div>
+        </div>
+
+        <div class="palette-section">
+          <div class="palette-label">Drinks</div>
+          <div class="chips-container" id="drinkPalette"></div>
+        </div>
+
+        <div class="palette-section">
+          <div class="palette-label">Cigarettes</div>
+          <div class="chips-container" id="cigarettePalette"></div>
+        </div>
+
+        <div class="palette-section">
+          <div class="palette-label">Pets</div>
+          <div class="chips-container" id="petPalette"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button onclick="checkSolution()">Check Solution</button>
+        <button class="secondary" onclick="clearAll()">Clear All</button>
+      </div>
+    </div>
+
+    <script>
+      const HOUSE_COLORS = ["red", "green", "white", "yellow", "blue"]
+
+      const attributes = {
+        nationality: [
+          { value: "Brit", icon: "🇬🇧" },
+          { value: "Swede", icon: "🇸🇪" },
+          { value: "Dane", icon: "🇩🇰" },
+          { value: "Norwegian", icon: "🇳🇴" },
+          { value: "German", icon: "🇩🇪" },
+        ],
+        drink: [
+          { value: "Tea", icon: "🍵" },
+          { value: "Coffee", icon: "☕" },
+          { value: "Milk", icon: "🥛" },
+          { value: "Beer", icon: "🍺" },
+          { value: "Water", icon: "💧" },
+        ],
+        cigarette: [
+          { value: "Pall Mall", icon: "🚬" },
+          { value: "Dunhill", icon: "🚬" },
+          { value: "Blend", icon: "🚬" },
+          { value: "Blue Master", icon: "🚬" },
+          { value: "Prince", icon: "🚬" },
+        ],
+        pet: [
+          { value: "Dogs", icon: "🐕" },
+          { value: "Birds", icon: "🦜" },
+          { value: "Cats", icon: "🐈" },
+          { value: "Horse", icon: "🐴" },
+          { value: "Fish", icon: "🐠" },
+        ],
+      }
+
+      const rules = [
+        {
+          text: "The Brit lives in the red house",
+          check: (state) => checkAttribute(state, "Brit", "red"),
+        },
+        { text: "The Swede keeps dogs", check: (state) => checkAttribute(state, "Swede", "Dogs") },
+        { text: "The Dane drinks tea", check: (state) => checkAttribute(state, "Dane", "Tea") },
+        {
+          text: "The green house is immediately left of the white house",
+          check: (state) => checkAdjacent(state, "green", "white", "left"),
+        },
+        {
+          text: "The green house owner drinks coffee",
+          check: (state) => checkAttribute(state, "green", "Coffee"),
+        },
+        {
+          text: "The person who smokes Pall Mall keeps birds",
+          check: (state) => checkAttribute(state, "Pall Mall", "Birds"),
+        },
+        {
+          text: "The yellow house owner smokes Dunhill",
+          check: (state) => checkAttribute(state, "yellow", "Dunhill"),
+        },
+        {
+          text: "The person in the center house drinks milk",
+          check: (state) => checkPosition(state, 2, "Milk"),
+        },
+        {
+          text: "The Norwegian lives in the first house",
+          check: (state) => checkPosition(state, 0, "Norwegian"),
+        },
+        {
+          text: "The Blend smoker lives next to the cat owner",
+          check: (state) => checkNeighbor(state, "Blend", "Cats"),
+        },
+        {
+          text: "The horse owner lives next to the Dunhill smoker",
+          check: (state) => checkNeighbor(state, "Horse", "Dunhill"),
+        },
+        {
+          text: "The Blue Master smoker drinks beer",
+          check: (state) => checkAttribute(state, "Blue Master", "Beer"),
+        },
+        {
+          text: "The German smokes Prince",
+          check: (state) => checkAttribute(state, "German", "Prince"),
+        },
+        {
+          text: "The Norwegian lives next to the blue house",
+          check: (state) => checkNeighbor(state, "Norwegian", "blue"),
+        },
+        {
+          text: "The Blend smoker has a neighbor who drinks water",
+          check: (state) => checkNeighbor(state, "Blend", "Water"),
+        },
+      ]
+
+      let streetState = [null, null, null, null, null] // Which house is in each position
+      let houseAttributes = {} // { color: { nationality, drink, cigarette, pet } }
+      let timerInterval = null
+      let startTime = null
+      let elapsedSeconds = 0
+
+      function initializeGame() {
+        // Initialize house attributes
+        HOUSE_COLORS.forEach((color) => {
+          houseAttributes[color] = {
+            nationality: null,
+            drink: null,
+            cigarette: null,
+            pet: null,
+          }
+        })
+
+        // Create houses in palette
+        const housesGrid = document.getElementById("housesGrid")
+        housesGrid.innerHTML = ""
+
+        HOUSE_COLORS.forEach((color) => {
+          const house = createHouseElement(color)
+          housesGrid.appendChild(house)
+        })
+
+        // Create attribute chips in palettes
+        createPalette("nationalityPalette", "nationality")
+        createPalette("drinkPalette", "drink")
+        createPalette("cigarettePalette", "cigarette")
+        createPalette("petPalette", "pet")
+
+        // Create rules display
+        const rulesGrid = document.getElementById("rulesGrid")
+        rulesGrid.innerHTML = ""
+        rules.forEach((rule, index) => {
+          const ruleEl = document.createElement("div")
+          ruleEl.className = "rule-item"
+          ruleEl.id = `rule-${index}`
+          ruleEl.textContent = `${index + 1}. ${rule.text}`
+          rulesGrid.appendChild(ruleEl)
+        })
+
+        // Setup drag and drop for street spots
+        document.querySelectorAll(".street-spot").forEach((spot) => {
+          spot.addEventListener("dragover", handleStreetDragOver)
+          spot.addEventListener("drop", handleStreetDrop)
+          spot.addEventListener("dragleave", handleDragLeave)
+        })
+
+        // Start timer
+        startTimer()
+      }
+
+      function createHouseElement(color) {
+        const house = document.createElement("div")
+        house.className = `house ${color}`
+        house.draggable = true
+        house.dataset.color = color
+
+        house.innerHTML = `
+                <div class="house-header">${color}</div>
+                <div class="house-attributes">
+                    <div class="house-attribute-slot" data-type="nationality">—</div>
+                    <div class="house-attribute-slot" data-type="drink">—</div>
+                    <div class="house-attribute-slot" data-type="cigarette">—</div>
+                    <div class="house-attribute-slot" data-type="pet">—</div>
+                </div>
+            `
+
+        house.addEventListener("dragstart", handleHouseDragStart)
+        house.addEventListener("dragend", handleDragEnd)
+        house.addEventListener("dragover", handleHouseDragOver)
+        house.addEventListener("drop", handleHouseDrop)
+        house.addEventListener("dragleave", handleDragLeave)
+
+        return house
+      }
+
+      function createPalette(paletteId, type) {
+        const palette = document.getElementById(paletteId)
+        palette.innerHTML = ""
+
+        attributes[type].forEach((attr) => {
+          const chip = document.createElement("div")
+          chip.className = "attribute-chip"
+          chip.draggable = true
+          chip.dataset.type = type
+          chip.dataset.value = attr.value
+          chip.innerHTML = `
+                    <span class="attribute-icon">${attr.icon}</span>
+                    <span>${attr.value}</span>
+                `
+
+          chip.addEventListener("dragstart", handleAttributeDragStart)
+          chip.addEventListener("dragend", handleDragEnd)
+
+          palette.appendChild(chip)
+        })
+      }
+
+      // House drag handlers
+      function handleHouseDragStart(e) {
+        e.stopPropagation()
+        e.target.classList.add("dragging")
+        e.dataTransfer.effectAllowed = "move"
+        e.dataTransfer.setData("itemType", "house")
+        e.dataTransfer.setData("color", e.target.dataset.color)
+      }
+
+      function handleStreetDragOver(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        e.dataTransfer.dropEffect = "move"
+
+        // Find the actual street spot
+        let spot = e.currentTarget
+        if (spot.classList.contains("house")) {
+          spot = spot.parentElement
+        }
+        if (spot.classList.contains("street-spot")) {
+          spot.classList.add("drag-over")
+        }
+      }
+
+      function handleStreetDrop(e) {
+        e.preventDefault()
+        e.stopPropagation()
+
+        // Find the actual street spot (might be dropping on house or spot)
+        let spot = e.currentTarget
+        if (spot.classList.contains("house")) {
+          spot = spot.parentElement
+        }
+        if (!spot.classList.contains("street-spot")) return
+
+        spot.classList.remove("drag-over")
+
+        const itemType = e.dataTransfer.getData("itemType")
+        if (itemType !== "house") return
+
+        const color = e.dataTransfer.getData("color")
+        const position = parseInt(spot.dataset.position)
+
+        // Find the house element
+        let house = document.querySelector(`.house[data-color="${color}"]`)
+        if (!house) return
+
+        // Remove house from current position if placed on street
+        const currentPos = streetState.indexOf(color)
+        if (currentPos !== -1 && currentPos !== position) {
+          const oldSpot = document.querySelector(`.street-spot[data-position="${currentPos}"]`)
+          oldSpot.innerHTML = `<span class="street-spot-label">${currentPos + 1}</span>`
+          streetState[currentPos] = null
+        }
+
+        // If there's already a house in this spot, swap them
+        if (streetState[position] && streetState[position] !== color) {
+          const oldColor = streetState[position]
+          const oldHouse = document.querySelector(`.house[data-color="${oldColor}"]`)
+
+          if (currentPos !== -1) {
+            // Swap positions
+            const oldSpot = document.querySelector(`.street-spot[data-position="${currentPos}"]`)
+            oldSpot.innerHTML = ""
+            oldSpot.appendChild(oldHouse)
+            streetState[currentPos] = oldColor
+          } else {
+            // Move old house back to palette
+            const housesGrid = document.getElementById("housesGrid")
+            housesGrid.appendChild(oldHouse)
+            oldHouse.classList.remove("placed")
+          }
+        }
+
+        // Place new house
+        streetState[position] = color
+        spot.innerHTML = ""
+        spot.appendChild(house)
+        house.classList.add("placed")
+
+        // Re-add event listeners for houses on the street
+        house.addEventListener("dragover", handleStreetDragOver)
+        house.addEventListener("drop", handleStreetDrop)
+
+        validateRules()
+      }
+
+      // Attribute drag handlers
+      function handleAttributeDragStart(e) {
+        e.target.classList.add("dragging")
+        e.dataTransfer.effectAllowed = "move"
+        e.dataTransfer.setData("itemType", "attribute")
+        e.dataTransfer.setData("type", e.target.dataset.type)
+        e.dataTransfer.setData("value", e.target.dataset.value)
+      }
+
+      function handleHouseDragOver(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        e.dataTransfer.dropEffect = "move"
+        e.currentTarget.classList.add("drag-over")
+      }
+
+      function handleHouseDrop(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        const house = e.currentTarget
+        house.classList.remove("drag-over")
+
+        const itemType = e.dataTransfer.getData("itemType")
+        if (itemType !== "attribute") return
+
+        const type = e.dataTransfer.getData("type")
+        const value = e.dataTransfer.getData("value")
+        const fromHouse = e.dataTransfer.getData("fromHouse")
+        const color = house.dataset.color
+
+        if (!color) return
+
+        // Remove from source house if dragged from a house
+        if (fromHouse && fromHouse !== color) {
+          houseAttributes[fromHouse][type] = null
+          updateHouseDisplay(fromHouse)
+        }
+
+        // Check if this attribute is already placed in another house (not the source)
+        Object.keys(houseAttributes).forEach((houseColor) => {
+          if (houseColor !== fromHouse && houseAttributes[houseColor][type] === value) {
+            houseAttributes[houseColor][type] = null
+            updateHouseDisplay(houseColor)
+          }
+        })
+
+        // Remove old attribute from target house if exists
+        if (houseAttributes[color][type]) {
+          const oldChip = document.querySelector(
+            `.attribute-chip[data-value="${houseAttributes[color][type]}"]`,
+          )
+          if (oldChip) oldChip.classList.remove("placed")
+        }
+
+        // Place new attribute
+        houseAttributes[color][type] = value
+        updateHouseDisplay(color)
+
+        // Mark chip as placed
+        const chip = document.querySelector(`.attribute-chip[data-value="${value}"]`)
+        if (chip) chip.classList.add("placed")
+
+        validateRules()
+      }
+
+      function handleDragEnd(e) {
+        e.target.classList.remove("dragging")
+      }
+
+      function handleDragLeave(e) {
+        e.currentTarget.classList.remove("drag-over")
+      }
+
+      function updateHouseDisplay(color) {
+        const house = document.querySelector(`.house[data-color="${color}"]`)
+        if (!house) return
+
+        const slots = house.querySelectorAll(".house-attribute-slot")
+        ;["nationality", "drink", "cigarette", "pet"].forEach((type, index) => {
+          const value = houseAttributes[color][type]
+          const slot = slots[index]
+
+          if (value) {
+            const attr = attributes[type].find((a) => a.value === value)
+            slot.innerHTML = `<span class="attribute-icon">${attr.icon}</span> ${attr.value}`
+            slot.classList.add("filled")
+            slot.draggable = true
+            slot.dataset.value = value
+            slot.dataset.type = type
+
+            // Add drag handlers to filled slots
+            slot.ondragstart = (e) => {
+              e.stopPropagation()
+              e.dataTransfer.effectAllowed = "move"
+              e.dataTransfer.setData("itemType", "attribute")
+              e.dataTransfer.setData("type", type)
+              e.dataTransfer.setData("value", value)
+              e.dataTransfer.setData("fromHouse", color)
+              slot.style.opacity = "0.5"
+            }
+
+            slot.ondragend = (e) => {
+              slot.style.opacity = "1"
+            }
+          } else {
+            slot.innerHTML = "—"
+            slot.classList.remove("filled")
+            slot.draggable = false
+            slot.dataset.value = ""
+            slot.dataset.type = type
+            slot.ondragstart = null
+            slot.ondragend = null
+          }
+        })
+      }
+
+      function validateRules() {
+        // Build state array from street positions
+        const state = streetState.map((color) => {
+          if (!color)
+            return { color: null, nationality: null, drink: null, cigarette: null, pet: null }
+          return {
+            color: color,
+            ...houseAttributes[color],
+          }
+        })
+
+        rules.forEach((rule, index) => {
+          const ruleEl = document.getElementById(`rule-${index}`)
+          const result = rule.check(state)
+
+          ruleEl.classList.remove("satisfied", "violated")
+          if (result === true) {
+            ruleEl.classList.add("satisfied")
+          } else if (result === false) {
+            ruleEl.classList.add("violated")
+          }
+        })
+      }
+
+      // Rule checking functions
+      function checkAttribute(state, attr1, attr2) {
+        const house = state.find(
+          (h) => h && Object.values(h).includes(attr1) && Object.values(h).includes(attr2),
+        )
+
+        if (
+          !state.some((h) => h && Object.values(h).includes(attr1)) ||
+          !state.some((h) => h && Object.values(h).includes(attr2))
+        ) {
+          return null
+        }
+
+        return house !== undefined
+      }
+
+      function checkPosition(state, position, attribute) {
+        if (!state[position] || !Object.values(state[position]).includes(attribute)) {
+          if (!state.some((h) => h && Object.values(h).includes(attribute))) {
+            return null
+          }
+          return false
+        }
+        return true
+      }
+
+      function checkAdjacent(state, attr1, attr2, direction) {
+        const index1 = state.findIndex((h) => h && Object.values(h).includes(attr1))
+        const index2 = state.findIndex((h) => h && Object.values(h).includes(attr2))
+
+        if (index1 === -1 || index2 === -1) return null
+
+        if (direction === "left") {
+          return index1 === index2 - 1
+        }
+        return false
+      }
+
+      function checkNeighbor(state, attr1, attr2) {
+        const index1 = state.findIndex((h) => h && Object.values(h).includes(attr1))
+        const index2 = state.findIndex((h) => h && Object.values(h).includes(attr2))
+
+        if (index1 === -1 || index2 === -1) return null
+
+        return Math.abs(index1 - index2) === 1
+      }
+
+      function checkSolution() {
+        const state = streetState.map((color) => {
+          if (!color) return null
+          return { color, ...houseAttributes[color] }
+        })
+
+        const allRulesSatisfied = rules.every((rule) => rule.check(state) === true)
+
+        if (allRulesSatisfied) {
+          setTimeout(() => {
+            showWinnerModal()
+          }, 500)
+        }
+      }
+
+      function clearAll() {
+        // Move all houses back to palette
+        streetState.forEach((color, position) => {
+          if (color) {
+            const house = document.querySelector(`.house[data-color="${color}"]`)
+            document.getElementById("housesGrid").appendChild(house)
+            house.classList.remove("placed")
+          }
+        })
+        streetState = [null, null, null, null, null]
+
+        // Reset street spots
+        document.querySelectorAll(".street-spot").forEach((spot, index) => {
+          spot.innerHTML = `<span class="street-spot-label">${index + 1}</span>`
+        })
+
+        // Clear attributes
+        Object.keys(houseAttributes).forEach((color) => {
+          houseAttributes[color] = {
+            nationality: null,
+            drink: null,
+            cigarette: null,
+            pet: null,
+          }
+          updateHouseDisplay(color)
+        })
+
+        // Clear chip markers
+        document.querySelectorAll(".attribute-chip").forEach((chip) => {
+          chip.classList.remove("placed")
+        })
+
+        validateRules()
+      }
+
+      function startTimer() {
+        startTime = Date.now()
+        timerInterval = setInterval(() => {
+          elapsedSeconds = Math.floor((Date.now() - startTime) / 1000)
+          updateTimerDisplay()
+        }, 1000)
+      }
+
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval)
+          timerInterval = null
+        }
+      }
+
+      function updateTimerDisplay() {
+        const minutes = Math.floor(elapsedSeconds / 60)
+        const seconds = elapsedSeconds % 60
+        const display = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+        document.getElementById("timer").textContent = display
+      }
+
+      function showWinnerModal() {
+        stopTimer()
+        const minutes = Math.floor(elapsedSeconds / 60)
+        const seconds = elapsedSeconds % 60
+        const timeDisplay = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+        document.getElementById("finalTime").textContent = timeDisplay
+        document.getElementById("winnerModal").classList.add("show")
+      }
+
+      function closeWinnerModal() {
+        document.getElementById("winnerModal").classList.remove("show")
+      }
+
+      function playAgain() {
+        document.getElementById("winnerModal").classList.remove("show")
+        clearAll()
+        elapsedSeconds = 0
+        updateTimerDisplay()
+        startTimer()
+      }
+
+      // Initialize on load
+      window.addEventListener("DOMContentLoaded", initializeGame)
+    </script>
+  </body>
+</html>
