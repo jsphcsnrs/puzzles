@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Syllable Scramble</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: "Segoe UI", sans-serif;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 30px 16px 50px;
+      }
+
+      .card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 760px;
+        padding: 36px 40px 40px;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 6px;
+      }
+      .header p {
+        color: #888;
+        font-size: 0.9rem;
+      }
+
+      .timer-bar {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
+      }
+      .timer {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        font-size: 1.4rem;
+        font-weight: 700;
+        padding: 8px 28px;
+        border-radius: 50px;
+        letter-spacing: 2px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Rules */
+      .rules {
+        background: #f8f7ff;
+        border-left: 4px solid #667eea;
+        border-radius: 0 12px 12px 0;
+        padding: 16px 20px;
+        margin-bottom: 28px;
+      }
+      .rules h3 {
+        color: #667eea;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+      .rules p {
+        color: #555;
+        font-size: 0.88rem;
+        line-height: 1.6;
+      }
+
+      /* Syllable pool */
+      .section-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #999;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+
+      .syllable-pool {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 30px;
+        min-height: 48px;
+        padding: 12px;
+        background: #fafafa;
+        border: 2px dashed #ddd;
+        border-radius: 14px;
+        transition: border-color 0.2s;
+      }
+      .syllable-pool.drag-over {
+        border-color: #667eea;
+        background: #f0f0ff;
+      }
+
+      .syllable {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: grab;
+        user-select: none;
+        letter-spacing: 0.5px;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s,
+          opacity 0.2s;
+        box-shadow: 0 2px 6px rgba(102, 126, 234, 0.35);
+      }
+      .syllable:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.45);
+      }
+      .syllable.dragging {
+        opacity: 0.4;
+        cursor: grabbing;
+      }
+      .syllable.used {
+        opacity: 0.35;
+        pointer-events: none;
+      }
+
+      /* Clues */
+      .clues {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .clue-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: #f8f7ff;
+        border-radius: 14px;
+        border: 2px solid transparent;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .clue-row.drag-over {
+        border-color: #667eea;
+        background: #eeeeff;
+      }
+      .clue-row.solved {
+        background: #f0fff4;
+        border-color: #52c87a;
+      }
+
+      .clue-number {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 800;
+        flex-shrink: 0;
+      }
+      .clue-row.solved .clue-number {
+        background: linear-gradient(135deg, #52c87a, #27ae60);
+      }
+
+      .clue-text {
+        flex: 0 0 160px;
+        font-size: 0.92rem;
+        color: #444;
+        font-weight: 600;
+      }
+      .clue-syllable-count {
+        font-size: 0.75rem;
+        color: #aaa;
+        flex: 0 0 60px;
+      }
+
+      .clue-drop-zone {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 36px;
+        padding: 6px 10px;
+        background: #fff;
+        border: 2px dashed #ddd;
+        border-radius: 10px;
+        align-items: center;
+        transition: border-color 0.2s;
+        cursor: pointer;
+      }
+      .clue-drop-zone:hover {
+        border-color: #aaa;
+      }
+      .clue-row.drag-over .clue-drop-zone {
+        border-color: #667eea;
+      }
+
+      .clue-drop-zone .syllable {
+        background: #667eea;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+      .clue-drop-zone .syllable:hover {
+        background: #e74c3c;
+        transform: none;
+      }
+      .clue-drop-zone .placeholder {
+        color: #ccc;
+        font-size: 0.8rem;
+        font-style: italic;
+        pointer-events: none;
+      }
+
+      .clue-row.wrong {
+        border-color: #e74c3c;
+        background: #fff5f5;
+      }
+
+      .solve-check {
+        flex-shrink: 0;
+        font-size: 1.2rem;
+        display: none;
+      }
+      .clue-row.solved .solve-check {
+        display: block;
+      }
+
+      .wrong-shake {
+        animation: shake 0.4s ease;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-6px);
+        }
+        40% {
+          transform: translateX(6px);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: translateX(4px);
+        }
+      }
+
+      /* Actions */
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 28px;
+      }
+      .btn {
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid #ccc;
+        color: #888;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        z-index: 100;
+        padding: 16px;
+      }
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .modal {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        padding: 40px 36px;
+        max-width: 420px;
+        width: 100%;
+        text-align: center;
+        transform: scale(0.85);
+        transition: transform 0.3s;
+      }
+      .modal-overlay.active .modal {
+        transform: scale(1);
+      }
+      .modal-icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+      }
+      .modal h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
+      .modal p {
+        color: #666;
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+      .modal .final-time {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #667eea;
+        margin: 16px 0 24px;
+        letter-spacing: 2px;
+      }
+      .modal-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .status-msg {
+        text-align: center;
+        margin-top: 12px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #e74c3c;
+        min-height: 20px;
+        opacity: 0;
+        transform: translateY(-4px);
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+      }
+      .status-msg.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 520px) {
+        .card {
+          padding: 24px 20px;
+        }
+        .clue-row {
+          flex-wrap: wrap;
+        }
+        .clue-text {
+          flex: 0 0 100%;
+        }
+        .clue-syllable-count {
+          flex: 0 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="header">
+        <h1>🧩 Syllable Scramble</h1>
+        <p>Group syllables to form words matching each clue</p>
+      </div>
+
+      <div class="timer-bar">
+        <div class="timer" id="timer">00:00</div>
+      </div>
+
+      <div class="rules">
+        <h3>📖 How to Play</h3>
+        <p>
+          Below are <strong>22 syllables</strong> and <strong>6 clues</strong>. Drag syllables (or
+          click to assign) to the matching clue to form a word. The number in parentheses tells you
+          how many syllables are in each answer. Each syllable is used exactly once. Assign
+          <em>all</em> syllables before checking — correct words lock in green, incorrect ones
+          shake. Good luck!
+        </p>
+      </div>
+
+      <div class="section-label">Syllable Pool</div>
+      <div class="syllable-pool" id="pool"></div>
+
+      <div class="section-label">Clues</div>
+      <div class="clues" id="clues"></div>
+
+      <div class="actions">
+        <button class="btn btn-outline" onclick="resetPuzzle()">↺ Reset</button>
+        <button class="btn btn-primary" id="checkAllBtn" onclick="checkAll()">✓ Check All</button>
+      </div>
+      <div id="statusMsg" class="status-msg"></div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div class="modal-overlay" id="winModal">
+      <div class="modal">
+        <div class="modal-icon">🎉</div>
+        <h2>Puzzle Solved!</h2>
+        <p>You completed Syllable Scramble in</p>
+        <div class="final-time" id="finalTime">00:00</div>
+        <div class="modal-btns">
+          <button class="btn btn-outline" onclick="closeModal()">Close</button>
+          <button class="btn btn-primary" onclick="resetPuzzle()">↺ Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const SYLLABLES = [
+        "A",
+        "AC",
+        "AD",
+        "BUT",
+        "CUP",
+        "DEM",
+        "HES",
+        "I",
+        "IC",
+        "IS",
+        "IS",
+        "LA",
+        "LAZ",
+        "LEG",
+        "LI",
+        "MIN",
+        "TANT",
+        "TER",
+        "TION",
+        "TOR",
+        "TRA",
+        "U",
+      ]
+
+      const CLUES = [
+        { id: 1, text: "Yellow flower", count: 3, answer: ["BUT", "TER", "CUP"] },
+        { id: 2, text: "Director", count: 5, answer: ["AD", "MIN", "IS", "TRA", "TOR"] },
+        { id: 3, text: "Lapis ___", count: 3, answer: ["LAZ", "U", "LI"] },
+        { id: 4, text: "Lawmaking", count: 4, answer: ["LEG", "IS", "LA", "TION"] },
+        { id: 5, text: "Undecided", count: 3, answer: ["HES", "I", "TANT"] },
+        { id: 6, text: "Scholar", count: 4, answer: ["AC", "A", "DEM", "IC"] },
+      ]
+
+      // State
+      let pool = [...SYLLABLES]
+      let clueSlots = CLUES.map(() => [])
+      let solved = CLUES.map(() => false)
+      let timerInterval, startTime
+      let dragSyl = null,
+        dragSource = null // source: 'pool' | clueIndex
+
+      function pad(n) {
+        return String(n).padStart(2, "0")
+      }
+      function formatTime(ms) {
+        const s = Math.floor(ms / 1000)
+        return pad(Math.floor(s / 60)) + ":" + pad(s % 60)
+      }
+
+      function startTimer() {
+        startTime = Date.now()
+        clearInterval(timerInterval)
+        timerInterval = setInterval(() => {
+          document.getElementById("timer").textContent = formatTime(Date.now() - startTime)
+        }, 500)
+      }
+
+      function stopTimer() {
+        clearInterval(timerInterval)
+      }
+
+      function render() {
+        renderPool()
+        renderClues()
+      }
+
+      function renderPool() {
+        const poolEl = document.getElementById("pool")
+        poolEl.innerHTML = ""
+        if (pool.length === 0) {
+          poolEl.innerHTML =
+            '<span style="color:#ccc;font-size:0.85rem;font-style:italic">All syllables assigned</span>'
+          return
+        }
+        pool.forEach((syl, idx) => {
+          const el = makeSylEl(syl, "pool", idx)
+          poolEl.appendChild(el)
+        })
+      }
+
+      function renderClues() {
+        const cluesEl = document.getElementById("clues")
+        cluesEl.innerHTML = ""
+        CLUES.forEach((clue, ci) => {
+          const row = document.createElement("div")
+          row.className = "clue-row" + (solved[ci] ? " solved" : "")
+          row.dataset.clue = ci
+
+          // drag-over events on row
+          row.addEventListener("dragover", (e) => {
+            e.preventDefault()
+            row.classList.add("drag-over")
+          })
+          row.addEventListener("dragleave", () => row.classList.remove("drag-over"))
+          row.addEventListener("drop", (e) => {
+            e.preventDefault()
+            row.classList.remove("drag-over")
+            dropOnClue(ci)
+          })
+
+          row.innerHTML = `
+      <div class="clue-number">${clue.id}</div>
+      <div class="clue-text">${clue.text}</div>
+      <div class="clue-syllable-count">(${clue.count} syl.)</div>
+    `
+
+          const dz = document.createElement("div")
+          dz.className = "clue-drop-zone"
+          if (clueSlots[ci].length === 0) {
+            dz.innerHTML = '<span class="placeholder">Drop syllables here…</span>'
+          } else {
+            clueSlots[ci].forEach((syl, si) => {
+              const el = makeSylEl(syl, ci, si)
+              dz.appendChild(el)
+            })
+          }
+          row.appendChild(dz)
+
+          const check = document.createElement("span")
+          check.className = "solve-check"
+          check.textContent = "✅"
+          row.appendChild(check)
+
+          cluesEl.appendChild(row)
+        })
+        updateCheckAllBtn()
+      }
+
+      function makeSylEl(syl, source, idx) {
+        const el = document.createElement("div")
+        el.className = "syllable"
+        el.textContent = syl
+        el.draggable = true
+
+        el.addEventListener("dragstart", (e) => {
+          dragSyl = syl
+          dragSource = source
+          el.classList.add("dragging")
+        })
+        el.addEventListener("dragend", () => el.classList.remove("dragging"))
+
+        // Click to cycle: pool → first incomplete clue; clue → return to pool
+        el.addEventListener("click", () => {
+          if (source === "pool") {
+            // find first incomplete clue that needs syllables
+            const ci = clueSlots.findIndex((s, i) => !solved[i] && s.length < CLUES[i].count)
+            if (ci >= 0) {
+              pool.splice(pool.indexOf(syl), 1) // remove one occurrence
+              clueSlots[ci].push(syl)
+              render()
+            }
+          } else {
+            // remove from clue, return to pool
+            const ci = source
+            clueSlots[ci].splice(idx, 1)
+            pool.push(syl)
+            render()
+          }
+        })
+
+        return el
+      }
+
+      function dropOnClue(ci) {
+        if (dragSyl === null || solved[ci]) return
+        // remove from source
+        if (dragSource === "pool") {
+          const i = pool.indexOf(dragSyl)
+          if (i >= 0) pool.splice(i, 1)
+        } else {
+          // from another clue
+          const srcCi = dragSource
+          const si = clueSlots[srcCi].indexOf(dragSyl)
+          if (si >= 0) clueSlots[srcCi].splice(si, 1)
+        }
+        clueSlots[ci].push(dragSyl)
+        dragSyl = null
+        dragSource = null
+        render()
+      }
+
+      function updateCheckAllBtn() {
+        const btn = document.getElementById("checkAllBtn")
+        if (!btn) return
+        btn.disabled = solved.every(Boolean)
+      }
+
+      function checkAll() {
+        if (pool.length > 0) {
+          showMsg(
+            `You still have ${pool.length} syllable${pool.length > 1 ? "s" : ""} left to place!`,
+          )
+          return
+        }
+        const rows = document.querySelectorAll(".clue-row")
+        let anyWrong = false
+        CLUES.forEach((clue, ci) => {
+          if (solved[ci]) return
+          const slot = clueSlots[ci]
+          const ans = clue.answer
+          const correct = slot.length === ans.length && ans.every((s, i) => s === slot[i])
+          const rowEl = rows[ci]
+          if (correct) {
+            solved[ci] = true
+            rowEl.classList.remove("wrong")
+          } else {
+            anyWrong = true
+            shake(rowEl)
+            rowEl.classList.add("wrong")
+            setTimeout(() => rowEl.classList.remove("wrong"), 1500)
+          }
+        })
+        render()
+        if (!anyWrong) checkWin()
+      }
+
+      let msgTimeout
+      function showMsg(text) {
+        let el = document.getElementById("statusMsg")
+        el.textContent = text
+        el.classList.add("visible")
+        clearTimeout(msgTimeout)
+        msgTimeout = setTimeout(() => el.classList.remove("visible"), 3000)
+      }
+
+      function shake(el) {
+        el.classList.remove("wrong-shake")
+        void el.offsetWidth
+        el.classList.add("wrong-shake")
+        setTimeout(() => el.classList.remove("wrong-shake"), 450)
+      }
+
+      function checkWin() {
+        if (solved.every(Boolean)) {
+          stopTimer()
+          const elapsed = formatTime(Date.now() - startTime)
+          document.getElementById("finalTime").textContent = elapsed
+          document.getElementById("winModal").classList.add("active")
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("winModal").classList.remove("active")
+      }
+
+      function resetPuzzle() {
+        closeModal()
+        pool = [...SYLLABLES]
+        clueSlots = CLUES.map(() => [])
+        solved = CLUES.map(() => false)
+        document.getElementById("timer").textContent = "00:00"
+        render()
+        startTimer()
+      }
+
+      // Pool drag setup
+      document.addEventListener("DOMContentLoaded", () => {
+        const poolEl = document.getElementById("pool")
+        poolEl.addEventListener("dragover", (e) => {
+          e.preventDefault()
+          poolEl.classList.add("drag-over")
+        })
+        poolEl.addEventListener("dragleave", () => poolEl.classList.remove("drag-over"))
+        poolEl.addEventListener("drop", (e) => {
+          e.preventDefault()
+          poolEl.classList.remove("drag-over")
+          if (dragSyl !== null && dragSource !== "pool") {
+            clueSlots[dragSource].splice(clueSlots[dragSource].indexOf(dragSyl), 1)
+            pool.push(dragSyl)
+            dragSyl = null
+            dragSource = null
+            render()
+          }
+        })
+
+        resetPuzzle()
+      })
+    </script>
+  </body>
+</html>
