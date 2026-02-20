@@ -86,7 +86,6 @@
         line-height: 1.6;
       }
 
-      /* Syllable pool */
       .section-label {
         font-size: 0.8rem;
         text-transform: uppercase;
@@ -96,23 +95,72 @@
         margin-bottom: 10px;
       }
 
+      /* Desktop pool */
+      .pool-wrapper {
+        margin-bottom: 30px;
+      }
+
       .syllable-pool {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        margin-bottom: 30px;
         min-height: 48px;
         padding: 12px;
         background: #fafafa;
         border: 2px dashed #ddd;
         border-radius: 14px;
-        transition: border-color 0.2s;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
       }
       .syllable-pool.drag-over {
         border-color: #667eea;
         background: #f0f0ff;
       }
 
+      /* Sticky pool bar (mobile) */
+      .sticky-pool-bar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 10px 14px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+      .sticky-pool-bar .sticky-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 700;
+        margin-bottom: 7px;
+      }
+      .sticky-pool-bar .syllable-pool {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        min-height: 40px;
+        padding: 8px 10px;
+        gap: 7px;
+      }
+      .sticky-pool-bar .syllable-pool.drag-over {
+        background: rgba(255, 255, 255, 0.28);
+        border-color: #fff;
+      }
+      .sticky-pool-bar .syllable {
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        font-size: 0.78rem;
+        padding: 6px 11px;
+      }
+
+      .sticky-spacer {
+        display: none;
+      }
+
+      /* Syllables */
       .syllable {
         background: linear-gradient(135deg, #667eea, #764ba2);
         color: #fff;
@@ -122,6 +170,7 @@
         font-weight: 700;
         cursor: grab;
         user-select: none;
+        touch-action: none;
         letter-spacing: 0.5px;
         transition:
           transform 0.15s,
@@ -134,12 +183,26 @@
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.45);
       }
       .syllable.dragging {
-        opacity: 0.4;
+        opacity: 0.35;
         cursor: grabbing;
       }
-      .syllable.used {
-        opacity: 0.35;
+
+      /* Touch drag ghost */
+      .touch-ghost {
+        position: fixed;
         pointer-events: none;
+        z-index: 9999;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.55);
+        transform: translate(-50%, -50%) scale(1.12);
+        opacity: 0.93;
+        transition: none;
       }
 
       /* Clues */
@@ -168,6 +231,10 @@
       .clue-row.solved {
         background: #f0fff4;
         border-color: #52c87a;
+      }
+      .clue-row.wrong {
+        border-color: #e74c3c;
+        background: #fff5f5;
       }
 
       .clue-number {
@@ -211,15 +278,10 @@
         border-radius: 10px;
         align-items: center;
         transition: border-color 0.2s;
-        cursor: pointer;
-      }
-      .clue-drop-zone:hover {
-        border-color: #aaa;
       }
       .clue-row.drag-over .clue-drop-zone {
         border-color: #667eea;
       }
-
       .clue-drop-zone .syllable {
         background: #667eea;
         font-size: 0.8rem;
@@ -235,11 +297,6 @@
         font-size: 0.8rem;
         font-style: italic;
         pointer-events: none;
-      }
-
-      .clue-row.wrong {
-        border-color: #e74c3c;
-        background: #fff5f5;
       }
 
       .solve-check {
@@ -295,6 +352,12 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
       }
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: default;
+        transform: none !important;
+        box-shadow: none !important;
+      }
       .btn-primary {
         background: linear-gradient(135deg, #667eea, #764ba2);
         color: #fff;
@@ -303,6 +366,24 @@
         background: transparent;
         border: 2px solid #ccc;
         color: #888;
+      }
+
+      .status-msg {
+        text-align: center;
+        margin-top: 12px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #e74c3c;
+        min-height: 20px;
+        opacity: 0;
+        transform: translateY(-4px);
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+      }
+      .status-msg.visible {
+        opacity: 1;
+        transform: translateY(0);
       }
 
       /* Modal */
@@ -369,27 +450,17 @@
         flex-wrap: wrap;
       }
 
-      .status-msg {
-        text-align: center;
-        margin-top: 12px;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: #e74c3c;
-        min-height: 20px;
-        opacity: 0;
-        transform: translateY(-4px);
-        transition:
-          opacity 0.2s,
-          transform 0.2s;
-      }
-      .status-msg.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      @media (max-width: 520px) {
+      /* Mobile */
+      @media (max-width: 600px) {
+        body {
+          padding: 16px 10px 60px;
+        }
         .card {
-          padding: 24px 20px;
+          padding: 20px 16px 28px;
+          border-radius: 16px;
+        }
+        .header h1 {
+          font-size: 1.5rem;
         }
         .clue-row {
           flex-wrap: wrap;
@@ -401,9 +472,24 @@
           flex: 0 0 auto;
         }
       }
+
+      /* Sticky bar — hidden by default, shown by JS when pool scrolls out of view */
+      .sticky-pool-bar.is-visible {
+        display: block;
+      }
+      .sticky-spacer.is-visible {
+        display: block;
+      }
     </style>
   </head>
   <body>
+    <!-- Sticky pool (mobile only) -->
+    <div class="sticky-pool-bar" id="stickyBar">
+      <div class="sticky-label">Syllable Pool</div>
+      <div class="syllable-pool" id="stickyPool"></div>
+    </div>
+    <div class="sticky-spacer" id="stickySpacer"></div>
+
     <div class="card">
       <div class="header">
         <h1>🧩 Syllable Scramble</h1>
@@ -417,16 +503,18 @@
       <div class="rules">
         <h3>📖 How to Play</h3>
         <p>
-          Below are <strong>22 syllables</strong> and <strong>6 clues</strong>. Drag syllables (or
-          click to assign) to the matching clue to form a word. The number in parentheses tells you
-          how many syllables are in each answer. Each syllable is used exactly once. Assign
-          <em>all</em> syllables before checking — correct words lock in green, incorrect ones
-          shake. Good luck!
+          Below are <strong>22 syllables</strong> and <strong>6 clues</strong>. Drag syllables in
+          order onto the matching clue to build a word. The number in parentheses tells you how many
+          syllables each answer has. Each syllable is used exactly once. You must place
+          <em>all</em> syllables before checking. Good luck!
         </p>
       </div>
 
-      <div class="section-label">Syllable Pool</div>
-      <div class="syllable-pool" id="pool"></div>
+      <!-- Desktop pool -->
+      <div class="pool-wrapper">
+        <div class="section-label">Syllable Pool</div>
+        <div class="syllable-pool" id="pool"></div>
+      </div>
 
       <div class="section-label">Clues</div>
       <div class="clues" id="clues"></div>
@@ -487,22 +575,31 @@
         { id: 6, text: "Scholar", count: 4, answer: ["AC", "A", "DEM", "IC"] },
       ]
 
-      // State
+      // ── State ──────────────────────────────────────────────
       let pool = [...SYLLABLES]
       let clueSlots = CLUES.map(() => [])
       let solved = CLUES.map(() => false)
       let timerInterval, startTime
-      let dragSyl = null,
-        dragSource = null // source: 'pool' | clueIndex
 
-      function pad(n) {
-        return String(n).padStart(2, "0")
-      }
+      // Mouse drag state
+      let dragSyl = null,
+        dragSource = null
+
+      // Touch drag state
+      let touchGhost = null
+      let touchDragSyl = null,
+        touchDragSource = null,
+        touchDragIdx = null
+      let touchOriginEl = null
+      let lastHighlighted = null
+      let touchMoved = false
+
+      // ── Timer ──────────────────────────────────────────────
+      const pad = (n) => String(n).padStart(2, "0")
       function formatTime(ms) {
         const s = Math.floor(ms / 1000)
         return pad(Math.floor(s / 60)) + ":" + pad(s % 60)
       }
-
       function startTimer() {
         startTime = Date.now()
         clearInterval(timerInterval)
@@ -510,27 +607,42 @@
           document.getElementById("timer").textContent = formatTime(Date.now() - startTime)
         }, 500)
       }
-
       function stopTimer() {
         clearInterval(timerInterval)
       }
 
+      // ── Helpers ────────────────────────────────────────────
+      function isMobile() {
+        return window.innerWidth <= 600
+      }
+
+      function updateStickyHeight() {
+        const bar = document.getElementById("stickyBar")
+        const spacer = document.getElementById("stickySpacer")
+        if (bar && spacer) spacer.style.height = bar.offsetHeight + 4 + "px"
+      }
+
+      // ── Render ─────────────────────────────────────────────
       function render() {
-        renderPool()
+        renderPools()
         renderClues()
       }
 
-      function renderPool() {
-        const poolEl = document.getElementById("pool")
-        poolEl.innerHTML = ""
-        if (pool.length === 0) {
-          poolEl.innerHTML =
-            '<span style="color:#ccc;font-size:0.85rem;font-style:italic">All syllables assigned</span>'
-          return
-        }
-        pool.forEach((syl, idx) => {
-          const el = makeSylEl(syl, "pool", idx)
-          poolEl.appendChild(el)
+      function renderPools() {
+        // Render into both pool elements; CSS hides whichever isn't active
+        ;["pool", "stickyPool"].forEach((id) => {
+          const el = document.getElementById(id)
+          if (!el) return
+          el.innerHTML = ""
+          if (pool.length === 0) {
+            const msg = document.createElement("span")
+            msg.style.cssText = "font-size:0.82rem;font-style:italic;"
+            msg.style.color = id === "stickyPool" ? "rgba(255,255,255,0.6)" : "#ccc"
+            msg.textContent = "All syllables placed ✓"
+            el.appendChild(msg)
+            return
+          }
+          pool.forEach((syl, idx) => el.appendChild(makeSylEl(syl, "pool", idx)))
         })
       }
 
@@ -542,7 +654,7 @@
           row.className = "clue-row" + (solved[ci] ? " solved" : "")
           row.dataset.clue = ci
 
-          // drag-over events on row
+          // Mouse drag-over
           row.addEventListener("dragover", (e) => {
             e.preventDefault()
             row.classList.add("drag-over")
@@ -562,72 +674,222 @@
 
           const dz = document.createElement("div")
           dz.className = "clue-drop-zone"
+          dz.dataset.clue = ci
           if (clueSlots[ci].length === 0) {
             dz.innerHTML = '<span class="placeholder">Drop syllables here…</span>'
           } else {
-            clueSlots[ci].forEach((syl, si) => {
-              const el = makeSylEl(syl, ci, si)
-              dz.appendChild(el)
-            })
+            clueSlots[ci].forEach((syl, si) => dz.appendChild(makeSylEl(syl, ci, si)))
           }
           row.appendChild(dz)
 
-          const check = document.createElement("span")
-          check.className = "solve-check"
-          check.textContent = "✅"
-          row.appendChild(check)
+          const chk = document.createElement("span")
+          chk.className = "solve-check"
+          chk.textContent = "✅"
+          row.appendChild(chk)
 
           cluesEl.appendChild(row)
         })
         updateCheckAllBtn()
       }
 
+      // ── Syllable element factory ───────────────────────────
       function makeSylEl(syl, source, idx) {
         const el = document.createElement("div")
         el.className = "syllable"
         el.textContent = syl
         el.draggable = true
 
-        el.addEventListener("dragstart", (e) => {
+        // Mouse drag
+        el.addEventListener("dragstart", () => {
           dragSyl = syl
           dragSource = source
           el.classList.add("dragging")
         })
         el.addEventListener("dragend", () => el.classList.remove("dragging"))
 
-        // Click to cycle: pool → first incomplete clue; clue → return to pool
+        // Click (desktop shortcut / tap fallback)
         el.addEventListener("click", () => {
-          if (source === "pool") {
-            // find first incomplete clue that needs syllables
-            const ci = clueSlots.findIndex((s, i) => !solved[i] && s.length < CLUES[i].count)
-            if (ci >= 0) {
-              pool.splice(pool.indexOf(syl), 1) // remove one occurrence
-              clueSlots[ci].push(syl)
-              render()
-            }
-          } else {
-            // remove from clue, return to pool
-            const ci = source
-            clueSlots[ci].splice(idx, 1)
-            pool.push(syl)
-            render()
-          }
+          if (touchMoved) return // was a touch drag, ignore click
+          handleTap(syl, source, idx)
         })
+
+        // Touch drag
+        el.addEventListener("touchstart", onTouchStart, { passive: false })
 
         return el
       }
 
+      function handleTap(syl, source, idx) {
+        if (source === "pool") {
+          const ci = clueSlots.findIndex((s, i) => !solved[i] && s.length < CLUES[i].count)
+          if (ci >= 0) {
+            pool.splice(pool.indexOf(syl), 1)
+            clueSlots[ci].push(syl)
+            render()
+          }
+        } else {
+          clueSlots[source].splice(idx, 1)
+          pool.push(syl)
+          render()
+        }
+      }
+
+      // ── Touch drag ─────────────────────────────────────────
+      function onTouchStart(e) {
+        if (e.touches.length !== 1) return
+        e.preventDefault()
+        touchMoved = false
+
+        const el = e.currentTarget
+        const touch = e.touches[0]
+
+        touchDragSyl = el.textContent.trim()
+        const dz = el.closest(".clue-drop-zone")
+        if (dz) {
+          touchDragSource = parseInt(dz.dataset.clue)
+          touchDragIdx = Array.from(dz.querySelectorAll(".syllable")).indexOf(el)
+        } else {
+          touchDragSource = "pool"
+          touchDragIdx = null
+        }
+        touchOriginEl = el
+
+        // Create floating ghost
+        touchGhost = document.createElement("div")
+        touchGhost.className = "touch-ghost"
+        touchGhost.textContent = touchDragSyl
+        document.body.appendChild(touchGhost)
+        positionGhost(touch.clientX, touch.clientY)
+
+        el.classList.add("dragging")
+
+        document.addEventListener("touchmove", onTouchMove, { passive: false })
+        document.addEventListener("touchend", onTouchEnd)
+        document.addEventListener("touchcancel", onTouchEnd)
+      }
+
+      function positionGhost(x, y) {
+        if (!touchGhost) return
+        touchGhost.style.left = x + "px"
+        touchGhost.style.top = y + "px"
+      }
+
+      function onTouchMove(e) {
+        if (e.touches.length !== 1) return
+        e.preventDefault()
+        touchMoved = true
+        const t = e.touches[0]
+        positionGhost(t.clientX, t.clientY)
+        updateHighlight(t.clientX, t.clientY)
+      }
+
+      function updateHighlight(x, y) {
+        if (lastHighlighted) {
+          lastHighlighted.classList.remove("drag-over")
+          lastHighlighted = null
+        }
+        const target = findDropTarget(x, y)
+        if (target) {
+          target.classList.add("drag-over")
+          lastHighlighted = target
+        }
+      }
+
+      function findDropTarget(x, y) {
+        // Clue rows (unsolved)
+        for (const row of document.querySelectorAll(".clue-row:not(.solved)")) {
+          const r = row.getBoundingClientRect()
+          if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return row
+        }
+        // Pool zones (return path)
+        for (const p of document.querySelectorAll(".syllable-pool")) {
+          const r = p.getBoundingClientRect()
+          if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return p
+        }
+        return null
+      }
+
+      function onTouchEnd(e) {
+        document.removeEventListener("touchmove", onTouchMove)
+        document.removeEventListener("touchend", onTouchEnd)
+        document.removeEventListener("touchcancel", onTouchEnd)
+
+        if (lastHighlighted) {
+          lastHighlighted.classList.remove("drag-over")
+          lastHighlighted = null
+        }
+        if (touchGhost) {
+          touchGhost.remove()
+          touchGhost = null
+        }
+        if (touchOriginEl) {
+          touchOriginEl.classList.remove("dragging")
+        }
+
+        const t = (e.changedTouches || [])[0]
+        if (!t || !touchMoved || touchDragSyl === null) {
+          cleanTouch()
+          return
+        }
+
+        const target = findDropTarget(t.clientX, t.clientY)
+
+        if (!target) {
+          cleanTouch()
+          return
+        }
+
+        // Drop on pool → return syllable
+        if (target.classList.contains("syllable-pool")) {
+          if (touchDragSource !== "pool") {
+            clueSlots[touchDragSource].splice(touchDragIdx, 1)
+            pool.push(touchDragSyl)
+            render()
+          }
+          cleanTouch()
+          return
+        }
+
+        // Drop on clue row
+        if (target.classList.contains("clue-row")) {
+          const ci = parseInt(target.dataset.clue)
+          if (isNaN(ci) || solved[ci]) {
+            cleanTouch()
+            return
+          }
+          if (touchDragSource === "pool") {
+            const i = pool.indexOf(touchDragSyl)
+            if (i >= 0) pool.splice(i, 1)
+          } else {
+            clueSlots[touchDragSource].splice(touchDragIdx, 1)
+          }
+          clueSlots[ci].push(touchDragSyl)
+          render()
+        }
+
+        cleanTouch()
+      }
+
+      function cleanTouch() {
+        touchDragSyl = null
+        touchDragSource = null
+        touchDragIdx = null
+        touchOriginEl = null
+        // Reset touchMoved after a short delay so the click handler can check it
+        setTimeout(() => {
+          touchMoved = false
+        }, 50)
+      }
+
+      // ── Mouse drop ─────────────────────────────────────────
       function dropOnClue(ci) {
         if (dragSyl === null || solved[ci]) return
-        // remove from source
         if (dragSource === "pool") {
           const i = pool.indexOf(dragSyl)
           if (i >= 0) pool.splice(i, 1)
         } else {
-          // from another clue
-          const srcCi = dragSource
-          const si = clueSlots[srcCi].indexOf(dragSyl)
-          if (si >= 0) clueSlots[srcCi].splice(si, 1)
+          const si = clueSlots[dragSource].indexOf(dragSyl)
+          if (si >= 0) clueSlots[dragSource].splice(si, 1)
         }
         clueSlots[ci].push(dragSyl)
         dragSyl = null
@@ -635,10 +897,20 @@
         render()
       }
 
+      function returnToPool(fromSource) {
+        if (dragSyl === null || fromSource === "pool") return
+        const si = clueSlots[fromSource].indexOf(dragSyl)
+        if (si >= 0) clueSlots[fromSource].splice(si, 1)
+        pool.push(dragSyl)
+        dragSyl = null
+        dragSource = null
+        render()
+      }
+
+      // ── Check / Win ────────────────────────────────────────
       function updateCheckAllBtn() {
         const btn = document.getElementById("checkAllBtn")
-        if (!btn) return
-        btn.disabled = solved.every(Boolean)
+        if (btn) btn.disabled = solved.every(Boolean)
       }
 
       function checkAll() {
@@ -653,8 +925,8 @@
         CLUES.forEach((clue, ci) => {
           if (solved[ci]) return
           const slot = clueSlots[ci]
-          const ans = clue.answer
-          const correct = slot.length === ans.length && ans.every((s, i) => s === slot[i])
+          const correct =
+            slot.length === clue.answer.length && clue.answer.every((s, i) => s === slot[i])
           const rowEl = rows[ci]
           if (correct) {
             solved[ci] = true
@@ -672,7 +944,7 @@
 
       let msgTimeout
       function showMsg(text) {
-        let el = document.getElementById("statusMsg")
+        const el = document.getElementById("statusMsg")
         el.textContent = text
         el.classList.add("visible")
         clearTimeout(msgTimeout)
@@ -689,8 +961,7 @@
       function checkWin() {
         if (solved.every(Boolean)) {
           stopTimer()
-          const elapsed = formatTime(Date.now() - startTime)
-          document.getElementById("finalTime").textContent = elapsed
+          document.getElementById("finalTime").textContent = formatTime(Date.now() - startTime)
           document.getElementById("winModal").classList.add("active")
         }
       }
@@ -709,24 +980,49 @@
         startTimer()
       }
 
-      // Pool drag setup
+      // ── Boot ───────────────────────────────────────────────
       document.addEventListener("DOMContentLoaded", () => {
-        const poolEl = document.getElementById("pool")
-        poolEl.addEventListener("dragover", (e) => {
-          e.preventDefault()
-          poolEl.classList.add("drag-over")
+        // Wire up mouse drop-back-to-pool for both pool elements
+        ;["pool", "stickyPool"].forEach((id) => {
+          const el = document.getElementById(id)
+          if (!el) return
+          el.addEventListener("dragover", (e) => {
+            e.preventDefault()
+            el.classList.add("drag-over")
+          })
+          el.addEventListener("dragleave", () => el.classList.remove("drag-over"))
+          el.addEventListener("drop", (e) => {
+            e.preventDefault()
+            el.classList.remove("drag-over")
+            returnToPool(dragSource)
+          })
         })
-        poolEl.addEventListener("dragleave", () => poolEl.classList.remove("drag-over"))
-        poolEl.addEventListener("drop", (e) => {
-          e.preventDefault()
-          poolEl.classList.remove("drag-over")
-          if (dragSyl !== null && dragSource !== "pool") {
-            clueSlots[dragSource].splice(clueSlots[dragSource].indexOf(dragSyl), 1)
-            pool.push(dragSyl)
-            dragSyl = null
-            dragSource = null
-            render()
+
+        // Sticky pool: appear only when the in-card pool scrolls off screen (mobile only)
+        const stickyBar = document.getElementById("stickyBar")
+        const stickySpacer = document.getElementById("stickySpacer")
+        const poolWrapper = document.getElementById("pool").closest(".pool-wrapper")
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            if (!isMobile()) return
+            const poolVisible = entries[0].isIntersecting
+            stickyBar.classList.toggle("is-visible", !poolVisible)
+            stickySpacer.classList.toggle("is-visible", !poolVisible)
+            if (!poolVisible) updateStickyHeight()
+          },
+          { threshold: 0 },
+        )
+
+        observer.observe(poolWrapper)
+
+        window.addEventListener("resize", () => {
+          // If resized to desktop, always hide the sticky bar
+          if (!isMobile()) {
+            stickyBar.classList.remove("is-visible")
+            stickySpacer.classList.remove("is-visible")
           }
+          updateStickyHeight()
         })
 
         resetPuzzle()
