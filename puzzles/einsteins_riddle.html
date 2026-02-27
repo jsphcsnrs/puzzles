@@ -264,6 +264,10 @@
         cursor: grab;
       }
 
+      .house-attribute-slot.slot-dragging {
+        opacity: 0.5;
+      }
+
       .house-attribute-slot.filled:active {
         cursor: grabbing;
       }
@@ -980,6 +984,7 @@
         ;["nationality", "drink", "cigarette", "pet"].forEach((type, index) => {
           const value = houseAttributes[color][type]
           const slot = slots[index]
+          slot.classList.remove("slot-dragging")
 
           if (value) {
             const attr = attributes[type].find((a) => a.value === value)
@@ -997,11 +1002,11 @@
               e.dataTransfer.setData("type", type)
               e.dataTransfer.setData("value", value)
               e.dataTransfer.setData("fromHouse", color)
-              slot.style.opacity = "0.5"
+              slot.classList.add("slot-dragging")
             }
 
             slot.ondragend = (e) => {
-              slot.style.opacity = "1"
+              slot.classList.remove("slot-dragging")
             }
           } else {
             slot.innerHTML = "—"
