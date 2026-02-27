@@ -52,16 +52,21 @@
 
       .rules {
         background: #f8f9fa;
-        border-left: 4px solid #667eea;
         padding: 20px;
         margin-bottom: 25px;
         border-radius: 8px;
       }
 
-      .rules h3 {
+      h3 {
         color: #333;
         margin-bottom: 15px;
-        font-size: 1.2em;
+        font-size: 1.1em;
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari, Chrome, Opera */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Standard property */
       }
 
       .rules-grid {
@@ -109,6 +114,12 @@
         border-radius: 10px;
         padding: 20px;
         margin-bottom: 20px;
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari, Chrome, Opera */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Standard property */
       }
 
       .street-label {
@@ -163,12 +174,6 @@
         border-radius: 10px;
         padding: 20px;
         margin-bottom: 20px;
-      }
-
-      .houses-palette h3 {
-        color: #333;
-        margin-bottom: 15px;
-        font-size: 1.1em;
       }
 
       .houses-grid {
@@ -273,10 +278,10 @@
       }
 
       .attribute-chip {
-        background: white;
-        padding: 8px 12px;
+        background: #f0f1ff;
+        padding: 5px 10px;
         border-radius: 20px;
-        font-size: 0.9em;
+        font-size: 0.85em;
         font-weight: 600;
         cursor: grab;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -303,36 +308,44 @@
       .palette {
         background: #f8f9fa;
         border-radius: 10px;
-        padding: 20px;
+        padding: 15px;
         margin-bottom: 20px;
       }
 
       .palette h3 {
-        color: #333;
-        margin-bottom: 15px;
-        font-size: 1.1em;
+        margin-bottom: 12px;
+      }
+
+      .palette-sections {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
       }
 
       .palette-section {
-        margin-bottom: 15px;
-      }
-
-      .palette-section:last-child {
-        margin-bottom: 0;
+        background: white;
+        border-radius: 8px;
+        padding: 10px;
       }
 
       .palette-label {
-        font-size: 0.85em;
+        font-size: 0.8em;
         color: #666;
         font-weight: 600;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         text-transform: uppercase;
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari, Chrome, Opera */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Standard property */
       }
 
       .chips-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
       }
 
       .attribute-chip.placed {
@@ -593,24 +606,26 @@
       <div class="palette">
         <h3>Drag these attributes to the houses:</h3>
 
-        <div class="palette-section">
-          <div class="palette-label">Nationalities</div>
-          <div class="chips-container" id="nationalityPalette"></div>
-        </div>
+        <div class="palette-sections">
+          <div class="palette-section">
+            <div class="palette-label">Nationalities</div>
+            <div class="chips-container" id="nationalityPalette"></div>
+          </div>
 
-        <div class="palette-section">
-          <div class="palette-label">Drinks</div>
-          <div class="chips-container" id="drinkPalette"></div>
-        </div>
+          <div class="palette-section">
+            <div class="palette-label">Drinks</div>
+            <div class="chips-container" id="drinkPalette"></div>
+          </div>
 
-        <div class="palette-section">
-          <div class="palette-label">Cigarettes</div>
-          <div class="chips-container" id="cigarettePalette"></div>
-        </div>
+          <div class="palette-section">
+            <div class="palette-label">Cigarettes</div>
+            <div class="chips-container" id="cigarettePalette"></div>
+          </div>
 
-        <div class="palette-section">
-          <div class="palette-label">Pets</div>
-          <div class="chips-container" id="petPalette"></div>
+          <div class="palette-section">
+            <div class="palette-label">Pets</div>
+            <div class="chips-container" id="petPalette"></div>
+          </div>
         </div>
       </div>
 
