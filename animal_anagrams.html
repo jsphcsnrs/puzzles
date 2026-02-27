@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animal Anagrams</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 760px;
+      width: 100%;
+      padding: 32px;
+      margin: 20px 0;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .header h1 span {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header .subtitle {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .timer {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 16px 0;
+    }
+
+    .rules {
+      background: #f8f9ff;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .rules strong { color: #667eea; }
+
+    .example {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .word-chip {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 4px 13px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+    }
+
+    .word-chip.answer {
+      background: linear-gradient(135deg, #48bb78, #276749);
+    }
+
+    .sym {
+      font-weight: 700;
+      color: #aaa;
+      font-size: 1rem;
+    }
+
+    /* Puzzle grid */
+    .puzzle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 520px) {
+      .puzzle-grid { grid-template-columns: 1fr; }
+      .card { padding: 20px; }
+    }
+
+    .puzzle-card {
+      border: 2px solid #e8e8f0;
+      border-radius: 14px;
+      padding: 16px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .puzzle-card.solved {
+      background: #f0fff4;
+      border-color: #68d391;
+    }
+
+    .puzzle-words {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .puzzle-word {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+    }
+
+    .puzzle-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .puzzle-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 2px solid #e0e0ee;
+      border-radius: 10px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .puzzle-input:focus { border-color: #667eea; }
+
+    .puzzle-input.wrong {
+      border-color: #fc8181;
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
+
+    .check-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.2s;
+    }
+
+    .check-btn:hover { opacity: 0.85; }
+
+    .solved-row {
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .puzzle-card.solved .puzzle-input-row { display: none; }
+    .puzzle-card.solved .solved-row { display: flex; }
+
+    .solved-answer {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #276749;
+      letter-spacing: 0.06em;
+    }
+
+    .checkmark {
+      color: #48bb78;
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    .progress {
+      text-align: center;
+      color: #888;
+      font-size: 0.9rem;
+      margin-top: 20px;
+    }
+
+    /* Winner modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.visible { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      padding: 40px 32px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .modal h2 span {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .modal .time-display {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 16px 0 4px;
+    }
+
+    .modal .time-label {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    .modal-buttons { display: flex; flex-direction: column; gap: 12px; }
+
+    .btn {
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn:hover { opacity: 0.87; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #f0f0f8;
+      color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>🐾 <span>Animal Anagrams</span></h1>
+      <div class="subtitle">Unscramble the letters to reveal the hidden animal</div>
+    </div>
+
+    <div class="timer" id="timer">0:00</div>
+
+    <div class="rules">
+      <strong>How to play:</strong> Combine ALL the letters from both words — every letter, used exactly once — to spell the name of an animal.
+      <div class="example">
+        <span class="word-chip">BOA</span>
+        <span class="sym">+</span>
+        <span class="word-chip">LUFF</span>
+        <span class="sym">→</span>
+        <span class="word-chip answer">BUFFALO</span>
+      </div>
+    </div>
+
+    <div class="puzzle-grid" id="puzzleGrid"></div>
+
+    <div class="progress" id="progress">0 / 4 solved</div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2>🎉 <span>Congrats!</span></h2>
+      <div class="time-display" id="modalTime"></div>
+      <div class="time-label">completion time</div>
+      <div class="modal-buttons">
+        <button class="btn btn-primary" onclick="closeModal()">Close</button>
+        <button class="btn btn-secondary" onclick="resetGame()">Reset &amp; Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PUZZLES = [
+      { words: ['ZEAL', 'GEL'],   answer: 'GAZELLE'   },
+      { words: ['NEAT', 'HELP'],  answer: 'ELEPHANT'  },
+      { words: ['BOW',  'MAT'],   answer: 'WOMBAT'    },
+      { words: ['EVIL', 'OWNER'], answer: 'WOLVERINE' },
+    ];
+
+    let solved = 0;
+    let timerInterval = null;
+    let startTime = Date.now();
+    let finalTime = '';
+
+    function formatTime(ms) {
+      const s = Math.floor(ms / 1000);
+      return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        document.getElementById('timer').textContent = formatTime(Date.now() - startTime);
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      finalTime = formatTime(Date.now() - startTime);
+    }
+
+    function renderPuzzles() {
+      const grid = document.getElementById('puzzleGrid');
+      grid.innerHTML = '';
+
+      PUZZLES.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = 'puzzle-card';
+        card.id = `card-${i}`;
+        card.innerHTML = `
+          <div class="puzzle-words">
+            <span class="puzzle-word">${p.words[0]}</span>
+            <span class="sym">+</span>
+            <span class="puzzle-word">${p.words[1]}</span>
+          </div>
+          <div class="puzzle-input-row">
+            <input
+              class="puzzle-input"
+              id="input-${i}"
+              type="text"
+              placeholder="Type animal…"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="characters"
+              spellcheck="false"
+            />
+            <button class="check-btn" onclick="checkAnswer(${i})" aria-label="Check">→</button>
+          </div>
+          <div class="solved-row">
+            <span class="solved-answer" id="answer-${i}"></span>
+            <span class="checkmark">✓</span>
+          </div>
+        `;
+        grid.appendChild(card);
+
+        const input = document.getElementById(`input-${i}`);
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(i); });
+        input.addEventListener('input', () => input.classList.remove('wrong'));
+      });
+    }
+
+    function checkAnswer(i) {
+      const card  = document.getElementById(`card-${i}`);
+      const input = document.getElementById(`input-${i}`);
+      if (card.classList.contains('solved')) return;
+
+      const val = input.value.trim().toUpperCase();
+      if (!val) return;
+
+      if (val === PUZZLES[i].answer) {
+        card.classList.add('solved');
+        document.getElementById(`answer-${i}`).textContent = PUZZLES[i].answer;
+        solved++;
+        document.getElementById('progress').textContent = `${solved} / 4 solved`;
+
+        if (solved === 4) {
+          stopTimer();
+          setTimeout(() => {
+            document.getElementById('modalTime').textContent = finalTime;
+            document.getElementById('modalOverlay').classList.add('visible');
+          }, 600);
+        }
+      } else {
+        input.classList.remove('wrong');
+        void input.offsetWidth;
+        input.classList.add('wrong');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('visible');
+    }
+
+    function resetGame() {
+      closeModal();
+      solved = 0;
+      clearInterval(timerInterval);
+      startTime = Date.now();
+      document.getElementById('timer').textContent = '0:00';
+      document.getElementById('progress').textContent = '0 / 4 solved';
+      renderPuzzles();
+      startTimer();
+    }
+
+    renderPuzzles();
+    startTimer();
+  </script>
+</body>
+</html>
