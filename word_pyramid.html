@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Pyramid</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: "Segoe UI", sans-serif;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 30px 16px 50px;
+      }
+
+      .card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 760px;
+        padding: 36px 40px 40px;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 6px;
+      }
+      .header p {
+        color: #888;
+        font-size: 0.9rem;
+      }
+
+      .timer-bar {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
+      }
+      .timer {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        font-size: 1.4rem;
+        font-weight: 700;
+        padding: 8px 28px;
+        border-radius: 50px;
+        letter-spacing: 2px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Rules */
+      .rules {
+        background: #f8f7ff;
+        border-left: 4px solid #667eea;
+        border-radius: 0 12px 12px 0;
+        padding: 16px 20px;
+        margin-bottom: 28px;
+      }
+      .rules h3 {
+        color: #667eea;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+      .rules p {
+        color: #555;
+        font-size: 0.88rem;
+        line-height: 1.6;
+      }
+
+      /* Pyramid */
+      .pyramid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin: 24px 0;
+      }
+
+      .pyramid-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .cell {
+        width: 44px;
+        height: 44px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        font-family: "Segoe UI", sans-serif;
+        text-transform: uppercase;
+        color: #333;
+        background: #fff;
+        outline: none;
+        padding: 0;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        caret-color: #667eea;
+        /* Prevent iOS zoom on focus */
+        font-size: max(1.25rem, 16px);
+      }
+      .cell:focus {
+        border-color: #667eea;
+        background: #f8f7ff;
+      }
+
+      /* Given top word */
+      .cell.given {
+        background: #f5f5f5;
+        color: #777;
+        border-color: #e0e0e0;
+        cursor: default;
+      }
+
+      /* Added hint letter */
+      .cell.hint {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border-color: transparent;
+        cursor: default;
+      }
+
+      /* Correct row */
+      .cell.solved {
+        background: #f0fff4 !important;
+        border-color: #52c87a !important;
+        color: #27ae60 !important;
+        cursor: default;
+      }
+      .cell.solved.hint {
+        background: #52c87a !important;
+        color: #fff !important;
+      }
+      .cell.solved.given {
+        background: #f5f5f5 !important;
+        border-color: #e0e0e0 !important;
+        color: #777 !important;
+      }
+
+      /* Wrong flash */
+      .cell.wrong {
+        border-color: #e74c3c !important;
+        background: #fff5f5 !important;
+      }
+
+      .wrong-shake {
+        animation: shake 0.4s ease;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-7px);
+        }
+        40% {
+          transform: translateX(7px);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: translateX(4px);
+        }
+      }
+
+      /* Actions */
+      .actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 28px;
+      }
+      .btn {
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        font-family: "Segoe UI", sans-serif;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid #ccc;
+        color: #888;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        z-index: 100;
+        padding: 16px;
+      }
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .modal {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        padding: 40px 36px;
+        max-width: 420px;
+        width: 100%;
+        text-align: center;
+        transform: scale(0.85);
+        transition: transform 0.3s;
+      }
+      .modal-overlay.active .modal {
+        transform: scale(1);
+      }
+      .modal-icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+      }
+      .modal h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
+      .modal p {
+        color: #666;
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+      .modal .final-time {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #667eea;
+        margin: 16px 0 24px;
+        letter-spacing: 2px;
+      }
+      .modal-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      /* Mobile */
+      @media (max-width: 600px) {
+        body {
+          padding: 16px 10px 60px;
+        }
+        .card {
+          padding: 20px 16px 28px;
+          border-radius: 16px;
+        }
+        .header h1 {
+          font-size: 1.5rem;
+        }
+        .cell {
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+        }
+        .pyramid-row {
+          gap: 4px;
+        }
+        .pyramid {
+          gap: 8px;
+        }
+      }
+
+      /* Very small screens */
+      @media (max-width: 360px) {
+        .cell {
+          width: 30px;
+          height: 30px;
+          border-radius: 6px;
+        }
+        .pyramid-row {
+          gap: 3px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="header">
+        <h1>🛕 Word Pyramid</h1>
+        <p>Add one letter per row, rearrange them all, and build the pyramid</p>
+      </div>
+
+      <div class="timer-bar">
+        <div class="timer" id="timer">00:00</div>
+      </div>
+
+      <div class="rules">
+        <h3>📖 How to Play</h3>
+        <p>
+          The top word is given. Each row adds one new letter (shown in
+          <strong style="color: #667eea">purple</strong>) — take all the letters from the row above,
+          add the purple letter, rearrange them into a real word, and type it in. Work your way to
+          the bottom to complete the pyramid!
+        </p>
+      </div>
+
+      <div class="pyramid" id="pyramid"></div>
+
+      <div class="actions">
+        <button class="btn btn-outline" onclick="resetPuzzle()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div class="modal-overlay" id="winModal">
+      <div class="modal">
+        <div class="modal-icon">🎉</div>
+        <h2>Pyramid Complete!</h2>
+        <p>You built the full pyramid in</p>
+        <div class="final-time" id="finalTime">00:00</div>
+        <div class="modal-btns">
+          <button class="btn btn-outline" onclick="closeModal()">Close</button>
+          <button class="btn btn-primary" onclick="resetPuzzle()">↺ Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Pyramid rows: the given top word, then each answer with its added hint letter and position.
+      // hintPos is the index in the answer word where the newly added letter sits.
+      const PYRAMID = [
+        { word: "PEA", hint: null, hintPos: null }, // given — shown read-only
+        { word: "HEAP", hint: "H", hintPos: 0 },
+        { word: "SHAPE", hint: "S", hintPos: 0 },
+        { word: "PHRASE", hint: "R", hintPos: 2 },
+        { word: "SHARPEN", hint: "N", hintPos: 6 },
+        { word: "SHRAPNEL", hint: "L", hintPos: 7 },
+      ]
+
+      let solved = []
+      let timerInterval, startTime
+
+      // ── Timer ──────────────────────────────────────────────
+      const pad = (n) => String(n).padStart(2, "0")
+      function formatTime(ms) {
+        const s = Math.floor(ms / 1000)
+        return pad(Math.floor(s / 60)) + ":" + pad(s % 60)
+      }
+      function startTimer() {
+        startTime = Date.now()
+        clearInterval(timerInterval)
+        timerInterval = setInterval(() => {
+          document.getElementById("timer").textContent = formatTime(Date.now() - startTime)
+        }, 500)
+      }
+      function stopTimer() {
+        clearInterval(timerInterval)
+      }
+
+      // ── Build pyramid ───────────────────────────────────────
+      function buildPyramid() {
+        const container = document.getElementById("pyramid")
+        container.innerHTML = ""
+        solved = PYRAMID.map((_, i) => i === 0) // row 0 is the given word, already "solved"
+
+        PYRAMID.forEach((rowData, ri) => {
+          const row = document.createElement("div")
+          row.className = "pyramid-row"
+          row.dataset.row = ri
+
+          for (let ci = 0; ci < rowData.word.length; ci++) {
+            const isGiven = ri === 0
+            const isHint = !isGiven && ci === rowData.hintPos
+
+            const cell = document.createElement("input")
+            cell.type = "text"
+            cell.maxLength = 1
+            cell.inputMode = "text"
+            cell.autocomplete = "off"
+            cell.autocorrect = "off"
+            cell.autocapitalize = "characters"
+            cell.spellcheck = false
+            cell.dataset.row = ri
+            cell.dataset.col = ci
+
+            if (isGiven) {
+              cell.className = "cell given"
+              cell.value = rowData.word[ci]
+              cell.readOnly = true
+            } else if (isHint) {
+              cell.className = "cell hint"
+              cell.value = rowData.hint
+              cell.readOnly = true
+            } else {
+              cell.className = "cell"
+              cell.addEventListener("keydown", onKeydown)
+              cell.addEventListener("input", onInput)
+            }
+
+            row.appendChild(cell)
+          }
+
+          container.appendChild(row)
+        })
+
+        // Focus first editable cell (row 1)
+        const first = getEditableCells(1)[0]
+        if (first) setTimeout(() => first.focus(), 50)
+      }
+
+      // ── Cell helpers ────────────────────────────────────────
+      function getCells(ri) {
+        return [...document.querySelectorAll(`.cell[data-row="${ri}"]`)]
+      }
+
+      function getEditableCells(ri) {
+        return getCells(ri).filter((c) => !c.readOnly)
+      }
+
+      // ── Input handling ──────────────────────────────────────
+      function onInput(e) {
+        const cell = e.target
+        const ri = parseInt(cell.dataset.row)
+        const ci = parseInt(cell.dataset.col)
+
+        // Keep only the last typed letter, uppercase
+        cell.value = cell.value
+          .replace(/[^a-zA-Z]/g, "")
+          .toUpperCase()
+          .slice(-1)
+
+        if (!cell.value) return
+
+        // Advance focus to next empty editable cell (after current col, then wrap to any empty)
+        const editables = getEditableCells(ri)
+        const afterCurrent = editables.filter((c) => parseInt(c.dataset.col) > ci && !c.value)
+        const anyEmpty = editables.filter((c) => !c.value)
+        const next = afterCurrent[0] || anyEmpty[0]
+        if (next) {
+          next.focus()
+        }
+
+        // Auto-check when all cells in this row are filled
+        if (editables.every((c) => c.value)) {
+          setTimeout(() => checkRow(ri), 80)
+        }
+      }
+
+      function onKeydown(e) {
+        const cell = e.target
+        const ri = parseInt(cell.dataset.row)
+        const ci = parseInt(cell.dataset.col)
+        const editables = getEditableCells(ri)
+
+        if (e.key === "Backspace") {
+          if (!cell.value) {
+            // Move to previous editable and clear it
+            const prev = editables.filter((c) => parseInt(c.dataset.col) < ci).pop()
+            if (prev) {
+              prev.value = ""
+              prev.focus()
+            }
+            e.preventDefault()
+          }
+        } else if (e.key === "ArrowLeft") {
+          const prev = editables.filter((c) => parseInt(c.dataset.col) < ci).pop()
+          if (prev) prev.focus()
+          e.preventDefault()
+        } else if (e.key === "ArrowRight") {
+          const next = editables.find((c) => parseInt(c.dataset.col) > ci)
+          if (next) next.focus()
+          e.preventDefault()
+        } else if (e.key === "Enter") {
+          if (editables.every((c) => c.value)) checkRow(ri)
+          e.preventDefault()
+        }
+      }
+
+      // ── Check a row ─────────────────────────────────────────
+      function checkRow(ri) {
+        if (solved[ri]) return
+        const editables = getEditableCells(ri)
+        if (!editables.every((c) => c.value)) return
+
+        const rowData = PYRAMID[ri]
+        const cells = getCells(ri)
+        const entered = cells.map((c) => c.value.toUpperCase()).join("")
+
+        if (entered === rowData.word) {
+          // Correct
+          solved[ri] = true
+          cells.forEach((c) => {
+            c.classList.add("solved")
+            c.readOnly = true
+          })
+
+          // Focus first editable cell in next unsolved row
+          for (let nr = ri + 1; nr < PYRAMID.length; nr++) {
+            if (!solved[nr]) {
+              const nextEdit = getEditableCells(nr)
+              if (nextEdit.length) setTimeout(() => nextEdit[0].focus(), 50)
+              break
+            }
+          }
+
+          if (solved.every(Boolean)) {
+            stopTimer()
+            document.getElementById("finalTime").textContent = formatTime(Date.now() - startTime)
+            setTimeout(() => document.getElementById("winModal").classList.add("active"), 450)
+          }
+        } else {
+          // Wrong — shake and clear
+          const row = document.querySelector(`.pyramid-row[data-row="${ri}"]`)
+          editables.forEach((c) => c.classList.add("wrong"))
+          row.classList.add("wrong-shake")
+          setTimeout(() => {
+            row.classList.remove("wrong-shake")
+            editables.forEach((c) => {
+              c.classList.remove("wrong")
+              c.value = ""
+            })
+            editables[0].focus()
+          }, 500)
+        }
+      }
+
+      // ── Reset / Modal ───────────────────────────────────────
+      function resetPuzzle() {
+        closeModal()
+        stopTimer()
+        document.getElementById("timer").textContent = "00:00"
+        buildPyramid()
+        startTimer()
+      }
+
+      function closeModal() {
+        document.getElementById("winModal").classList.remove("active")
+      }
+
+      // ── Boot ────────────────────────────────────────────────
+      document.addEventListener("DOMContentLoaded", () => {
+        buildPyramid()
+        startTimer()
+      })
+    </script>
+  </body>
+</html>
