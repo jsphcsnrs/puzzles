@@ -6,11 +6,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A static HTML puzzle website — no build system, no framework, no dependencies. Each puzzle is a self-contained `.html` file with all CSS and JS inline. The site is opened directly in a browser from the filesystem.
 
+```
+puzzles/
+├── index.html
+├── CLAUDE.md
+└── puzzles/        ← all puzzle .html files live here
+```
+
 ## Adding a New Puzzle
 
 When asked to create a new puzzle, produce both:
 
-1. A complete `<puzzle_name>.html` file following the design system below.
+1. A complete `puzzles/<puzzle_name>.html` file following the design system below.
 2. An entry for the `puzzles` array in `index.html` (inside the clearly marked `ADD NEW PUZZLES HERE` block).
 
 For `releaseDate`, default to the next Friday after the current latest `releaseDate` unless told otherwise.
@@ -63,7 +70,7 @@ Each entry in the `puzzles` array:
   title: "...",
   icon: "...", // single emoji, but not any that are already used for a puzzle
   description: "...", // 1-2 sentences, enticing but no spoilers
-  file: "...", // snake_case .html filename
+  file: "puzzles/...", // snake_case .html filename under the puzzles/ folder
   releaseDate: "YYYY-MM-DD",
 }
 ```
