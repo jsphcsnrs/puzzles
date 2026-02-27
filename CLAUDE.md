@@ -28,6 +28,32 @@ Every puzzle page must follow this style to match the site:
 - **Winner modal:** triggered on puzzle completion; shows a "Congrats" / celebratory heading (🎉), the player's completion time in large text, a "Close" button, and a "Reset & Play Again" button; uses the same card style (white, `border-radius: 20px`, gradient heading text)
 - **Mobile:** full touchscreen support required
 
+### Heading with gradient text
+
+Apply the gradient only to a `<span>` inside the `<h1>`, never to the `<h1>` itself — otherwise emojis get clipped and turn invisible.
+
+```html
+<h1>🎯 <span>Puzzle Title</span></h1>
+```
+
+```css
+.header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.header h1 span {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+```
+
+### Workflow
+
+Do **not** read existing puzzle files when creating a new one. All necessary patterns are documented in this file. Work from this specification alone.
+
 ## index.html Puzzle Registration
 
 Each entry in the `puzzles` array:
