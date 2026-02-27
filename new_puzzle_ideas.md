@@ -1,5 +1,6 @@
-|-- COMPLETE THE WORDS --|
+# COMPLETE THE WORDS
 
+```
 Complete the words below using three consecutive letters in alphabetical order.
 Example: _ _ A _ U S; add A B and C it would become ABACUS.
 
@@ -18,10 +19,11 @@ Answer:
 4. Define
 5. Astute
 6. Hijack
+```
 
+# WORDS TO ANIMALS
 
-|-- WORDS TO ANIMALS --|
-
+```
 Combine the letters of each pair of words to form the name of an animal.
 
 Example: Boa, luff → buffalo
@@ -33,3 +35,4 @@ Evil, owner
 
 ANSWER
 Gazelle, elephant, wombat, wolverine
+```

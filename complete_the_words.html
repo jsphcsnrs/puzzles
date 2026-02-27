@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete the Words</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: "Segoe UI", sans-serif;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 30px 16px 50px;
+      }
+
+      .card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 760px;
+        padding: 36px 40px 40px;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 6px;
+      }
+      .header p {
+        color: #888;
+        font-size: 0.9rem;
+      }
+
+      /* Timer */
+      .timer-bar {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
+      }
+      .timer {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        font-size: 1.4rem;
+        font-weight: 700;
+        padding: 8px 28px;
+        border-radius: 50px;
+        letter-spacing: 2px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Rules */
+      .rules {
+        background: #f8f7ff;
+        border-left: 4px solid #667eea;
+        border-radius: 0 12px 12px 0;
+        padding: 16px 20px;
+        margin-bottom: 28px;
+      }
+      .rules h3 {
+        color: #667eea;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+      .rules p {
+        color: #555;
+        font-size: 0.88rem;
+        line-height: 1.6;
+      }
+      .rules .example {
+        margin-top: 10px;
+        padding: 10px 14px;
+        background: #fff;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        color: #444;
+        border: 1px solid #e8e8f8;
+      }
+      .rules .example strong {
+        color: #667eea;
+      }
+
+      /* Puzzles */
+      .puzzles {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .puzzle-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        background: #f8f7ff;
+        border-radius: 14px;
+        border: 2px solid transparent;
+        transition: border-color 0.2s, background 0.2s;
+      }
+      .puzzle-row.correct {
+        background: #f0fff4;
+        border-color: #52c87a;
+      }
+      .puzzle-row.wrong {
+        border-color: #e74c3c;
+        background: #fff5f5;
+      }
+
+      .row-num {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 800;
+        flex-shrink: 0;
+      }
+      .puzzle-row.correct .row-num {
+        background: linear-gradient(135deg, #52c87a, #27ae60);
+      }
+
+      /* Word display */
+      .word-display {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        flex: 1;
+      }
+
+      .lc {
+        width: 34px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border-radius: 6px;
+        border: 2px solid;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+      }
+      .lc.known {
+        background: #fff;
+        border-color: #dde0f0;
+        color: #444;
+      }
+      .lc.blank {
+        background: #f0f1ff;
+        border-color: #b0b8f0;
+        border-style: dashed;
+        color: #667eea;
+        font-weight: 800;
+      }
+      .lc.blank.preview {
+        border-style: solid;
+        background: #e8eaff;
+      }
+      .puzzle-row.correct .lc.blank {
+        background: #e8fff0;
+        border-color: #52c87a;
+        border-style: solid;
+        color: #27ae60;
+      }
+
+      /* Input */
+      .answer-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .answer-input {
+        width: 76px;
+        height: 38px;
+        border: 2px solid #dde0f0;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: #444;
+        outline: none;
+        font-family: monospace;
+        background: #fff;
+        transition: border-color 0.2s, background 0.2s;
+      }
+      .answer-input:focus {
+        border-color: #667eea;
+        background: #f8f7ff;
+      }
+      .answer-input:disabled {
+        background: #f0fff4;
+        border-color: #52c87a;
+        color: #27ae60;
+        cursor: default;
+      }
+      .puzzle-row.wrong .answer-input {
+        border-color: #e74c3c;
+        background: #fff0f0;
+      }
+
+      .row-check {
+        font-size: 1.2rem;
+        display: none;
+        flex-shrink: 0;
+      }
+      .puzzle-row.correct .row-check {
+        display: block;
+      }
+
+      /* Actions */
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 28px;
+      }
+      .btn {
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        font-family: "Segoe UI", sans-serif;
+        transition: transform 0.15s, box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 2px solid #ccc;
+        color: #888;
+      }
+
+      /* Shake animation */
+      .wrong-shake {
+        animation: shake 0.4s ease;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-6px);
+        }
+        40% {
+          transform: translateX(6px);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: translateX(4px);
+        }
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+        z-index: 100;
+        padding: 16px;
+      }
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .modal {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        padding: 40px 36px;
+        max-width: 420px;
+        width: 100%;
+        text-align: center;
+        transform: scale(0.85);
+        transition: transform 0.3s;
+      }
+      .modal-overlay.active .modal {
+        transform: scale(1);
+      }
+      .modal-icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+      }
+      .modal h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+      }
+      .modal p {
+        color: #666;
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+      .final-time {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #667eea;
+        margin: 16px 0 24px;
+        letter-spacing: 2px;
+      }
+      .modal-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      /* Mobile */
+      @media (max-width: 600px) {
+        body {
+          padding: 14px 10px 50px;
+        }
+        .card {
+          padding: 20px 14px 28px;
+          border-radius: 16px;
+        }
+        .header h1 {
+          font-size: 1.5rem;
+        }
+        .lc {
+          width: 28px;
+          height: 32px;
+          font-size: 0.9rem;
+        }
+        .answer-input {
+          width: 62px;
+          font-size: 0.95rem;
+          letter-spacing: 3px;
+        }
+        .puzzle-row {
+          padding: 10px 12px;
+          gap: 7px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="header">
+        <h1>🔡 Complete the Words</h1>
+        <p>Fill in the blanks with three consecutive alphabet letters</p>
+      </div>
+
+      <div class="timer-bar">
+        <div class="timer" id="timer">00:00</div>
+      </div>
+
+      <div class="rules">
+        <h3>📖 How to Play</h3>
+        <p>
+          Each word has <strong>three missing letters</strong>. The missing letters are always
+          <strong>three consecutive letters of the alphabet</strong>. Type those three letters (in
+          alphabetical order) to complete the word.
+        </p>
+        <div class="example">
+          Example: <strong>_ _ A _ U S</strong> → type <strong>ABC</strong> →
+          <strong>AB</strong>A<strong>C</strong>US
+        </div>
+      </div>
+
+      <div class="puzzles" id="puzzles"></div>
+
+      <div class="actions">
+        <button class="btn btn-outline" onclick="resetPuzzle()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div class="modal-overlay" id="winModal">
+      <div class="modal">
+        <div class="modal-icon">🎉</div>
+        <h2>Congrats!</h2>
+        <p>You completed the puzzle in</p>
+        <div class="final-time" id="finalTime">00:00</div>
+        <div class="modal-btns">
+          <button class="btn btn-outline" onclick="closeModal()">Close</button>
+          <button class="btn btn-primary" onclick="resetPuzzle()">↺ Reset & Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const PUZZLES = [
+        { word: "FABRIC", answer: "ABC", hiddenIdx: [1, 2, 5] },
+        { word: "THIRST", answer: "RST", hiddenIdx: [3, 4, 5] },
+        { word: "ALUMNA", answer: "LMN", hiddenIdx: [1, 3, 4] },
+        { word: "DEFINE", answer: "DEF", hiddenIdx: [0, 1, 2] },
+        { word: "ASTUTE", answer: "STU", hiddenIdx: [1, 2, 3] },
+        { word: "HIJACK", answer: "HIJ", hiddenIdx: [0, 1, 2] },
+      ]
+
+      let solved = []
+      let timerInterval, startTime
+
+      const pad = (n) => String(n).padStart(2, "0")
+      const formatTime = (ms) => {
+        const s = Math.floor(ms / 1000)
+        return pad(Math.floor(s / 60)) + ":" + pad(s % 60)
+      }
+
+      function startTimer() {
+        startTime = Date.now()
+        clearInterval(timerInterval)
+        timerInterval = setInterval(() => {
+          document.getElementById("timer").textContent = formatTime(Date.now() - startTime)
+        }, 500)
+      }
+
+      function stopTimer() {
+        clearInterval(timerInterval)
+      }
+
+      function renderPuzzles() {
+        const container = document.getElementById("puzzles")
+        container.innerHTML = ""
+        solved = PUZZLES.map(() => false)
+
+        PUZZLES.forEach((puz, pi) => {
+          const row = document.createElement("div")
+          row.className = "puzzle-row"
+          row.id = "row-" + pi
+
+          // Number badge
+          const num = document.createElement("div")
+          num.className = "row-num"
+          num.textContent = pi + 1
+          row.appendChild(num)
+
+          // Word display
+          const wd = document.createElement("div")
+          wd.className = "word-display"
+          wd.id = "word-" + pi
+          puz.word.split("").forEach((letter, li) => {
+            const cell = document.createElement("div")
+            const isBlank = puz.hiddenIdx.includes(li)
+            cell.className = "lc " + (isBlank ? "blank" : "known")
+            if (!isBlank) cell.textContent = letter
+            wd.appendChild(cell)
+          })
+          row.appendChild(wd)
+
+          // Input + checkmark
+          const wrap = document.createElement("div")
+          wrap.className = "answer-wrap"
+
+          const input = document.createElement("input")
+          input.type = "text"
+          input.maxLength = 3
+          input.className = "answer-input"
+          input.placeholder = "···"
+          input.autocomplete = "off"
+          input.autocorrect = "off"
+          input.autocapitalize = "characters"
+          input.spellcheck = false
+          input.dataset.pi = pi
+          input.addEventListener("input", () => onInput(pi, input))
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              // Move focus to the next unsolved row's input
+              const next = PUZZLES.findIndex((_, i) => i > pi && !solved[i])
+              if (next >= 0) document.querySelector(`input[data-pi="${next}"]`)?.focus()
+            }
+          })
+          wrap.appendChild(input)
+
+          const chk = document.createElement("span")
+          chk.className = "row-check"
+          chk.textContent = "✅"
+          wrap.appendChild(chk)
+
+          row.appendChild(wrap)
+          container.appendChild(row)
+        })
+      }
+
+      function onInput(pi, input) {
+        let val = input.value.toUpperCase().replace(/[^A-Z]/g, "")
+        if (val.length > 3) val = val.slice(0, 3)
+        input.value = val
+
+        // Clear wrong state while editing
+        const row = document.getElementById("row-" + pi)
+        row.classList.remove("wrong")
+
+        // Update preview
+        updatePreview(pi, val)
+
+        // Auto-check when 3rd letter typed
+        if (val.length === 3) {
+          autoCheck(pi, val, row, input)
+        }
+      }
+
+      function updatePreview(pi, val) {
+        const wd = document.getElementById("word-" + pi)
+        const blanks = wd.querySelectorAll(".blank")
+        blanks.forEach((cell, i) => {
+          if (i < val.length) {
+            cell.textContent = val[i]
+            cell.classList.add("preview")
+          } else {
+            cell.textContent = ""
+            cell.classList.remove("preview")
+          }
+        })
+      }
+
+      function autoCheck(pi, val, row, input) {
+        const puz = PUZZLES[pi]
+        if (val === puz.answer) {
+          markSolved(pi, puz, row, input)
+          if (solved.every(Boolean)) {
+            setTimeout(checkWin, 300)
+          }
+        } else {
+          row.classList.add("wrong")
+          shake(row)
+          setTimeout(() => row.classList.remove("wrong"), 1500)
+        }
+      }
+
+      function markSolved(pi, puz, row, input) {
+        solved[pi] = true
+        row.classList.add("correct")
+        input.disabled = true
+        // Fill blank cells with the correct letters
+        const wd = document.getElementById("word-" + pi)
+        const blanks = wd.querySelectorAll(".blank")
+        const sortedHidden = [...puz.hiddenIdx].sort((a, b) => a - b)
+        blanks.forEach((cell, i) => {
+          cell.textContent = puz.word[sortedHidden[i]]
+        })
+      }
+
+      function checkWin() {
+        stopTimer()
+        document.getElementById("finalTime").textContent = formatTime(Date.now() - startTime)
+        document.getElementById("winModal").classList.add("active")
+      }
+
+      function closeModal() {
+        document.getElementById("winModal").classList.remove("active")
+      }
+
+      function resetPuzzle() {
+        closeModal()
+        document.getElementById("timer").textContent = "00:00"
+        renderPuzzles()
+        startTimer()
+      }
+
+      function shake(el) {
+        el.classList.remove("wrong-shake")
+        void el.offsetWidth
+        el.classList.add("wrong-shake")
+        setTimeout(() => el.classList.remove("wrong-shake"), 450)
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        renderPuzzles()
+        startTimer()
+      })
+    </script>
+  </body>
+</html>
