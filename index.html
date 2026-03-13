@@ -170,20 +170,28 @@
         <h1>🧩 Puzzle Collection</h1>
         <p class="subtitle">Challenge your mind with these fun brain teasers!</p>
       </header>
-
+      
       <div class="puzzle-grid" id="puzzleGrid"></div>
-
+      
       <footer>
         <p>Made with 💜 for Daves everywhere</p>
       </footer>
     </div>
-
+    
     <script>
       // ============================================================
       // ADD NEW PUZZLES HERE
       // releaseDate: "YYYY-MM-DD" — puzzle won't show until this date
       // ============================================================
       const puzzles = [
+        {
+          title: "Census-Taker Problem",
+          icon: "🏠",
+          description:
+            "A classic logic puzzle about three children, a house number, and one crucial clue. Can you deduce all their ages?",
+          file: "puzzles/census_taker.html",
+          releaseDate: "2026-03-20",
+        },
         {
           title: "Animal Anagrams",
           icon: "🐾",

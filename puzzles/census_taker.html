@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Census-Taker Problem</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .puzzle-shell {
+        width: 100%;
+        max-width: 760px;
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 24px 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .header {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .title-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .title-emoji {
+        font-size: 1.9rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+
+      .header h1 span {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
+        color: #555;
+      }
+
+      .timer {
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(102, 126, 234, 0.08);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        color: #333;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+
+      .timer-label {
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        color: #667eea;
+      }
+
+      .timer-value {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .content-row {
+        display: grid;
+        grid-template-columns: 1.6fr 1.1fr;
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      .puzzle-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .puzzle-text {
+        background: #f8f9ff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        border: 1px solid rgba(102, 126, 234, 0.15);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #333;
+      }
+
+      .puzzle-text p + p {
+        margin-top: 8px;
+      }
+
+      .input-panel {
+        background: #fdfdff;
+        border-radius: 14px;
+        padding: 14px 16px 16px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .input-panel h2 {
+        font-size: 1rem;
+        color: #667eea;
+        margin-bottom: 2px;
+      }
+
+      .age-input-row {
+        display: flex;
+        gap: 8px;
+      }
+
+      .age-input {
+        flex: 1;
+        position: relative;
+      }
+
+      .age-input label {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #777;
+        margin-bottom: 3px;
+      }
+
+      .age-input input {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid #d0d4ff;
+        font-size: 0.95rem;
+        font-variant-numeric: tabular-nums;
+        outline: none;
+        transition:
+          border-color 0.18s ease,
+          box-shadow 0.18s ease,
+          background-color 0.18s ease;
+      }
+
+      .age-input input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.18);
+        background-color: #ffffff;
+      }
+
+      .age-input input::-webkit-outer-spin-button,
+      .age-input input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .age-input input[type="number"] {
+        -moz-appearance: textfield;
+      }
+
+      .controls-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-weight: 600;
+        font-size: 0.92rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition:
+          background-color 0.2s ease,
+          box-shadow 0.2s ease,
+          transform 0.1s ease;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .btn-primary {
+        background: #667eea;
+        color: #ffffff;
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.35);
+      }
+
+      .btn-primary:hover,
+      .btn-primary:active {
+        background: #5568d3;
+        box-shadow: 0 10px 22px rgba(86, 104, 211, 0.4);
+        transform: translateY(1px);
+      }
+
+      .btn-secondary {
+        background: #f4f4ff;
+        color: #555;
+        border: 1px solid rgba(102, 126, 234, 0.25);
+      }
+
+      .btn-secondary:hover,
+      .btn-secondary:active {
+        background: #eaebff;
+        transform: translateY(1px);
+      }
+
+      .feedback {
+        min-height: 1.2em;
+        font-size: 0.86rem;
+        margin-top: 2px;
+      }
+
+      .feedback.error {
+        color: #d63939;
+      }
+
+      .feedback.hint {
+        color: #9b5de5;
+      }
+
+      .rules-panel {
+        background: #f8f9ff;
+        border-radius: 14px;
+        padding: 14px 16px 16px;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        position: sticky;
+        top: 8px;
+        align-self: flex-start;
+      }
+
+      .rules-panel h2 {
+        font-size: 0.98rem;
+        color: #764ba2;
+        margin-bottom: 6px;
+      }
+
+      .rules-panel ul {
+        list-style: none;
+        padding-left: 0;
+        font-size: 0.86rem;
+        line-height: 1.6;
+        color: #444;
+      }
+
+      .rules-panel li::before {
+        content: "➤";
+        color: #667eea;
+        margin-right: 6px;
+        font-size: 0.75rem;
+      }
+
+      .rules-panel li + li {
+        margin-top: 4px;
+      }
+
+      .rules-footnote {
+        margin-top: 8px;
+        font-size: 0.78rem;
+        color: #777;
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 2px;
+        font-size: 0.85rem;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .back-link span {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .back-link:active {
+        transform: translateY(1px);
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 50;
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.18s ease,
+          transform 0.18s ease;
+      }
+
+      .modal-backdrop.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal-card {
+        background: #ffffff;
+        border-radius: 20px;
+        max-width: 420px;
+        width: 100%;
+        padding: 22px 22px 18px;
+        box-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+        transform: translateY(12px);
+        transition: transform 0.18s ease;
+      }
+
+      .modal-backdrop.visible .modal-card {
+        transform: translateY(0);
+      }
+
+      .modal-header {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .modal-header h2 {
+        font-size: 1.5rem;
+        margin-top: 4px;
+      }
+
+      .modal-header h2 span {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .modal-body {
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+        color: #444;
+      }
+
+      .time-display {
+        margin-top: 6px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #333;
+      }
+
+      .time-display span {
+        font-variant-numeric: tabular-nums;
+        color: #667eea;
+      }
+
+      .solution {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      .solution strong {
+        color: #764ba2;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 720px) {
+        .card {
+          padding: 18px 16px 16px;
+        }
+
+        .content-row {
+          grid-template-columns: 1fr;
+        }
+
+        .rules-panel {
+          position: relative;
+          top: 0;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 1.6rem;
+        }
+
+        .timer {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .age-input-row {
+          flex-direction: column;
+        }
+
+        .btn {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="puzzle-shell">
+      <div class="card">
+        <div class="header-row">
+          <div class="header">
+            <div class="title-line">
+              <div class="title-emoji">🏠</div>
+              <h1>🎯 <span>Census-Taker Problem</span></h1>
+            </div>
+            <p class="subtitle">
+              A classic logic puzzle: three children, a house number, and one extra hint about the oldest child.
+            </p>
+          </div>
+          <div class="timer" aria-live="polite">
+            <div class="timer-label">Time</div>
+            <div class="timer-value" id="timerDisplay">00:00</div>
+          </div>
+        </div>
+
+        <div class="content-row">
+          <section class="puzzle-panel" aria-label="Puzzle content">
+            <div class="puzzle-text">
+              <p>
+                During a recent census, a man told the census taker that he had three children. When asked their ages,
+                he replied, “The product of their ages is 72. The sum of their ages is the same as my house number.”
+                The census taker ran to the door and looked at the house number.
+              </p>
+              <p>
+                “I still can’t tell,” she complained. “Oh, that’s right. I forgot to tell you that the oldest one likes
+                apple pie.” The census taker promptly wrote down the ages of the three children.
+              </p>
+              <p><strong>How old are the three children?</strong></p>
+            </div>
+
+            <form class="input-panel" id="ageForm">
+              <h2>Enter the three ages</h2>
+              <p style="font-size: 0.86rem; color: #555">
+                Type the ages as whole numbers in years. Order does not matter.
+              </p>
+              <div class="age-input-row">
+                <div class="age-input">
+                  <label for="age1">Child 1</label>
+                  <input id="age1" name="age1" type="number" min="0" inputmode="numeric" autocomplete="off" />
+                </div>
+                <div class="age-input">
+                  <label for="age2">Child 2</label>
+                  <input id="age2" name="age2" type="number" min="0" inputmode="numeric" autocomplete="off" />
+                </div>
+                <div class="age-input">
+                  <label for="age3">Child 3</label>
+                  <input id="age3" name="age3" type="number" min="0" inputmode="numeric" autocomplete="off" />
+                </div>
+              </div>
+              <div class="controls-row">
+                <button type="submit" class="btn btn-primary">
+                  Check ages
+                </button>
+                <button type="button" class="btn btn-secondary" id="resetButton">
+                  Reset
+                </button>
+              </div>
+              <div class="feedback" id="feedback" aria-live="polite"></div>
+            </form>
+          </section>
+
+          <aside class="rules-panel" aria-label="How to play">
+            <h2>Rules &amp; Hints</h2>
+            <ul>
+              <li>There are exactly three children, and their ages are whole numbers in years.</li>
+              <li>The <strong>product</strong> of their ages is 72.</li>
+              <li>The <strong>sum</strong> of their ages matches the house number on the door.</li>
+              <li>
+                Even after seeing the house number, the census taker still could not tell their ages — there must be
+                more than one possible triple with that sum.
+              </li>
+              <li>One extra clue: there is a single <strong>oldest</strong> child (who likes apple pie!).</li>
+            </ul>
+            <p class="rules-footnote">
+              Use the clues together to narrow down the possibilities, then enter the only triple that fits
+              <em>all</em> of them.
+            </p>
+            <a class="back-link" href="../index.html">
+              ← <span>Back to puzzle collection</span>
+            </a>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div style="font-size: 2.1rem">🎉</div>
+          <h2 id="winTitle"><span>Well done!</span></h2>
+        </div>
+        <div class="modal-body">
+          <p>You cracked the Census-Taker Problem.</p>
+          <div class="time-display">
+            Your time: <span id="finalTime">00:00</span>
+          </div>
+          <div class="solution">
+            The children are <strong>3, 3, and 8</strong> years old.
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="closeModalButton">
+            Close
+          </button>
+          <button type="button" class="btn btn-primary" id="playAgainButton">
+            Reset &amp; Play Again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      ;(() => {
+        const timerDisplay = document.getElementById("timerDisplay")
+        const ageForm = document.getElementById("ageForm")
+        const feedback = document.getElementById("feedback")
+        const resetButton = document.getElementById("resetButton")
+        const winModal = document.getElementById("winModal")
+        const finalTime = document.getElementById("finalTime")
+        const closeModalButton = document.getElementById("closeModalButton")
+        const playAgainButton = document.getElementById("playAgainButton")
+
+        const ageInputs = [
+          document.getElementById("age1"),
+          document.getElementById("age2"),
+          document.getElementById("age3"),
+        ]
+
+        let startTime = Date.now()
+        let timerId = null
+
+        function formatTime(ms) {
+          const totalSeconds = Math.floor(ms / 1000)
+          const minutes = Math.floor(totalSeconds / 60)
+          const seconds = totalSeconds % 60
+
+          const m = String(minutes).padStart(2, "0")
+          const s = String(seconds).padStart(2, "0")
+          return `${m}:${s}`
+        }
+
+        function startTimer() {
+          if (timerId !== null) return
+          startTime = Date.now()
+          timerId = setInterval(() => {
+            const now = Date.now()
+            timerDisplay.textContent = formatTime(now - startTime)
+          }, 250)
+        }
+
+        function stopTimer() {
+          if (timerId !== null) {
+            clearInterval(timerId)
+            timerId = null
+          }
+        }
+
+        function resetPuzzle() {
+          ageInputs.forEach((input) => {
+            input.value = ""
+          })
+          feedback.textContent = ""
+          feedback.className = "feedback"
+          winModal.classList.remove("visible")
+          stopTimer()
+          timerDisplay.textContent = "00:00"
+          startTimer()
+          ageInputs[0].focus()
+        }
+
+        function showWinModal() {
+          stopTimer()
+          const elapsed = Date.now() - startTime
+          const formatted = formatTime(elapsed)
+          finalTime.textContent = formatted
+          winModal.classList.add("visible")
+        }
+
+        function checkAges(event) {
+          event.preventDefault()
+
+          const ages = ageInputs
+            .map((input) => Number.parseInt(input.value, 10))
+            .filter((n) => !Number.isNaN(n))
+
+          if (ages.length !== 3) {
+            feedback.textContent = "Please enter all three ages."
+            feedback.className = "feedback error"
+            return
+          }
+
+          if (ages.some((age) => age <= 0)) {
+            feedback.textContent = "Ages should be positive whole numbers."
+            feedback.className = "feedback error"
+            return
+          }
+
+          const [a, b, c] = ages.sort((x, y) => x - y)
+
+          const product = a * b * c
+          if (product !== 72) {
+            feedback.textContent = "Those ages don't multiply to 72. Try again."
+            feedback.className = "feedback error"
+            return
+          }
+
+          // Unique triple that also satisfies the ambiguity + oldest-child clues: 3, 3, 8
+          if (a === 3 && b === 3 && c === 8) {
+            feedback.textContent = ""
+            feedback.className = "feedback"
+            showWinModal()
+          } else {
+            feedback.textContent =
+              "These ages do multiply to 72, but they don't fit all of the clues. Think about the house number and the oldest child."
+            feedback.className = "feedback hint"
+          }
+        }
+
+        ageForm.addEventListener("submit", checkAges)
+
+        resetButton.addEventListener("click", () => {
+          resetPuzzle()
+        })
+
+        closeModalButton.addEventListener("click", () => {
+          winModal.classList.remove("visible")
+        })
+
+        playAgainButton.addEventListener("click", () => {
+          resetPuzzle()
+        })
+
+        winModal.addEventListener("click", (event) => {
+          if (event.target === winModal) {
+            winModal.classList.remove("visible")
+          }
+        })
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && winModal.classList.contains("visible")) {
+            winModal.classList.remove("visible")
+          }
+        })
+
+        // Start timer as soon as the page is ready
+        window.addEventListener("load", () => {
+          startTimer()
+          if (ageInputs[0]) {
+            ageInputs[0].focus()
+          }
+        })
+      })()
+    </script>
+  </body>
+</html>
+
