@@ -45,15 +45,15 @@ Apply the gradient only to a `<span>` inside the `<h1>`, never to the `<h1>` its
 
 ```css
 .header h1 {
-  font-size: 2rem;
-  font-weight: 800;
-  margin-bottom: 6px;
+ font-size: 2rem;
+ font-weight: 800;
+ margin-bottom: 6px;
 }
 .header h1 span {
   background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ background-clip: text;
 }
 ```
 
@@ -76,3 +76,4 @@ Each entry in the `puzzles` array:
 ```
 
 Puzzles with a future `releaseDate` are hidden from the grid and replaced with a single "Coming Soon" card showing the next release date.
+
