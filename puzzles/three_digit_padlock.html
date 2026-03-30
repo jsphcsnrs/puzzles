@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Three-Digit Padlock</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%221em%22 font-size=%2286%22>🔒</text></svg>"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 24px 16px 48px;
+      }
+
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 28px 24px 32px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+
+      .header h1 span {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .timer {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #667eea;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
+      }
+
+      .intro {
+        color: #555;
+        line-height: 1.55;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.05rem;
+      }
+
+      .rules {
+        background: #f6f7fc;
+        border-radius: 14px;
+        padding: 18px 18px 14px;
+        margin-bottom: 22px;
+      }
+
+      .rules h2 {
+        font-size: 1.05rem;
+        color: #764ba2;
+        margin-bottom: 12px;
+        font-weight: 700;
+      }
+
+      .clue-list {
+        list-style: none;
+      }
+
+      .clue-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 10px;
+        color: #444;
+        line-height: 1.45;
+        font-size: 0.98rem;
+      }
+
+      .digits {
+        font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+        font-weight: 700;
+        font-size: 1rem;
+        color: #667eea;
+        min-width: 4.5ch;
+        letter-spacing: 0.15em;
+      }
+
+      .play-area {
+        text-align: center;
+      }
+
+      .play-area h2 {
+        font-size: 1.05rem;
+        color: #333;
+        margin-bottom: 14px;
+        font-weight: 600;
+      }
+
+      .dial-row {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+        touch-action: manipulation;
+      }
+
+      .dial {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .dial button {
+        width: 48px;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.45);
+      }
+
+      .dial button:active {
+        transform: translateY(1px);
+      }
+
+      .dial .window {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        border: 3px solid #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #333;
+        background: #fafbff;
+        user-select: none;
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-primary {
+        padding: 14px 36px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.45);
+      }
+
+      .btn-primary:active {
+        transform: translateY(1px);
+      }
+
+      .btn-secondary {
+        padding: 10px 24px;
+        border: 2px solid #667eea;
+        border-radius: 10px;
+        background: white;
+        color: #667eea;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .feedback {
+        min-height: 1.5em;
+        margin-top: 12px;
+        font-weight: 600;
+        color: #c0392b;
+        font-size: 0.95rem;
+      }
+
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 100;
+      }
+
+      .modal-overlay.open {
+        display: flex;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        max-width: 420px;
+        width: 100%;
+        padding: 32px 28px;
+        text-align: center;
+      }
+
+      .modal h2 {
+        font-size: 1.75rem;
+        margin-bottom: 12px;
+      }
+
+      .modal h2 span {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .modal .time-display {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: #667eea;
+        margin: 16px 0 24px;
+        letter-spacing: 0.02em;
+      }
+
+      .modal .btn-row {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 1.5rem;
+        }
+
+        .timer {
+          font-size: 1.45rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="header">
+          <h1>🔒 <span>Three-Digit Padlock</span></h1>
+          <div class="timer" id="timer">0:00.00</div>
+        </div>
+        <p class="intro">
+          You are trying to open a padlock with a three-digit combination. Use the five clues below to crack the code.
+        </p>
+        <div class="rules">
+          <h2>Clues</h2>
+          <ul class="clue-list">
+            <li>
+              <span class="digits">6 8 2</span>
+              <span>— One digit is correct and in the correct position.</span>
+            </li>
+            <li>
+              <span class="digits">6 1 4</span>
+              <span>— One digit is correct but in the wrong position.</span>
+            </li>
+            <li>
+              <span class="digits">2 0 6</span>
+              <span>— Two digits are correct but in the wrong position.</span>
+            </li>
+            <li>
+              <span class="digits">7 3 8</span>
+              <span>— Nothing’s correct.</span>
+            </li>
+            <li>
+              <span class="digits">7 8 0</span>
+              <span>— One digit is correct but in the wrong position.</span>
+            </li>
+          </ul>
+        </div>
+        <div class="play-area">
+          <h2>Enter your combination</h2>
+          <div class="dial-row" id="dialRow" aria-label="Combination dials"></div>
+          <div class="actions">
+            <button type="button" class="btn-primary" id="tryBtn">Try combination</button>
+            <button type="button" class="btn-secondary" id="resetBtn">Reset dials</button>
+          </div>
+          <div class="feedback" id="feedback" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="winnerModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
+      <div class="modal">
+        <h2 id="winnerTitle">🎉 <span>Congrats!</span></h2>
+        <p>Your time:</p>
+        <div class="time-display" id="finalTime">0:00.00</div>
+        <div class="btn-row">
+          <button type="button" class="btn-primary" id="closeModal">Close</button>
+          <button type="button" class="btn-secondary" id="playAgain">Reset &amp; Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const SOLUTION = [0, 4, 2]
+        const dialRow = document.getElementById("dialRow")
+        const timerEl = document.getElementById("timer")
+        const feedback = document.getElementById("feedback")
+        const tryBtn = document.getElementById("tryBtn")
+        const resetBtn = document.getElementById("resetBtn")
+        const winnerModal = document.getElementById("winnerModal")
+        const finalTime = document.getElementById("finalTime")
+        const closeModal = document.getElementById("closeModal")
+        const playAgain = document.getElementById("playAgain")
+
+        let values = [0, 0, 0]
+        let start = performance.now()
+        let done = false
+        let raf = null
+
+        function formatTime(ms) {
+          const s = Math.floor(ms / 1000)
+          const m = Math.floor(s / 60)
+          const sec = s % 60
+          const cs = Math.floor((ms % 1000) / 10)
+          return m + ":" + String(sec).padStart(2, "0") + "." + String(cs).padStart(2, "0")
+        }
+
+        function tick() {
+          if (done) return
+          const elapsed = performance.now() - start
+          timerEl.textContent = formatTime(elapsed)
+          raf = requestAnimationFrame(tick)
+        }
+
+        function buildDials() {
+          dialRow.innerHTML = ""
+          for (let i = 0; i < 3; i++) {
+            const wrap = document.createElement("div")
+            wrap.className = "dial"
+            const up = document.createElement("button")
+            up.type = "button"
+            up.setAttribute("aria-label", "Increase digit " + (i + 1))
+            up.textContent = "▲"
+            const win = document.createElement("div")
+            win.className = "window"
+            win.textContent = String(values[i])
+            const down = document.createElement("button")
+            down.type = "button"
+            down.setAttribute("aria-label", "Decrease digit " + (i + 1))
+            down.textContent = "▼"
+            const idx = i
+            function render() {
+              win.textContent = String(values[idx])
+            }
+            up.addEventListener("click", function () {
+              if (done) return
+              values[idx] = (values[idx] + 1) % 10
+              render()
+              feedback.textContent = ""
+            })
+            down.addEventListener("click", function () {
+              if (done) return
+              values[idx] = (values[idx] + 9) % 10
+              render()
+              feedback.textContent = ""
+            })
+            wrap.appendChild(up)
+            wrap.appendChild(win)
+            wrap.appendChild(down)
+            dialRow.appendChild(wrap)
+          }
+        }
+
+        function check() {
+          if (done) return
+          const ok = values.every(function (v, i) {
+            return v === SOLUTION[i]
+          })
+          if (ok) {
+            done = true
+            cancelAnimationFrame(raf)
+            const elapsed = performance.now() - start
+            finalTime.textContent = formatTime(elapsed)
+            winnerModal.classList.add("open")
+            feedback.textContent = ""
+          } else {
+            feedback.textContent = "That’s not the right combination. Keep deducing!"
+          }
+        }
+
+        function resetDials() {
+          values = [0, 0, 0]
+          done = false
+          start = performance.now()
+          feedback.textContent = ""
+          buildDials()
+          cancelAnimationFrame(raf)
+          raf = requestAnimationFrame(tick)
+        }
+
+        tryBtn.addEventListener("click", check)
+        resetBtn.addEventListener("click", resetDials)
+        closeModal.addEventListener("click", function () {
+          winnerModal.classList.remove("open")
+        })
+        playAgain.addEventListener("click", function () {
+          winnerModal.classList.remove("open")
+          resetDials()
+        })
+
+        winnerModal.addEventListener("click", function (e) {
+          if (e.target === winnerModal) winnerModal.classList.remove("open")
+        })
+
+        buildDials()
+        raf = requestAnimationFrame(tick)
+      })()
+    </script>
+  </body>
+</html>
