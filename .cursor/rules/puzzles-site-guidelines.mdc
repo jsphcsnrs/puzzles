@@ -30,7 +30,7 @@ Every puzzle page must follow this style to match the site:
 - **Card:** white, `border-radius: 20px`, `box-shadow: 0 20px 60px rgba(0,0,0,0.3)`, `max-width` around 760px
 - **Primary color:** `#667eea` — Secondary: `#764ba2`
 - **Font:** `Segoe UI`
-- **Timer:** starts on page load, displayed prominently
+- **Timer:** starts on page load, displayed prominently, and formatted as minutes and seconds only (`M:SS`, no milliseconds/centiseconds)
 - **Rules:** always visible on screen (no modal to hide them)
 - **Winner modal:** triggered on puzzle completion; shows a "Congrats" / celebratory heading (🎉), the player's completion time in large text, a "Close" button, and a "Reset & Play Again" button; uses the same card style (white, `border-radius: 20px`, gradient heading text)
 - **Mobile:** full touchscreen support required

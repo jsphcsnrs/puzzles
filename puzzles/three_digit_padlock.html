@@ -103,6 +103,8 @@
         color: #667eea;
         min-width: 4.5ch;
         letter-spacing: 0.15em;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
 
       .play-area {
@@ -273,7 +275,7 @@
       <div class="card">
         <div class="header">
           <h1>🔒 <span>Three-Digit Padlock</span></h1>
-          <div class="timer" id="timer">0:00.00</div>
+          <div class="timer" id="timer">0:00</div>
         </div>
         <p class="intro">
           You are trying to open a padlock with a three-digit combination. Use the five clues below to crack the code.
@@ -319,7 +321,7 @@
       <div class="modal">
         <h2 id="winnerTitle">🎉 <span>Congrats!</span></h2>
         <p>Your time:</p>
-        <div class="time-display" id="finalTime">0:00.00</div>
+        <div class="time-display" id="finalTime">0:00</div>
         <div class="btn-row">
           <button type="button" class="btn-primary" id="closeModal">Close</button>
           <button type="button" class="btn-secondary" id="playAgain">Reset &amp; Play Again</button>
@@ -349,8 +351,7 @@
           const s = Math.floor(ms / 1000)
           const m = Math.floor(s / 60)
           const sec = s % 60
-          const cs = Math.floor((ms % 1000) / 10)
-          return m + ":" + String(sec).padStart(2, "0") + "." + String(cs).padStart(2, "0")
+          return m + ":" + String(sec).padStart(2, "0")
         }
 
         function tick() {
