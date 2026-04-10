@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Missing Fourth</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 24px 16px 48px;
+        color: #333;
+      }
+
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 28px 24px 32px;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+        line-height: 1.2;
+      }
+
+      .header h1 span {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .sub {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 18px;
+        line-height: 1.45;
+      }
+
+      .timer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .timer {
+        font-size: 1.75rem;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: #667eea;
+      }
+
+      .rules {
+        background: #f4f6ff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        color: #444;
+        margin-bottom: 22px;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+      }
+
+      .rules strong {
+        color: #764ba2;
+      }
+
+      .sequence {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      @media (max-width: 520px) {
+        .sequence {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .seq-cell {
+        background: linear-gradient(145deg, #fafbff 0%, #f0f2ff 100%);
+        border-radius: 14px;
+        padding: 16px 14px;
+        border: 2px solid rgba(102, 126, 234, 0.35);
+        text-align: center;
+      }
+
+      .seq-cell .label {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #333;
+        font-family: "Consolas", "Segoe UI Mono", monospace;
+        margin-bottom: 6px;
+      }
+
+      .seq-cell .val {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #667eea;
+      }
+
+      .seq-cell.mystery {
+        border-style: dashed;
+        background: #fff;
+      }
+
+      .seq-cell.mystery .label {
+        color: #764ba2;
+      }
+
+      .answer-block {
+        margin-bottom: 22px;
+      }
+
+      .answer-heading {
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #444;
+      }
+
+      .answer-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      /* Answer: grid keeps letters / : / number / Check aligned; no flex overlap */
+      .answer-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(5.5rem, 7.5rem) auto;
+        grid-template-rows: auto auto;
+        gap: 8px 12px;
+        align-items: end;
+      }
+
+      .answer-grid .ag-lbl {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #666;
+        margin: 0;
+        padding: 0;
+      }
+
+      .answer-grid .ag-lbl-letters {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .answer-grid .ag-lbl-num {
+        grid-column: 3;
+        grid-row: 1;
+      }
+
+      .answer-grid .ag-inp {
+        width: 100%;
+        min-width: 0;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 2px solid #ddd;
+        font-size: 1rem;
+        font-family: inherit;
+        box-sizing: border-box;
+      }
+
+      .answer-grid .ag-inp:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .answer-grid .ag-inp-letters {
+        grid-column: 1;
+        grid-row: 2;
+      }
+
+      .answer-grid .answer-colon {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: center;
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: #764ba2;
+        line-height: 1;
+        padding: 0 4px;
+        margin: 0;
+      }
+
+      .answer-grid .ag-inp-num {
+        grid-column: 3;
+        grid-row: 2;
+      }
+
+      .answer-grid .ag-btn {
+        grid-column: 4;
+        grid-row: 2;
+        white-space: nowrap;
+      }
+
+      /* Narrow / small tablet: keep inputs + colon on one row; Check full width below */
+      @media (max-width: 680px) and (min-width: 421px) {
+        .answer-grid {
+          grid-template-columns: minmax(0, 1fr) auto minmax(5.25rem, 6.75rem);
+          grid-template-rows: auto auto auto;
+          gap: 8px 10px;
+        }
+
+        .answer-grid .ag-lbl-letters {
+          grid-column: 1;
+          grid-row: 1;
+        }
+
+        .answer-grid .ag-lbl-num {
+          grid-column: 3;
+          grid-row: 1;
+        }
+
+        .answer-grid .ag-inp-letters {
+          grid-column: 1;
+          grid-row: 2;
+        }
+
+        .answer-grid .answer-colon {
+          grid-column: 2;
+          grid-row: 2;
+        }
+
+        .answer-grid .ag-inp-num {
+          grid-column: 3;
+          grid-row: 2;
+        }
+
+        .answer-grid .ag-btn {
+          grid-column: 1 / -1;
+          grid-row: 3;
+          width: 100%;
+        }
+      }
+
+      /* Phone: single column, colon hidden */
+      @media (max-width: 420px) {
+        .answer-grid {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto;
+          gap: 10px;
+          align-items: stretch;
+        }
+
+        .answer-grid .ag-lbl-letters {
+          grid-column: 1;
+          grid-row: 1;
+        }
+
+        .answer-grid .ag-inp-letters {
+          grid-column: 1;
+          grid-row: 2;
+        }
+
+        .answer-grid .ag-lbl-num {
+          grid-column: 1;
+          grid-row: 3;
+        }
+
+        .answer-grid .answer-colon {
+          display: none;
+        }
+
+        .answer-grid .ag-inp-num {
+          grid-column: 1;
+          grid-row: 4;
+        }
+
+        .answer-grid .ag-btn {
+          grid-column: 1;
+          grid-row: 5;
+          width: 100%;
+        }
+      }
+
+      .btn {
+        padding: 14px 20px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: inherit;
+        min-height: 48px;
+        touch-action: manipulation;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+      }
+
+      .btn-primary:active {
+        transform: scale(0.98);
+      }
+
+      .btn-ghost {
+        background: #eee;
+        color: #444;
+      }
+
+      .feedback {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        display: none;
+      }
+
+      .feedback.bad {
+        display: block;
+        background: #ffe8e8;
+        color: #a32020;
+        border: 1px solid #f5b5b5;
+      }
+
+      .feedback.ok {
+        display: block;
+        background: #e8fff0;
+        color: #1a6b3a;
+        border: 1px solid #9ee5b8;
+      }
+
+      .helpers {
+        margin-top: 8px;
+      }
+
+      .helper-section {
+        border: 1px solid #e8e8e8;
+        border-radius: 14px;
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+
+      .helper-toggle {
+        width: 100%;
+        text-align: left;
+        padding: 14px 16px;
+        background: #f8f8fc;
+        border: none;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        font-family: inherit;
+        min-height: 48px;
+        touch-action: manipulation;
+      }
+
+      .helper-toggle:hover {
+        background: #f0f0fa;
+      }
+
+      .helper-toggle .chev {
+        color: #667eea;
+        font-size: 0.85rem;
+      }
+
+      .helper-body {
+        padding: 16px;
+        display: none;
+        border-top: 1px solid #eee;
+        background: #fff;
+      }
+
+      .helper-body.open {
+        display: block;
+      }
+
+      .hint-list {
+        list-style: none;
+        margin-top: 10px;
+      }
+
+      .hint-list li {
+        margin-bottom: 10px;
+        padding-left: 0;
+      }
+
+      .hint-list button {
+        width: 100%;
+        text-align: left;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        background: #fafafa;
+        font-family: inherit;
+        font-size: 0.95rem;
+        cursor: pointer;
+        min-height: 48px;
+        touch-action: manipulation;
+      }
+
+      .hint-list button:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+
+      .hint-reveal {
+        margin-top: 8px;
+        padding: 10px 12px;
+        background: #f4f6ff;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: #333;
+        display: none;
+      }
+
+      .hint-reveal.show {
+        display: block;
+      }
+
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .modal-overlay.open {
+        display: flex;
+      }
+
+      .modal-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        max-width: 520px;
+        width: 100%;
+        padding: 28px 24px;
+        text-align: center;
+      }
+
+      .modal-card h2 {
+        font-size: 1.75rem;
+        margin-bottom: 12px;
+      }
+
+      .modal-card h2 span {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .final-time {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: #667eea;
+        margin: 16px 0;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .modal-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .modal-actions .btn {
+        width: 100%;
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 18px;
+        color: #667eea;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="header">
+          <h1>🏛️ <span>Missing Fourth</span></h1>
+        </div>
+
+        <div class="timer-row">
+          <div class="timer" id="timer" aria-live="polite">0:00</div>
+          <a class="back-link" href="../index.html">← All puzzles</a>
+        </div>
+
+        <div class="rules">
+          <strong>Rules.</strong> Study the first three terms. Work out the pattern, then enter the
+          fourth term in two parts: <strong>letters</strong> (e.g., "Fe" and "Seen") and a <strong>number</strong>
+          (e.g., "4" and "9"). Both fields must be filled before you check. The timer
+          starts when the page loads. You can reset below without reloading.
+        </div>
+
+        <div class="sequence" aria-label="Sequence clues">
+          <div class="seq-cell">
+            <div class="label">Fe</div>
+            <div class="val">4</div>
+          </div>
+          <div class="seq-cell">
+            <div class="label">S</div>
+            <div class="val">9</div>
+          </div>
+          <div class="seq-cell">
+            <div class="label">Seen</div>
+            <div class="val">5</div>
+          </div>
+          <div class="seq-cell mystery">
+            <div class="label">?</div>
+            <div class="val" style="color: #aaa">—</div>
+          </div>
+        </div>
+
+        <div class="answer-block">
+          <p class="answer-heading" id="answerGroupLabel">Your fourth term</p>
+          <div class="answer-grid" role="group" aria-labelledby="answerGroupLabel">
+            <span class="answer-colon" aria-hidden="true">-</span>
+            <input
+              class="ag-inp ag-inp-letters"
+              id="answerLetters"
+              type="text"
+              autocomplete="off"
+              placeholder="Letters"
+              enterkeyhint="go"
+              autocapitalize="off"
+              spellcheck="false"
+            />
+            <input
+              class="ag-inp ag-inp-num"
+              id="answerNumber"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="Number"
+              enterkeyhint="go"
+            />
+            <button type="button" class="btn btn-primary ag-btn" id="submitBtn">Check</button>
+          </div>
+          <div class="feedback" id="feedback" role="status"></div>
+        </div>
+
+        <div class="answer-row" style="margin-bottom: 22px">
+          <button type="button" class="btn btn-ghost" id="resetBtn">Reset puzzle &amp; timer</button>
+        </div>
+
+        <div class="helpers">
+          <div class="helper-section">
+            <button type="button" class="helper-toggle" data-target="hHints">
+              <span>Hints</span>
+              <span class="chev">▼</span>
+            </button>
+            <div class="helper-body" id="hHints">
+              <ul class="hint-list">
+                <li>
+                  <button type="button" id="hintBtn1">Hint 1</button>
+                  <div class="hint-reveal" id="hint1">
+                    The letters are NOT related to elements from the periodic table.
+                  </div>
+                </li>
+                <li>
+                  <button type="button" id="hintBtn2" disabled>Hint 2</button>
+                  <div class="hint-reveal" id="hint2">
+                    The letters are the remainder of a word after other letters have been removed.
+                  </div>
+                </li>
+                <li>
+                  <button type="button" id="hintBtn3" disabled>Hint 3</button>
+                  <div class="hint-reveal" id="hint3">
+                    The letters removed from each word can also be interpreted as numbers.
+                  </div>
+                </li>
+                <li>
+                  <button type="button" id="hintBtn4" disabled>Hint 4</button>
+                  <div class="hint-reveal" id="hint4">
+                    The number in each group is derived from the missing letters.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="winnerModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
+      <div class="modal-card">
+        <h2 id="winnerTitle">🎉 <span>Well connected!</span></h2>
+        <p>You cracked it in</p>
+        <div class="final-time" id="finalTime">0:00</div>
+        <p style="font-size: 0.95rem; color: #555; line-height: 1.45">
+          <strong>Eght</strong> and <strong>1</strong> — The sequence is the words <strong>five</strong>,
+          <strong>six</strong>, <strong>seven</strong>, <strong>eight</strong>. In each, remove a substring
+          that forms a Roman numeral: <strong>five</strong> minus <strong>IV</strong> → Fe and 4;
+          <strong>six</strong> minus <strong>IX</strong> → S and 9; <strong>seven</strong> minus
+          <strong>V</strong> → seen and 5; <strong>eight</strong> minus <strong>I</strong> → Eght and 1.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-primary" id="modalClose">Close</button>
+          <button type="button" class="btn btn-ghost" id="modalReset">Reset &amp; Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      ;(function () {
+        let startTime = Date.now()
+        let solved = false
+        let rafId = null
+
+        const timerEl = document.getElementById("timer")
+        const answerLetters = document.getElementById("answerLetters")
+        const answerNumber = document.getElementById("answerNumber")
+        const submitBtn = document.getElementById("submitBtn")
+        const feedback = document.getElementById("feedback")
+        const resetBtn = document.getElementById("resetBtn")
+        const winnerModal = document.getElementById("winnerModal")
+        const finalTime = document.getElementById("finalTime")
+
+        function formatTime(ms) {
+          const s = Math.floor(ms / 1000)
+          const m = Math.floor(s / 60)
+          const sec = s % 60
+          return m + ":" + (sec < 10 ? "0" : "") + sec
+        }
+
+        function tick() {
+          if (!solved) {
+            timerEl.textContent = formatTime(Date.now() - startTime)
+            rafId = requestAnimationFrame(tick)
+          }
+        }
+
+        function startTimerLoop() {
+          if (rafId) cancelAnimationFrame(rafId)
+          rafId = requestAnimationFrame(tick)
+        }
+
+        function normalizeLetters(s) {
+          return s.trim().toLowerCase()
+        }
+
+        function parseNumberField(s) {
+          const t = s.trim()
+          if (!/^\d+$/.test(t)) return null
+          return parseInt(t, 10)
+        }
+
+        function isCorrectAnswer() {
+          const letters = normalizeLetters(answerLetters.value)
+          const numRaw = answerNumber.value.trim()
+          if (!letters || !numRaw) return { ok: false, reason: "empty" }
+          const n = parseNumberField(answerNumber.value)
+          if (n === null) return { ok: false, reason: "badnum" }
+          if (letters === "eght" && n === 1) return { ok: true }
+          return { ok: false, reason: "wrong" }
+        }
+
+        function showFeedback(ok, msg) {
+          feedback.className = "feedback " + (ok ? "ok" : "bad")
+          feedback.textContent = msg
+        }
+
+        function clearFeedback() {
+          feedback.className = "feedback"
+          feedback.textContent = ""
+        }
+
+        function completePuzzle() {
+          if (solved) return
+          solved = true
+          const elapsed = Date.now() - startTime
+          if (rafId) cancelAnimationFrame(rafId)
+          timerEl.textContent = formatTime(elapsed)
+          finalTime.textContent = formatTime(elapsed)
+          winnerModal.classList.add("open")
+        }
+
+        function trySubmit() {
+          clearFeedback()
+          const result = isCorrectAnswer()
+          if (result.ok) {
+            showFeedback(true, "That matches — nice solve!")
+            completePuzzle()
+            return
+          }
+          if (result.reason === "empty") {
+            showFeedback(false, "Enter both the letters and the number before checking.")
+            return
+          }
+          if (result.reason === "badnum") {
+            showFeedback(false, "The number box should contain digits only (a whole number).")
+            return
+          }
+          showFeedback(false, "Not quite — try the graduated hints if you want a nudge.")
+        }
+
+        submitBtn.addEventListener("click", trySubmit)
+
+        function onAnswerKeydown(e) {
+          if (e.key === "Enter") trySubmit()
+        }
+        answerLetters.addEventListener("keydown", onAnswerKeydown)
+        answerNumber.addEventListener("keydown", onAnswerKeydown)
+
+        function resetAll() {
+          solved = false
+          startTime = Date.now()
+          answerLetters.value = ""
+          answerNumber.value = ""
+          clearFeedback()
+          winnerModal.classList.remove("open")
+          hintLevel = 0
+          ;["hint1", "hint2", "hint3", "hint4"].forEach(function (id) {
+            document.getElementById(id).classList.remove("show")
+          })
+          document.getElementById("hintBtn1").disabled = false
+          document.getElementById("hintBtn2").disabled = true
+          document.getElementById("hintBtn3").disabled = true
+          document.getElementById("hintBtn4").disabled = true
+          startTimerLoop()
+        }
+
+        resetBtn.addEventListener("click", resetAll)
+        document.getElementById("modalClose").addEventListener("click", function () {
+          winnerModal.classList.remove("open")
+        })
+        document.getElementById("modalReset").addEventListener("click", function () {
+          winnerModal.classList.remove("open")
+          resetAll()
+        })
+        winnerModal.addEventListener("click", function (e) {
+          if (e.target === winnerModal) winnerModal.classList.remove("open")
+        })
+
+        document.querySelectorAll(".helper-toggle").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const id = btn.getAttribute("data-target")
+            const body = document.getElementById(id)
+            const open = body.classList.toggle("open")
+            btn.querySelector(".chev").textContent = open ? "▲" : "▼"
+          })
+        })
+
+        /* Hints (must open in order) */
+        let hintLevel = 0
+        document.getElementById("hintBtn1").addEventListener("click", function () {
+          document.getElementById("hint1").classList.add("show")
+          this.disabled = true
+          hintLevel = 1
+          document.getElementById("hintBtn2").disabled = false
+        })
+        document.getElementById("hintBtn2").addEventListener("click", function () {
+          if (hintLevel < 1) return
+          document.getElementById("hint2").classList.add("show")
+          this.disabled = true
+          hintLevel = 2
+          document.getElementById("hintBtn3").disabled = false
+        })
+        document.getElementById("hintBtn3").addEventListener("click", function () {
+          if (hintLevel < 2) return
+          document.getElementById("hint3").classList.add("show")
+          this.disabled = true
+          hintLevel = 3
+          document.getElementById("hintBtn4").disabled = false
+        })
+        document.getElementById("hintBtn4").addEventListener("click", function () {
+          if (hintLevel < 3) return
+          document.getElementById("hint4").classList.add("show")
+          this.disabled = true
+          hintLevel = 4
+        })
+
+        startTimerLoop()
+      })()
+    </script>
+  </body>
+</html>
