@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Common Connections</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+        padding: 24px 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #2d3748;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 32px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+
+      .header h1 span {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        color: #667085;
+        line-height: 1.5;
+      }
+
+      .timer {
+        display: inline-block;
+        margin-top: 16px;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .rules {
+        margin-bottom: 24px;
+        padding: 18px 20px;
+        border-radius: 16px;
+        background: #f4f3ff;
+        border: 2px solid #e0ddff;
+        line-height: 1.6;
+      }
+
+      .rules h2 {
+        color: #667eea;
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+
+      .puzzle-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .clue-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 180px;
+        gap: 14px;
+        align-items: center;
+        padding: 16px;
+        border: 2px solid #edf0f7;
+        border-radius: 16px;
+        background: #fbfcff;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .clue-row.correct {
+        border-color: #32d583;
+        background: #ecfdf3;
+      }
+
+      .clue-row.incorrect {
+        border-color: #f04438;
+        background: #fff1f0;
+      }
+
+      .clue-text {
+        font-size: 1.05rem;
+        font-weight: 700;
+        line-height: 1.4;
+      }
+
+      .clue-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        margin-right: 8px;
+        border-radius: 50%;
+        background: #667eea;
+        color: white;
+        font-size: 0.9rem;
+      }
+
+      input {
+        width: 100%;
+        min-height: 48px;
+        padding: 10px 14px;
+        border: 2px solid #d0d5dd;
+        border-radius: 12px;
+        font: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        text-align: center;
+        color: #344054;
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+      }
+
+      .clue-row.correct input {
+        border-color: #32d583;
+        background: white;
+        color: #027a48;
+      }
+
+      .clue-row.incorrect input {
+        border-color: #f04438;
+        background: white;
+        color: #b42318;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        min-height: 48px;
+        padding: 12px 22px;
+        border: 0;
+        border-radius: 12px;
+        background: #667eea;
+        color: white;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          background 0.2s ease;
+        touch-action: manipulation;
+      }
+
+      button:hover {
+        background: #5568d3;
+        transform: translateY(-1px);
+      }
+
+      button.secondary {
+        background: #eef2ff;
+        color: #667eea;
+      }
+
+      button.secondary:hover {
+        background: #e0e7ff;
+      }
+
+      .feedback {
+        min-height: 24px;
+        margin-top: 16px;
+        text-align: center;
+        color: #667085;
+        font-weight: 700;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(16, 24, 40, 0.68);
+        z-index: 10;
+      }
+
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal {
+        width: 100%;
+        max-width: 440px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 32px;
+        text-align: center;
+      }
+
+      .modal h2 {
+        margin-bottom: 12px;
+        font-size: 2rem;
+      }
+
+      .modal h2 span {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .completion-time {
+        margin: 20px 0;
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #667eea;
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 12px;
+        }
+
+        .card {
+          padding: 22px;
+        }
+
+        .header h1 {
+          font-size: 1.7rem;
+        }
+
+        .clue-row {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+
+        .clue-text {
+          font-size: 1rem;
+        }
+
+        .actions button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section class="card">
+        <header class="header">
+          <h1>🔗 <span>Common Connections</span></h1>
+          <p class="subtitle">Find the single word that connects each list of three things.</p>
+          <div class="timer" id="timer">0:00</div>
+        </header>
+
+        <section class="rules" aria-labelledby="rules-heading">
+          <h2 id="rules-heading">Rules</h2>
+          <p>Each row contains three clue words. Find a fourth word that can pair with all three clues. Your answer checks when you leave a field. Find all six to finish the puzzle.</p>
+        </section>
+
+        <form id="puzzleForm" autocomplete="off">
+          <div class="puzzle-list" id="puzzleList"></div>
+
+          <div class="actions">
+            <button type="button" class="secondary" id="resetButton">Reset</button>
+          </div>
+
+          <p class="feedback" id="feedback" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <div class="modal-overlay" id="winnerModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
+      <div class="modal">
+        <h2 id="winnerTitle">🎉 <span>Congrats!</span></h2>
+        <p>You found every connection in</p>
+        <div class="completion-time" id="completionTime">0:00</div>
+        <div class="actions">
+          <button type="button" id="closeModal">Close</button>
+          <button type="button" class="secondary" id="playAgain">Reset &amp; Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const puzzles = [
+        { clues: ["Piano", "answer", "Florida"], answer: "key" },
+        { clues: ["Face", "needle", "hurricane"], answer: "eye" },
+        { clues: ["River", "checking account", "blood"], answer: "bank" },
+        { clues: ["Corn", "headphone", "piercing"], answer: "ear" },
+        { clues: ["Fireplace", "cabin", "ship captain"], answer: "log" },
+        { clues: ["Tree", "dog", "cinnamon"], answer: "bark" },
+      ]
+
+      const puzzleList = document.getElementById("puzzleList")
+      const form = document.getElementById("puzzleForm")
+      const feedback = document.getElementById("feedback")
+      const timer = document.getElementById("timer")
+      const winnerModal = document.getElementById("winnerModal")
+      const completionTime = document.getElementById("completionTime")
+      const resetButton = document.getElementById("resetButton")
+      const closeModal = document.getElementById("closeModal")
+      const playAgain = document.getElementById("playAgain")
+
+      let startTime = Date.now()
+      let timerId = null
+      let solved = false
+
+      function formatTime(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60)
+        const seconds = totalSeconds % 60
+        return `${minutes}:${String(seconds).padStart(2, "0")}`
+      }
+
+      function updateTimer() {
+        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000)
+        timer.textContent = formatTime(elapsedSeconds)
+      }
+
+      function normalize(value) {
+        return value.trim().toLowerCase()
+      }
+
+      function renderPuzzle() {
+        puzzleList.innerHTML = ""
+
+        puzzles.forEach((puzzle, index) => {
+          const row = document.createElement("label")
+          row.className = "clue-row"
+          row.innerHTML = `
+            <span class="clue-text"><span class="clue-number">${index + 1}</span>${puzzle.clues.join(", ")}</span>
+            <input type="text" data-answer="${puzzle.answer}" aria-label="Answer for ${puzzle.clues.join(", ")}" />
+          `
+          puzzleList.appendChild(row)
+        })
+      }
+
+      function validateInput(input) {
+        const row = input.closest(".clue-row")
+        const answer = normalize(input.value)
+        const isCorrect = answer === input.dataset.answer
+        const isIncorrect = answer !== "" && !isCorrect
+
+        row.classList.toggle("correct", isCorrect)
+        row.classList.toggle("incorrect", isIncorrect)
+        updateProgress()
+      }
+
+      function clearIncorrectState(input) {
+        input.closest(".clue-row").classList.remove("incorrect")
+      }
+
+      function updateProgress() {
+        const inputs = [...puzzleList.querySelectorAll("input")]
+        const correctCount = inputs.filter((input) => input.closest(".clue-row").classList.contains("correct")).length
+
+        feedback.textContent = `${correctCount} of ${puzzles.length} connections solved.`
+
+        if (correctCount === puzzles.length && !solved) {
+          solved = true
+          clearInterval(timerId)
+          completionTime.textContent = timer.textContent
+          winnerModal.classList.add("show")
+        }
+      }
+
+      function resetGame() {
+        solved = false
+        startTime = Date.now()
+        clearInterval(timerId)
+        timerId = setInterval(updateTimer, 1000)
+        updateTimer()
+        winnerModal.classList.remove("show")
+        feedback.textContent = ""
+        renderPuzzle()
+        puzzleList.querySelector("input").focus()
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault()
+        if (document.activeElement?.matches("#puzzleList input")) {
+          document.activeElement.blur()
+        }
+      })
+
+      puzzleList.addEventListener("focusout", (event) => {
+        if (event.target.matches("input")) {
+          validateInput(event.target)
+        }
+      })
+      puzzleList.addEventListener("input", (event) => {
+        if (event.target.matches("input")) {
+          clearIncorrectState(event.target)
+        }
+      })
+      resetButton.addEventListener("click", resetGame)
+      closeModal.addEventListener("click", () => winnerModal.classList.remove("show"))
+      playAgain.addEventListener("click", resetGame)
+
+      renderPuzzle()
+      timerId = setInterval(updateTimer, 1000)
+      updateTimer()
+    </script>
+  </body>
+</html>
