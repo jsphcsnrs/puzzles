@@ -20,7 +20,12 @@ When asked to create a new puzzle, produce both:
 1. A complete `puzzles/<puzzle_name>.html` file following the design system below.
 2. An entry for the `puzzles` array in `index.html` (inside the clearly marked `ADD NEW PUZZLES HERE` block).
 
-For `releaseDate`, default to the next Friday after the current latest `releaseDate` unless told otherwise.
+For `releaseDate`, default to the **later** of:
+
+- the Friday after the current latest `releaseDate`, or
+- the next Friday on or after today (if today is Friday, today counts).
+
+In other words: keep the weekly Friday cadence, but never assign a date in the past. Override only if explicitly told otherwise.
 
 # Design System
 
