@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Synonym Shift - Puzzle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Outfit', sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 24px 16px;
+        color: #f1f5f9;
+        overflow-x: hidden;
+      }
+
+      .card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        max-width: 800px;
+        width: 100%;
+        padding: 32px 32px 40px;
+        margin-bottom: 40px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+      }
+
+      .header h1 span {
+        background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .header .subtitle {
+        color: #94a3b8;
+        font-size: 1.05rem;
+        margin-bottom: 16px;
+      }
+
+      .timer {
+        display: inline-block;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.25rem;
+        padding: 8px 24px;
+        border-radius: 999px;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        letter-spacing: 0.5px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .rules {
+        background: rgba(15, 23, 42, 0.4);
+        border-left: 4px solid #818cf8;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin: 20px 0 28px;
+        font-size: 0.98rem;
+        line-height: 1.6;
+        color: #cbd5e1;
+      }
+
+      .rules strong {
+        color: #f8fafc;
+      }
+
+      .rules .example {
+        margin-top: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.92rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        color: #94a3b8;
+      }
+
+      .rules .example em {
+        color: #e2e8f0;
+        font-style: normal;
+        font-weight: 600;
+      }
+
+      .puzzle-row {
+        background: rgba(15, 23, 42, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .puzzle-row::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: transparent;
+        transition: background-color 0.3s;
+      }
+
+      .puzzle-row.solved {
+        border-color: rgba(34, 197, 94, 0.4);
+        background: rgba(20, 83, 45, 0.15);
+      }
+
+      .puzzle-row.solved::before {
+        background-color: #22c55e;
+      }
+
+      .row-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      .row-num {
+        font-weight: 700;
+        color: #818cf8;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .row-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .row-status {
+        color: #22c55e;
+        font-size: 0.9rem;
+        font-weight: 600;
+        opacity: 0;
+        transform: translateX(10px);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .puzzle-row.solved .row-status {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .reset-row-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        font-family: inherit;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .reset-row-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #f1f5f9;
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .word-pair-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .word-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .word-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .letter-container {
+        display: flex;
+        align-items: center;
+        gap: 0; /* Let slots control spacing */
+        flex-wrap: wrap;
+        min-height: 58px;
+        background: rgba(15, 23, 42, 0.2);
+        padding: 6px 8px;
+        border-radius: 12px;
+        border: 1px dashed rgba(255, 255, 255, 0.05);
+      }
+
+      .letter-tile {
+        width: 44px;
+        height: 44px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+        cursor: grab;
+        user-select: none;
+        transition: transform 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+        touch-action: none; /* Disable native panning/zooming during drag */
+        flex-shrink: 0;
+        margin: 0 2px;
+      }
+
+      .letter-tile:hover {
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .letter-tile:active {
+        cursor: grabbing;
+      }
+
+      .letter-tile.dragging {
+        opacity: 0.3;
+        transform: scale(0.9);
+        border-style: dashed;
+      }
+
+      /* Floating tile representation following the mouse */
+      .floating-tile {
+        position: fixed;
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        border: 2px solid #c084fc;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #fff;
+        pointer-events: none;
+        z-index: 9999;
+        box-shadow: 0 12px 28px rgba(124, 58, 237, 0.5);
+        transform: scale(1.15);
+      }
+
+      /* Target slots for letter insertion */
+      .slot {
+        width: 0px;
+        height: 44px;
+        background: transparent;
+        transition: width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        cursor: default;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 10px;
+      }
+
+      /* Expanded and visible slot when dragging a letter over it */
+      .slot.active-drag-hover {
+        width: 48px;
+        background: rgba(168, 85, 247, 0.15);
+        border: 2px dashed rgba(192, 132, 252, 0.6);
+        margin: 0 4px;
+      }
+
+      .swap-divider {
+        font-size: 1.8rem;
+        color: rgba(255, 255, 255, 0.15);
+        user-select: none;
+        padding: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 100;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        max-width: 460px;
+        width: 100%;
+        padding: 40px 32px;
+        text-align: center;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      @keyframes modalPop {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .modal h2 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        font-weight: 800;
+      }
+
+      .modal h2 span {
+        background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .modal .final-time {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin: 20px 0 6px;
+        background: linear-gradient(135deg, #818cf8, #f472b6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .modal .final-label {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        margin-bottom: 30px;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #5a52e6, #8b4bf0);
+        box-shadow: 0 8px 24px rgba(79, 70, 229, 0.5);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
+
+      /* Home Link */
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 24px;
+        transition: color 0.2s;
+      }
+
+      .back-link:hover {
+        color: #f1f5f9;
+      }
+
+      /* Solved state locking */
+      .puzzle-row.solved .letter-tile {
+        cursor: default;
+        background: rgba(34, 197, 94, 0.1);
+        border-color: rgba(34, 197, 94, 0.3);
+        color: #86efac;
+      }
+
+      .puzzle-row.solved .letter-tile:hover {
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Mobile styles */
+      @media (max-width: 640px) {
+        .card {
+          padding: 24px 16px 30px;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .word-pair-container {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 16px;
+        }
+
+        .swap-divider {
+          transform: rotate(90deg);
+          padding: 8px 0;
+          font-size: 1.5rem;
+        }
+
+        .letter-tile {
+          width: 40px;
+          height: 40px;
+          font-size: 1.2rem;
+        }
+
+        .floating-tile {
+          width: 40px;
+          height: 40px;
+          font-size: 1.2rem;
+        }
+
+        .slot.active-drag-hover {
+          width: 44px;
+          height: 40px;
+        }
+
+        .slot {
+          height: 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div style="max-width: 800px; width: 100%;">
+      <a href="../index.html" class="back-link">← Back to Puzzles</a>
+
+      <div class="card">
+        <div class="header">
+          <h1>🔀 <span>Synonym Shift</span></h1>
+          <div class="subtitle">
+            Move a single letter from one word to the other to make a pair of synonyms.
+          </div>
+          <div class="timer" id="timer">0:00</div>
+        </div>
+
+        <div class="rules">
+          <strong>How to play:</strong> Click/tap and drag a letter from one word, and hover it over the other word. The adjacent letters will slide out of the way to show where it will land. Release the letter to make the shift!
+          <div class="example">
+            <strong>Example:</strong> In <em>“Boast - Hip,”</em> drag the <em>“s”</em> from Boast and insert it inside Hip to create <em>“Boat - Ship.”</em>
+          </div>
+        </div>
+
+        <div id="puzzle-container"></div>
+      </div>
+    </div>
+
+    <div
+      class="modal-overlay"
+      id="winModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="winTitle"
+    >
+      <div class="modal">
+        <h2 id="winTitle">🎉 <span>Superb shifting!</span></h2>
+        <div class="final-time" id="finalTime">0:00</div>
+        <div class="final-label">Your completion time</div>
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" id="closeBtn">Close</button>
+          <button class="btn btn-primary" id="resetBtn">Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const INITIAL_PUZZLES = [
+        {
+          wordA: "DIED",
+          wordB: "ANTE",
+          targets: ["DINED", "ATE"]
+        },
+        {
+          wordA: "LAZE",
+          wordB: "FIBRE",
+          targets: ["BLAZE", "FIRE"]
+        },
+        {
+          wordA: "CLOCK",
+          wordB: "LOSE",
+          targets: ["LOCK", "CLOSE"]
+        },
+        {
+          wordA: "FONT",
+          wordB: "HEARD",
+          targets: ["FRONT", "HEAD"]
+        },
+        {
+          wordA: "SNAKED",
+          wordB: "TRIPPED",
+          targets: ["NAKED", "STRIPPED"]
+        }
+      ];
+
+      // Game state
+      let puzzles = [];
+      let startTime = Date.now();
+      let timerId = null;
+      let gameSolved = false;
+
+      function fmt(ms) {
+        const total = Math.max(0, Math.floor(ms / 1000));
+        const m = Math.floor(total / 60);
+        const s = total % 60;
+        return m + ":" + s.toString().padStart(2, "0");
+      }
+
+      function tick() {
+        document.getElementById("timer").textContent = fmt(Date.now() - startTime);
+      }
+
+      function startTimer() {
+        startTime = Date.now();
+        tick();
+        if (timerId) clearInterval(timerId);
+        timerId = setInterval(tick, 500);
+      }
+
+      function stopTimer() {
+        if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+      }
+
+      function initGame() {
+        // Deep copy starting puzzles
+        puzzles = INITIAL_PUZZLES.map((p, idx) => ({
+          id: idx,
+          currentA: p.wordA.split(""),
+          currentB: p.wordB.split(""),
+          initialA: p.wordA,
+          initialB: p.wordB,
+          targets: p.targets,
+          solved: false
+        }));
+        gameSolved = false;
+        renderPuzzles();
+        startTimer();
+      }
+
+      function checkRowSolved(row) {
+        const wordAStr = row.currentA.join("").toUpperCase();
+        const wordBStr = row.currentB.join("").toUpperCase();
+        const targets = row.targets.map(t => t.toUpperCase());
+        
+        // Order-independent match
+        const solved = (wordAStr === targets[0] && wordBStr === targets[1]) ||
+                       (wordAStr === targets[1] && wordBStr === targets[0]);
+        return solved;
+      }
+
+      function resetRow(rowIdx) {
+        const row = puzzles[rowIdx];
+        row.currentA = row.initialA.split("");
+        row.currentB = row.initialB.split("");
+        row.solved = false;
+        renderPuzzles();
+      }
+
+      function checkGameWin() {
+        const allSolved = puzzles.every(p => p.solved);
+        if (allSolved && !gameSolved) {
+          gameSolved = true;
+          stopTimer();
+          document.getElementById("finalTime").textContent = document.getElementById("timer").textContent;
+          document.getElementById("winModal").classList.add("active");
+        }
+      }
+
+      function renderPuzzles() {
+        const container = document.getElementById("puzzle-container");
+        container.innerHTML = "";
+
+        puzzles.forEach((row, rowIdx) => {
+          const rowEl = document.createElement("div");
+          rowEl.className = `puzzle-row ${row.solved ? 'solved' : ''}`;
+          rowEl.dataset.rowIdx = rowIdx;
+          
+          // Row Header
+          const headerEl = document.createElement("div");
+          headerEl.className = "row-header";
+          headerEl.innerHTML = `
+            <span class="row-num">Pair ${rowIdx + 1}</span>
+            <div class="row-actions">
+              <span class="row-status">✓ Solved</span>
+              ${!row.solved ? `
+                <button class="reset-row-btn" onclick="resetRow(${rowIdx})">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  Reset
+                </button>
+              ` : ''}
+            </div>
+          `;
+          rowEl.appendChild(headerEl);
+
+          // Word Pair Layout
+          const pairContainer = document.createElement("div");
+          pairContainer.className = "word-pair-container";
+
+          // Word A
+          const wordAWrapper = document.createElement("div");
+          wordAWrapper.className = "word-wrapper";
+          const wordATitle = document.createElement("div");
+          wordATitle.className = "word-title";
+          wordATitle.textContent = row.solved ? "Synonym A" : "Word A";
+          wordAWrapper.appendChild(wordATitle);
+
+          const letterContainerA = document.createElement("div");
+          letterContainerA.className = "letter-container";
+          letterContainerA.dataset.wordKey = 'currentA';
+          renderWordTiles(letterContainerA, rowIdx, 'currentA', row.currentA);
+          wordAWrapper.appendChild(letterContainerA);
+          pairContainer.appendChild(wordAWrapper);
+
+          // Divider
+          const divider = document.createElement("div");
+          divider.className = "swap-divider";
+          divider.textContent = "⇄";
+          pairContainer.appendChild(divider);
+
+          // Word B
+          const wordBWrapper = document.createElement("div");
+          wordBWrapper.className = "word-wrapper";
+          const wordBTitle = document.createElement("div");
+          wordBTitle.className = "word-title";
+          wordBTitle.textContent = row.solved ? "Synonym B" : "Word B";
+          wordBWrapper.appendChild(wordBTitle);
+
+          const letterContainerB = document.createElement("div");
+          letterContainerB.className = "letter-container";
+          letterContainerB.dataset.wordKey = 'currentB';
+          renderWordTiles(letterContainerB, rowIdx, 'currentB', row.currentB);
+          wordBWrapper.appendChild(letterContainerB);
+          pairContainer.appendChild(wordBWrapper);
+
+          rowEl.appendChild(pairContainer);
+          container.appendChild(rowEl);
+        });
+
+        // Initialize drag listeners
+        initDragAndDrop();
+      }
+
+      function renderWordTiles(container, rowIdx, wordKey, letterArray) {
+        // Render slots and tiles alternating
+        for (let i = 0; i <= letterArray.length; i++) {
+          // Render slot
+          const slot = document.createElement("div");
+          slot.className = "slot";
+          slot.dataset.slotIdx = i;
+          container.appendChild(slot);
+
+          // Render tile (if not at the end index)
+          if (i < letterArray.length) {
+            const tile = document.createElement("div");
+            tile.className = "letter-tile";
+            tile.textContent = letterArray[i];
+            tile.dataset.letterIdx = i;
+            
+            container.appendChild(tile);
+          }
+        }
+      }
+
+      // Drag and Drop implementation using Pointer Events
+      function initDragAndDrop() {
+        const tiles = document.querySelectorAll(".letter-tile");
+        tiles.forEach((tile) => {
+          const rowEl = tile.closest(".puzzle-row");
+          const rowIdx = Number(rowEl.dataset.rowIdx);
+          if (puzzles[rowIdx].solved) return;
+
+          tile.addEventListener("pointerdown", (e) => {
+            // Touch bypasses the button check completely
+            if (e.pointerType === "mouse" && e.button !== 0) return;
+            startDrag(tile, e);
+          });
+        });
+      }
+
+      function getClosestSlot(oppositeContainer, clientX, clientY) {
+        const slots = oppositeContainer.querySelectorAll(".slot");
+        let closestSlot = null;
+        let minDistance = Infinity;
+
+        slots.forEach((slot) => {
+          const rect = slot.getBoundingClientRect();
+          // Midpoint of the slot's vertical area
+          const slotX = rect.left + rect.width / 2;
+          const slotY = rect.top + rect.height / 2;
+
+          const dist = Math.hypot(clientX - slotX, clientY - slotY);
+          if (dist < minDistance) {
+            minDistance = dist;
+            closestSlot = slot;
+          }
+        });
+
+        return closestSlot;
+      }
+
+      function startDrag(tile, startEvent) {
+        const rowEl = tile.closest(".puzzle-row");
+        const rowIdx = Number(rowEl.dataset.rowIdx);
+        const container = tile.closest(".letter-container");
+        const wordKey = container.dataset.wordKey;
+        const letterIdx = Number(tile.dataset.letterIdx);
+        const oppositeWordKey = wordKey === 'currentA' ? 'currentB' : 'currentA';
+
+        // Capture pointer to track it outside the element bounds
+        tile.setPointerCapture(startEvent.pointerId);
+
+        // Get initial positioning info
+        const tileRect = tile.getBoundingClientRect();
+        const offsetX = startEvent.clientX - tileRect.left;
+        const offsetY = startEvent.clientY - tileRect.top;
+
+        // Visual feedback: dim original tile
+        tile.classList.add("dragging");
+
+        // Create floating duplicate that follows pointer
+        const floatTile = document.createElement("div");
+        floatTile.className = "floating-tile";
+        floatTile.textContent = tile.textContent;
+        floatTile.style.left = `${tileRect.left}px`;
+        floatTile.style.top = `${tileRect.top}px`;
+        document.body.appendChild(floatTile);
+
+        const oppositeContainer = rowEl.querySelector(`.letter-container[data-word-key="${oppositeWordKey}"]`);
+        let currentHoveredSlot = null;
+
+        function onPointerMove(e) {
+          // Update float position
+          floatTile.style.left = `${e.clientX - offsetX}px`;
+          floatTile.style.top = `${e.clientY - offsetY}px`;
+
+          // Hit test distance to opposite container
+          const containerRect = oppositeContainer.getBoundingClientRect();
+          // Activating range: within 120px vertically/horizontally
+          const isNearOpposite = e.clientX >= containerRect.left - 120 &&
+                                 e.clientX <= containerRect.right + 120 &&
+                                 e.clientY >= containerRect.top - 120 &&
+                                 e.clientY <= containerRect.bottom + 120;
+
+          let targetSlot = null;
+          if (isNearOpposite) {
+            targetSlot = getClosestSlot(oppositeContainer, e.clientX, e.clientY);
+          }
+
+          if (targetSlot !== currentHoveredSlot) {
+            if (currentHoveredSlot) {
+              currentHoveredSlot.classList.remove("active-drag-hover");
+            }
+            currentHoveredSlot = targetSlot;
+            if (currentHoveredSlot) {
+              currentHoveredSlot.classList.add("active-drag-hover");
+            }
+          }
+        }
+
+        function onPointerUp(e) {
+          // Clean up event listeners
+          tile.removeEventListener("pointermove", onPointerMove);
+          tile.removeEventListener("pointerup", onPointerUp);
+          
+          try {
+            tile.releasePointerCapture(e.pointerId);
+          } catch(err) {
+            // Ignore if pointer capture already released or invalid
+          }
+
+          // Clean up slot classes
+          if (currentHoveredSlot) {
+            currentHoveredSlot.classList.remove("active-drag-hover");
+          }
+
+          // Check if successfully dropped on a slot
+          if (currentHoveredSlot) {
+            const destSlotIdx = Number(currentHoveredSlot.dataset.slotIdx);
+            
+            // Execute migration
+            const sourceWord = puzzles[rowIdx][wordKey];
+            const destWord = puzzles[rowIdx][oppositeWordKey];
+            
+            const letter = sourceWord[letterIdx];
+            sourceWord.splice(letterIdx, 1);
+            destWord.splice(destSlotIdx, 0, letter);
+
+            // Check if solved
+            puzzles[rowIdx].solved = checkRowSolved(puzzles[rowIdx]);
+
+            // Remove float tile immediately and redraw
+            floatTile.remove();
+            tile.classList.remove("dragging");
+            
+            renderPuzzles();
+            checkGameWin();
+          } else {
+            // Animate snap back to original tile location
+            floatTile.style.transition = "all 0.25s cubic-bezier(0.25, 1, 0.5, 1)";
+            const originalRect = tile.getBoundingClientRect();
+            floatTile.style.left = `${originalRect.left}px`;
+            floatTile.style.top = `${originalRect.top}px`;
+
+            setTimeout(() => {
+              floatTile.remove();
+              tile.classList.remove("dragging");
+            }, 250);
+          }
+        }
+
+        tile.addEventListener("pointermove", onPointerMove);
+        tile.addEventListener("pointerup", onPointerUp);
+      }
+
+      // Win modal buttons
+      document.getElementById("closeBtn").addEventListener("click", () => {
+        document.getElementById("winModal").classList.remove("active");
+      });
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        document.getElementById("winModal").classList.remove("active");
+        initGame();
+      });
+
+      // Start the game
+      initGame();
+    </script>
+  </body>
+</html>
