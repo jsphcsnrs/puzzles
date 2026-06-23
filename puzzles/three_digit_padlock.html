@@ -4,84 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Three-Digit Padlock</title>
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%221em%22 font-size=%2286%22>🔒</text></svg>"
-    />
+    <link rel="stylesheet" href="../styles/neumorphic.css" />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 24px 16px 48px;
-      }
-
-      .wrap {
-        max-width: 760px;
-        margin: 0 auto;
-      }
-
-      .card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        padding: 28px 24px 32px;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 20px;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 6px;
-      }
-
-      .header h1 span {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .timer {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #667eea;
-        letter-spacing: 0.04em;
-        margin-bottom: 8px;
-      }
-
-      .intro {
-        color: #555;
-        line-height: 1.55;
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 1.05rem;
-      }
-
-      .rules {
-        background: #f6f7fc;
-        border-radius: 14px;
-        padding: 18px 18px 14px;
-        margin-bottom: 22px;
-      }
-
-      .rules h2 {
-        font-size: 1.05rem;
-        color: #764ba2;
-        margin-bottom: 12px;
-        font-weight: 700;
-      }
-
       .clue-list {
         list-style: none;
       }
@@ -91,7 +15,6 @@
         align-items: flex-start;
         gap: 12px;
         margin-bottom: 10px;
-        color: #444;
         line-height: 1.45;
         font-size: 0.98rem;
       }
@@ -100,7 +23,7 @@
         font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
         font-weight: 700;
         font-size: 1rem;
-        color: #667eea;
+        color: var(--accent);
         min-width: 4.5ch;
         letter-spacing: 0.15em;
         white-space: nowrap;
@@ -113,7 +36,6 @@
 
       .play-area h2 {
         font-size: 1.05rem;
-        color: #333;
         margin-bottom: 14px;
         font-weight: 600;
       }
@@ -134,35 +56,38 @@
         gap: 4px;
       }
 
-      .dial button {
+      .dial-btn {
         width: 48px;
         height: 40px;
+        min-height: 44px;
         border: none;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
+        border-radius: var(--radius-inner);
+        background: var(--bg);
+        color: var(--accent);
         font-size: 1.2rem;
         font-weight: 700;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.45);
+        box-shadow: var(--shadow-extruded-small);
+        transition: box-shadow var(--transition), transform var(--transition);
+        font-family: inherit;
       }
 
-      .dial button:active {
+      .dial-btn:active {
+        box-shadow: var(--shadow-inset-small);
         transform: translateY(1px);
       }
 
       .dial .window {
         width: 56px;
         height: 56px;
-        border-radius: 12px;
-        border: 3px solid #667eea;
+        border-radius: var(--radius-inner);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.75rem;
         font-weight: 800;
-        color: #333;
-        background: #fafbff;
+        background: var(--bg);
+        box-shadow: var(--shadow-inset);
         user-select: none;
       }
 
@@ -173,115 +98,45 @@
         gap: 10px;
       }
 
-      .btn-primary {
-        padding: 14px 36px;
-        border: none;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        font-size: 1.05rem;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.45);
-      }
-
-      .btn-primary:active {
-        transform: translateY(1px);
-      }
-
-      .btn-secondary {
-        padding: 10px 24px;
-        border: 2px solid #667eea;
-        border-radius: 10px;
-        background: white;
-        color: #667eea;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-      }
-
       .feedback {
         min-height: 1.5em;
         margin-top: 12px;
         font-weight: 600;
-        color: #c0392b;
+        color: var(--error);
         font-size: 0.95rem;
       }
 
-      .modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.45);
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        z-index: 100;
-      }
-
-      .modal-overlay.open {
-        display: flex;
-      }
-
-      .modal {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-        max-width: 420px;
-        width: 100%;
-        padding: 32px 28px;
-        text-align: center;
-      }
-
-      .modal h2 {
-        font-size: 1.75rem;
-        margin-bottom: 12px;
-      }
-
-      .modal h2 span {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .modal .time-display {
-        font-size: 2.25rem;
+      .completion-time {
+        margin: 20px 0;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 2.5rem;
         font-weight: 800;
-        color: #667eea;
-        margin: 16px 0 24px;
-        letter-spacing: 0.02em;
-      }
-
-      .modal .btn-row {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+        color: var(--fg);
       }
 
       @media (max-width: 480px) {
         .header h1 {
           font-size: 1.5rem;
         }
-
-        .timer {
-          font-size: 1.45rem;
-        }
       }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <div class="card">
-        <div class="header">
-          <h1>🔒 <span>Three-Digit Padlock</span></h1>
+    <main class="container container-narrow">
+      <section class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md"><i data-lucide="lock" class="icon icon-md"></i></span>
+            <span class="title-text">Three-Digit Padlock</span>
+          </h1>
+          <p class="subtitle">
+            You are trying to open a padlock with a three-digit combination. Use the five clues below to crack the code.
+          </p>
           <div class="timer" id="timer">0:00</div>
-        </div>
-        <p class="intro">
-          You are trying to open a padlock with a three-digit combination. Use the five clues below to crack the code.
-        </p>
-        <div class="rules">
-          <h2>Clues</h2>
+        </header>
+
+        <section class="rules" aria-labelledby="rules-heading">
+          <h2 id="rules-heading">Clues</h2>
           <ul class="clue-list">
             <li>
               <span class="digits">6 8 2</span>
@@ -297,38 +152,42 @@
             </li>
             <li>
               <span class="digits">7 3 8</span>
-              <span>— Nothing’s correct.</span>
+              <span>— Nothing's correct.</span>
             </li>
             <li>
               <span class="digits">7 8 0</span>
               <span>— One digit is correct but in the wrong position.</span>
             </li>
           </ul>
-        </div>
+        </section>
+
         <div class="play-area">
           <h2>Enter your combination</h2>
           <div class="dial-row" id="dialRow" aria-label="Combination dials"></div>
           <div class="actions">
-            <button type="button" class="btn-primary" id="tryBtn">Try combination</button>
-            <button type="button" class="btn-secondary" id="resetBtn">Reset dials</button>
+            <button type="button" class="btn btn-primary" id="tryBtn">Try combination</button>
+            <button type="button" class="btn btn-secondary" id="resetBtn">Reset dials</button>
           </div>
           <div class="feedback" id="feedback" aria-live="polite"></div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
     <div class="modal-overlay" id="winnerModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
       <div class="modal">
-        <h2 id="winnerTitle">🎉 <span>Congrats!</span></h2>
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl"></i></div>
+        <h2 id="winnerTitle" class="font-display">Congrats!</h2>
         <p>Your time:</p>
-        <div class="time-display" id="finalTime">0:00</div>
-        <div class="btn-row">
-          <button type="button" class="btn-primary" id="closeModal">Close</button>
-          <button type="button" class="btn-secondary" id="playAgain">Reset &amp; Play Again</button>
+        <div class="completion-time" id="finalTime">0:00</div>
+        <div class="modal-btns">
+          <button type="button" class="btn btn-primary" id="closeModal">Close</button>
+          <button type="button" class="btn btn-secondary" id="playAgain">Reset &amp; Play Again</button>
         </div>
       </div>
     </div>
 
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
     <script>
       (function () {
         const SOLUTION = [0, 4, 2]
@@ -368,6 +227,7 @@
             wrap.className = "dial"
             const up = document.createElement("button")
             up.type = "button"
+            up.className = "dial-btn"
             up.setAttribute("aria-label", "Increase digit " + (i + 1))
             up.textContent = "▲"
             const win = document.createElement("div")
@@ -375,6 +235,7 @@
             win.textContent = String(values[i])
             const down = document.createElement("button")
             down.type = "button"
+            down.className = "dial-btn"
             down.setAttribute("aria-label", "Decrease digit " + (i + 1))
             down.textContent = "▼"
             const idx = i
@@ -410,10 +271,10 @@
             cancelAnimationFrame(raf)
             const elapsed = performance.now() - start
             finalTime.textContent = formatTime(elapsed)
-            winnerModal.classList.add("open")
+            winnerModal.classList.add("active")
             feedback.textContent = ""
           } else {
-            feedback.textContent = "That’s not the right combination. Keep deducing!"
+            feedback.textContent = "That's not the right combination. Keep deducing!"
           }
         }
 
@@ -430,19 +291,22 @@
         tryBtn.addEventListener("click", check)
         resetBtn.addEventListener("click", resetDials)
         closeModal.addEventListener("click", function () {
-          winnerModal.classList.remove("open")
+          winnerModal.classList.remove("active")
         })
         playAgain.addEventListener("click", function () {
-          winnerModal.classList.remove("open")
+          winnerModal.classList.remove("active")
           resetDials()
         })
 
         winnerModal.addEventListener("click", function (e) {
-          if (e.target === winnerModal) winnerModal.classList.remove("open")
+          if (e.target === winnerModal) winnerModal.classList.remove("active")
         })
 
-        buildDials()
-        raf = requestAnimationFrame(tick)
+        document.addEventListener("DOMContentLoaded", function () {
+          PuzzleIcons.initIcons()
+          buildDials()
+          raf = requestAnimationFrame(tick)
+        })
       })()
     </script>
   </body>

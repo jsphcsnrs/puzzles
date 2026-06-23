@@ -4,104 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Census-Taker Problem</title>
+    <link rel="stylesheet" href="../styles/neumorphic.css" />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      }
-
-      .puzzle-shell {
-        width: 100%;
-        max-width: 760px;
-      }
-
-      .card {
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        padding: 24px 24px 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-      }
-
       .header-row {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         gap: 16px;
         flex-wrap: wrap;
+        margin-bottom: 20px;
       }
 
-      .header {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
+      .header-row .header {
+        flex: 1;
+        text-align: left;
+        margin-bottom: 0;
       }
 
-      .title-line {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-
-      .title-emoji {
-        font-size: 1.9rem;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 6px;
-      }
-
-      .header h1 span {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .subtitle {
-        font-size: 0.95rem;
-        color: #555;
-      }
-
-      .timer {
-        padding: 10px 16px;
-        border-radius: 999px;
-        background: rgba(102, 126, 234, 0.08);
-        border: 1px solid rgba(102, 126, 234, 0.3);
-        color: #333;
-        font-weight: 600;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        white-space: nowrap;
-      }
-
-      .timer-label {
-        text-transform: uppercase;
-        font-size: 0.7rem;
-        letter-spacing: 0.08em;
-        color: #667eea;
-      }
-
-      .timer-value {
-        font-variant-numeric: tabular-nums;
+      .header-row .header h1 {
+        justify-content: flex-start;
       }
 
       .content-row {
@@ -118,13 +39,12 @@
       }
 
       .puzzle-text {
-        background: #f8f9ff;
-        border-radius: 14px;
+        background: var(--bg);
+        border-radius: var(--radius-base);
         padding: 14px 16px;
-        border: 1px solid rgba(102, 126, 234, 0.15);
+        box-shadow: var(--shadow-extruded-small);
         font-size: 0.95rem;
         line-height: 1.6;
-        color: #333;
       }
 
       .puzzle-text p + p {
@@ -132,10 +52,10 @@
       }
 
       .input-panel {
-        background: #fdfdff;
-        border-radius: 14px;
+        background: var(--bg);
+        border-radius: var(--radius-base);
         padding: 14px 16px 16px;
-        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-extruded-small);
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -143,7 +63,7 @@
 
       .input-panel h2 {
         font-size: 1rem;
-        color: #667eea;
+        color: var(--accent);
         margin-bottom: 2px;
       }
 
@@ -162,28 +82,14 @@
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: #777;
+        color: var(--muted);
         margin-bottom: 3px;
+        font-weight: 700;
       }
 
       .age-input input {
         width: 100%;
-        padding: 8px 10px;
-        border-radius: 10px;
-        border: 1px solid #d0d4ff;
-        font-size: 0.95rem;
         font-variant-numeric: tabular-nums;
-        outline: none;
-        transition:
-          border-color 0.18s ease,
-          box-shadow 0.18s ease,
-          background-color 0.18s ease;
-      }
-
-      .age-input input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.18);
-        background-color: #ffffff;
       }
 
       .age-input input::-webkit-outer-spin-button,
@@ -203,50 +109,6 @@
         margin-top: 6px;
       }
 
-      .btn {
-        border: none;
-        border-radius: 999px;
-        padding: 9px 18px;
-        font-weight: 600;
-        font-size: 0.92rem;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        transition:
-          background-color 0.2s ease,
-          box-shadow 0.2s ease,
-          transform 0.1s ease;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      .btn-primary {
-        background: #667eea;
-        color: #ffffff;
-        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.35);
-      }
-
-      .btn-primary:hover,
-      .btn-primary:active {
-        background: #5568d3;
-        box-shadow: 0 10px 22px rgba(86, 104, 211, 0.4);
-        transform: translateY(1px);
-      }
-
-      .btn-secondary {
-        background: #f4f4ff;
-        color: #555;
-        border: 1px solid rgba(102, 126, 234, 0.25);
-      }
-
-      .btn-secondary:hover,
-      .btn-secondary:active {
-        background: #eaebff;
-        transform: translateY(1px);
-      }
-
       .feedback {
         min-height: 1.2em;
         font-size: 0.86rem;
@@ -254,18 +116,18 @@
       }
 
       .feedback.error {
-        color: #d63939;
+        color: var(--error);
       }
 
       .feedback.hint {
-        color: #9b5de5;
+        color: var(--accent);
       }
 
       .rules-panel {
-        background: #f8f9ff;
-        border-radius: 14px;
+        background: var(--bg);
+        border-radius: var(--radius-base);
         padding: 14px 16px 16px;
-        border: 1px solid rgba(102, 126, 234, 0.2);
+        box-shadow: var(--shadow-extruded-small);
         position: sticky;
         top: 8px;
         align-self: flex-start;
@@ -273,7 +135,7 @@
 
       .rules-panel h2 {
         font-size: 0.98rem;
-        color: #764ba2;
+        color: var(--fg);
         margin-bottom: 6px;
       }
 
@@ -282,12 +144,11 @@
         padding-left: 0;
         font-size: 0.86rem;
         line-height: 1.6;
-        color: #444;
       }
 
       .rules-panel li::before {
         content: "➤";
-        color: #667eea;
+        color: var(--accent);
         margin-right: 6px;
         font-size: 0.75rem;
       }
@@ -299,16 +160,16 @@
       .rules-footnote {
         margin-top: 8px;
         font-size: 0.78rem;
-        color: #777;
+        color: var(--muted);
       }
 
       .back-link {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        margin-top: 2px;
+        margin-top: 8px;
         font-size: 0.85rem;
-        color: #667eea;
+        color: var(--accent);
         text-decoration: none;
         font-weight: 600;
       }
@@ -318,105 +179,17 @@
         text-underline-offset: 2px;
       }
 
-      .back-link:active {
-        transform: translateY(1px);
-      }
-
-      .modal-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        z-index: 50;
-        opacity: 0;
-        pointer-events: none;
-        transition:
-          opacity 0.18s ease,
-          transform 0.18s ease;
-      }
-
-      .modal-backdrop.visible {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .modal-card {
-        background: #ffffff;
-        border-radius: 20px;
-        max-width: 420px;
-        width: 100%;
-        padding: 22px 22px 18px;
-        box-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
-        transform: translateY(12px);
-        transition: transform 0.18s ease;
-      }
-
-      .modal-backdrop.visible .modal-card {
-        transform: translateY(0);
-      }
-
-      .modal-header {
-        text-align: center;
-        margin-bottom: 10px;
-      }
-
-      .modal-header h2 {
-        font-size: 1.5rem;
-        margin-top: 4px;
-      }
-
-      .modal-header h2 span {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .modal-body {
-        text-align: center;
-        margin-bottom: 10px;
-        font-size: 0.95rem;
-        color: #444;
-      }
-
-      .time-display {
-        margin-top: 6px;
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #333;
-      }
-
-      .time-display span {
-        font-variant-numeric: tabular-nums;
-        color: #667eea;
-      }
-
       .solution {
         margin-top: 10px;
         font-size: 0.9rem;
-        color: #555;
+        color: var(--muted);
       }
 
       .solution strong {
-        color: #764ba2;
-      }
-
-      .modal-actions {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 10px;
+        color: var(--fg);
       }
 
       @media (max-width: 720px) {
-        .card {
-          padding: 18px 16px 16px;
-        }
-
         .content-row {
           grid-template-columns: 1fr;
         }
@@ -425,23 +198,22 @@
           position: relative;
           top: 0;
         }
+
+        .header-row .header {
+          text-align: center;
+        }
+
+        .header-row .header h1 {
+          justify-content: center;
+        }
       }
 
       @media (max-width: 480px) {
-        .header h1 {
-          font-size: 1.6rem;
-        }
-
-        .timer {
-          width: 100%;
-          justify-content: center;
-        }
-
         .age-input-row {
           flex-direction: column;
         }
 
-        .btn {
+        .controls-row .btn {
           flex: 1;
           justify-content: center;
         }
@@ -449,22 +221,19 @@
     </style>
   </head>
   <body>
-    <div class="puzzle-shell">
-      <div class="card">
+    <main class="container container-narrow">
+      <section class="card card-extruded">
         <div class="header-row">
-          <div class="header">
-            <div class="title-line">
-              <div class="title-emoji">🏠</div>
-              <h1>🎯 <span>Census-Taker Problem</span></h1>
-            </div>
+          <header class="header">
+            <h1 class="font-display">
+              <span class="icon-well icon-well-md"><i data-lucide="home" class="icon icon-md"></i></span>
+              <span class="title-text">Census-Taker Problem</span>
+            </h1>
             <p class="subtitle">
               A classic logic puzzle: three children, a house number, and one extra hint about the oldest child.
             </p>
-          </div>
-          <div class="timer" aria-live="polite">
-            <div class="timer-label">Time</div>
-            <div class="timer-value" id="timerDisplay">00:00</div>
-          </div>
+          </header>
+          <div class="timer" id="timerDisplay" aria-live="polite">0:00</div>
         </div>
 
         <div class="content-row">
@@ -472,42 +241,38 @@
             <div class="puzzle-text">
               <p>
                 During a recent census, a man told the census taker that he had three children. When asked their ages,
-                he replied, “The product of their ages is 72. The sum of their ages is the same as my house number.”
+                he replied, "The product of their ages is 72. The sum of their ages is the same as my house number."
                 The census taker ran to the door and looked at the house number.
               </p>
               <p>
-                “I still can’t tell,” she complained. “Oh, that’s right. I forgot to tell you that the oldest one likes
-                apple pie.” The census taker promptly wrote down the ages of the three children.
+                "I still can't tell," she complained. "Oh, that's right. I forgot to tell you that the oldest one likes
+                apple pie." The census taker promptly wrote down the ages of the three children.
               </p>
               <p><strong>How old are the three children?</strong></p>
             </div>
 
             <form class="input-panel" id="ageForm">
               <h2>Enter the three ages</h2>
-              <p style="font-size: 0.86rem; color: #555">
+              <p class="text-muted" style="font-size: 0.86rem">
                 Type the ages as whole numbers in years. Order does not matter.
               </p>
               <div class="age-input-row">
                 <div class="age-input">
                   <label for="age1">Child 1</label>
-                  <input id="age1" name="age1" type="number" min="0" inputmode="numeric" autocomplete="off" />
+                  <input class="input" id="age1" name="age1" type="number" min="0" inputmode="numeric" autocomplete="off" />
                 </div>
                 <div class="age-input">
                   <label for="age2">Child 2</label>
-                  <input id="age2" name="age2" type="number" min="0" inputmode="numeric" autocomplete="off" />
+                  <input class="input" id="age2" name="age2" type="number" min="0" inputmode="numeric" autocomplete="off" />
                 </div>
                 <div class="age-input">
                   <label for="age3">Child 3</label>
-                  <input id="age3" name="age3" type="number" min="0" inputmode="numeric" autocomplete="off" />
+                  <input class="input" id="age3" name="age3" type="number" min="0" inputmode="numeric" autocomplete="off" />
                 </div>
               </div>
               <div class="controls-row">
-                <button type="submit" class="btn btn-primary">
-                  Check ages
-                </button>
-                <button type="button" class="btn btn-secondary" id="resetButton">
-                  Reset
-                </button>
+                <button type="submit" class="btn btn-primary">Check ages</button>
+                <button type="button" class="btn btn-secondary" id="resetButton">Reset</button>
               </div>
               <div class="feedback" id="feedback" aria-live="polite"></div>
             </form>
@@ -534,35 +299,27 @@
             </a>
           </aside>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
-    <div class="modal-backdrop" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
-      <div class="modal-card">
-        <div class="modal-header">
-          <div style="font-size: 2.1rem">🎉</div>
-          <h2 id="winTitle"><span>Well done!</span></h2>
+    <div class="modal-overlay" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+      <div class="modal">
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl"></i></div>
+        <h2 id="winTitle" class="font-display">Well done!</h2>
+        <p>You cracked the Census-Taker Problem.</p>
+        <div class="final-time" id="finalTime">0:00</div>
+        <div class="solution">
+          The children are <strong>3, 3, and 8</strong> years old.
         </div>
-        <div class="modal-body">
-          <p>You cracked the Census-Taker Problem.</p>
-          <div class="time-display">
-            Your time: <span id="finalTime">00:00</span>
-          </div>
-          <div class="solution">
-            The children are <strong>3, 3, and 8</strong> years old.
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" id="closeModalButton">
-            Close
-          </button>
-          <button type="button" class="btn btn-primary" id="playAgainButton">
-            Reset &amp; Play Again
-          </button>
+        <div class="modal-btns">
+          <button type="button" class="btn btn-secondary" id="closeModalButton">Close</button>
+          <button type="button" class="btn btn-primary" id="playAgainButton">Reset &amp; Play Again</button>
         </div>
       </div>
     </div>
 
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
     <script>
       ;(() => {
         const timerDisplay = document.getElementById("timerDisplay")
@@ -587,10 +344,7 @@
           const totalSeconds = Math.floor(ms / 1000)
           const minutes = Math.floor(totalSeconds / 60)
           const seconds = totalSeconds % 60
-
-          const m = String(minutes).padStart(2, "0")
-          const s = String(seconds).padStart(2, "0")
-          return `${m}:${s}`
+          return `${minutes}:${String(seconds).padStart(2, "0")}`
         }
 
         function startTimer() {
@@ -615,9 +369,9 @@
           })
           feedback.textContent = ""
           feedback.className = "feedback"
-          winModal.classList.remove("visible")
+          winModal.classList.remove("active")
           stopTimer()
-          timerDisplay.textContent = "00:00"
+          timerDisplay.textContent = "0:00"
           startTimer()
           ageInputs[0].focus()
         }
@@ -627,7 +381,7 @@
           const elapsed = Date.now() - startTime
           const formatted = formatTime(elapsed)
           finalTime.textContent = formatted
-          winModal.classList.add("visible")
+          winModal.classList.add("active")
         }
 
         function checkAges(event) {
@@ -658,7 +412,6 @@
             return
           }
 
-          // Unique triple that also satisfies the ambiguity + oldest-child clues: 3, 3, 8
           if (a === 3 && b === 3 && c === 8) {
             feedback.textContent = ""
             feedback.className = "feedback"
@@ -677,7 +430,7 @@
         })
 
         closeModalButton.addEventListener("click", () => {
-          winModal.classList.remove("visible")
+          winModal.classList.remove("active")
         })
 
         playAgainButton.addEventListener("click", () => {
@@ -686,18 +439,18 @@
 
         winModal.addEventListener("click", (event) => {
           if (event.target === winModal) {
-            winModal.classList.remove("visible")
+            winModal.classList.remove("active")
           }
         })
 
         document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape" && winModal.classList.contains("visible")) {
-            winModal.classList.remove("visible")
+          if (event.key === "Escape" && winModal.classList.contains("active")) {
+            winModal.classList.remove("active")
           }
         })
 
-        // Start timer as soon as the page is ready
-        window.addEventListener("load", () => {
+        document.addEventListener("DOMContentLoaded", () => {
+          PuzzleIcons.initIcons()
           startTimer()
           if (ageInputs[0]) {
             ageInputs[0].focus()
@@ -707,4 +460,3 @@
     </script>
   </body>
 </html>
-

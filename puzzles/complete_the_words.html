@@ -4,104 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Complete the Words</title>
+    <link rel="stylesheet" href="../styles/neumorphic.css" />
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-family: "Segoe UI", sans-serif;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 30px 16px 50px;
-      }
-
-      .card {
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        width: 100%;
-        max-width: 760px;
-        padding: 36px 40px 40px;
-      }
-
-      /* Header */
-      .header {
-        text-align: center;
-        margin-bottom: 28px;
-      }
-      .header h1 {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 6px;
-      }
-      .header h1 span {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .header p {
-        color: #888;
-        font-size: 0.9rem;
-      }
-
-      /* Timer */
-      .timer-bar {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 24px;
-      }
-      .timer {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: #fff;
-        font-size: 1.4rem;
-        font-weight: 700;
-        padding: 8px 28px;
-        border-radius: 50px;
-        letter-spacing: 2px;
-        font-variant-numeric: tabular-nums;
-      }
-
-      /* Rules */
-      .rules {
-        background: #f8f7ff;
-        border-left: 4px solid #667eea;
-        border-radius: 0 12px 12px 0;
-        padding: 16px 20px;
-        margin-bottom: 28px;
-      }
-      .rules h3 {
-        color: #667eea;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 8px;
-      }
-      .rules p {
-        color: #555;
-        font-size: 0.88rem;
-        line-height: 1.6;
-      }
-      .rules .example {
-        margin-top: 10px;
-        padding: 10px 14px;
-        background: #fff;
-        border-radius: 8px;
-        font-size: 0.88rem;
-        color: #444;
-        border: 1px solid #e8e8f8;
-      }
-      .rules .example strong {
-        color: #667eea;
-      }
-
-      /* Puzzles */
       .puzzles {
         display: flex;
         flex-direction: column;
@@ -113,22 +17,24 @@
         align-items: center;
         gap: 10px;
         padding: 12px 16px;
-        background: #f8f7ff;
-        border-radius: 14px;
-        border: 2px solid transparent;
-        transition: border-color 0.2s, background 0.2s;
+        border-radius: var(--radius-base);
+        background: var(--bg);
+        box-shadow: var(--shadow-extruded-small);
+        transition: box-shadow var(--transition), background var(--transition);
       }
+
       .puzzle-row.correct {
-        background: #f0fff4;
-        border-color: #52c87a;
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        box-shadow: var(--shadow-inset);
       }
+
       .puzzle-row.wrong {
-        border-color: #e74c3c;
-        background: #fff5f5;
+        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        box-shadow: var(--shadow-inset);
       }
 
       .row-num {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--accent);
         color: #fff;
         min-width: 28px;
         height: 28px;
@@ -139,12 +45,13 @@
         font-size: 0.8rem;
         font-weight: 800;
         flex-shrink: 0;
-      }
-      .puzzle-row.correct .row-num {
-        background: linear-gradient(135deg, #52c87a, #27ae60);
+        box-shadow: var(--shadow-extruded-small);
       }
 
-      /* Word display */
+      .puzzle-row.correct .row-num {
+        background: var(--success);
+      }
+
       .word-display {
         display: flex;
         gap: 4px;
@@ -160,34 +67,32 @@
         justify-content: center;
         font-size: 1.1rem;
         font-weight: 700;
-        border-radius: 6px;
-        border: 2px solid;
-        transition: background 0.15s, border-color 0.15s, color 0.15s;
-      }
-      .lc.known {
-        background: #fff;
-        border-color: #dde0f0;
-        color: #444;
-      }
-      .lc.blank {
-        background: #f0f1ff;
-        border-color: #b0b8f0;
-        border-style: dashed;
-        color: #667eea;
-        font-weight: 800;
-      }
-      .lc.blank.preview {
-        border-style: solid;
-        background: #e8eaff;
-      }
-      .puzzle-row.correct .lc.blank {
-        background: #e8fff0;
-        border-color: #52c87a;
-        border-style: solid;
-        color: #27ae60;
+        border-radius: var(--radius-inner);
+        box-shadow: var(--shadow-inset-small);
+        transition: background var(--transition), box-shadow var(--transition), color var(--transition);
       }
 
-      /* Input */
+      .lc.known {
+        background: var(--bg);
+        color: var(--fg);
+      }
+
+      .lc.blank {
+        background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+        box-shadow: var(--shadow-inset);
+        color: var(--accent);
+        font-weight: 800;
+      }
+
+      .lc.blank.preview {
+        background: color-mix(in srgb, var(--accent) 14%, var(--bg));
+      }
+
+      .puzzle-row.correct .lc.blank {
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        color: var(--success);
+      }
+
       .answer-wrap {
         display: flex;
         align-items: center;
@@ -198,78 +103,58 @@
       .answer-input {
         width: 76px;
         height: 38px;
-        border: 2px solid #dde0f0;
-        border-radius: 10px;
         text-align: center;
         font-size: 1.05rem;
         font-weight: 700;
         letter-spacing: 5px;
         text-transform: uppercase;
-        color: #444;
-        outline: none;
         font-family: monospace;
-        background: #fff;
-        transition: border-color 0.2s, background 0.2s;
       }
-      .answer-input:focus {
-        border-color: #667eea;
-        background: #f8f7ff;
-      }
+
       .answer-input:disabled {
-        background: #f0fff4;
-        border-color: #52c87a;
-        color: #27ae60;
+        background: color-mix(in srgb, var(--success) 10%, var(--bg));
+        color: var(--success);
         cursor: default;
-      }
-      .puzzle-row.wrong .answer-input {
-        border-color: #e74c3c;
-        background: #fff0f0;
       }
 
       .row-check {
-        font-size: 1.2rem;
         display: none;
         flex-shrink: 0;
       }
+
       .puzzle-row.correct .row-check {
         display: block;
       }
 
-      /* Actions */
+      .row-check .icon {
+        stroke: var(--success);
+      }
+
       .actions {
         display: flex;
         justify-content: center;
         gap: 12px;
         margin-top: 28px;
       }
-      .btn {
-        padding: 10px 24px;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        cursor: pointer;
-        border: none;
-        font-family: "Segoe UI", sans-serif;
-        transition: transform 0.15s, box-shadow 0.15s;
-      }
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: #fff;
-      }
-      .btn-outline {
-        background: transparent;
-        border: 2px solid #ccc;
-        color: #888;
+
+      .rules .example {
+        margin-top: 10px;
+        padding: 10px 14px;
+        border-radius: var(--radius-inner);
+        background: var(--bg);
+        box-shadow: var(--shadow-inset-small);
+        font-size: 0.88rem;
+        color: var(--fg);
       }
 
-      /* Shake animation */
+      .rules .example strong {
+        color: var(--accent);
+      }
+
       .wrong-shake {
         animation: shake 0.4s ease;
       }
+
       @keyframes shake {
         0%,
         100% {
@@ -289,92 +174,19 @@
         }
       }
 
-      /* Modal */
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s;
-        z-index: 100;
-        padding: 16px;
-      }
-      .modal-overlay.active {
-        opacity: 1;
-        pointer-events: all;
-      }
-      .modal {
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-        padding: 40px 36px;
-        max-width: 420px;
-        width: 100%;
-        text-align: center;
-        transform: scale(0.85);
-        transition: transform 0.3s;
-      }
-      .modal-overlay.active .modal {
-        transform: scale(1);
-      }
-      .modal-icon {
-        font-size: 3rem;
-        margin-bottom: 12px;
-      }
-      .modal h2 {
-        font-size: 1.8rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 8px;
-      }
-      .modal p {
-        color: #666;
-        margin-bottom: 6px;
-        font-size: 0.95rem;
-      }
-      .final-time {
-        font-size: 2.2rem;
-        font-weight: 900;
-        color: #667eea;
-        margin: 16px 0 24px;
-        letter-spacing: 2px;
-      }
-      .modal-btns {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      /* Mobile */
       @media (max-width: 600px) {
-        body {
-          padding: 14px 10px 50px;
-        }
-        .card {
-          padding: 20px 14px 28px;
-          border-radius: 16px;
-        }
-        .header h1 {
-          font-size: 1.5rem;
-        }
         .lc {
           width: 28px;
           height: 32px;
           font-size: 0.9rem;
         }
+
         .answer-input {
           width: 62px;
           font-size: 0.95rem;
           letter-spacing: 3px;
         }
+
         .puzzle-row {
           padding: 10px 12px;
           gap: 7px;
@@ -383,50 +195,53 @@
     </style>
   </head>
   <body>
-    <div class="card">
-      <div class="header">
-        <h1>🔡 <span>Complete the Words</span></h1>
-        <p>Fill in the blanks with three consecutive alphabet letters</p>
-      </div>
+    <main class="container container-narrow">
+      <section class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md"><i data-lucide="text-cursor-input" class="icon icon-md"></i></span>
+            <span class="title-text">Complete the Words</span>
+          </h1>
+          <p class="subtitle">Fill in the blanks with three consecutive alphabet letters</p>
+          <div class="timer" id="timer">00:00</div>
+        </header>
 
-      <div class="timer-bar">
-        <div class="timer" id="timer">00:00</div>
-      </div>
+        <section class="rules" aria-labelledby="rules-heading">
+          <h2 id="rules-heading">How to Play</h2>
+          <p>
+            Each word has <strong>three missing letters</strong>. The missing letters are always
+            <strong>three consecutive letters of the alphabet</strong>. Type those three letters (in
+            alphabetical order) to complete the word.
+          </p>
+          <div class="example">
+            Example: <strong>_ _ A _ U S</strong> → type <strong>ABC</strong> →
+            <strong>AB</strong>A<strong>C</strong>US
+          </div>
+        </section>
 
-      <div class="rules">
-        <h3>📖 How to Play</h3>
-        <p>
-          Each word has <strong>three missing letters</strong>. The missing letters are always
-          <strong>three consecutive letters of the alphabet</strong>. Type those three letters (in
-          alphabetical order) to complete the word.
-        </p>
-        <div class="example">
-          Example: <strong>_ _ A _ U S</strong> → type <strong>ABC</strong> →
-          <strong>AB</strong>A<strong>C</strong>US
+        <div class="puzzles" id="puzzles"></div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" onclick="resetPuzzle()">Reset</button>
         </div>
-      </div>
+      </section>
+    </main>
 
-      <div class="puzzles" id="puzzles"></div>
-
-      <div class="actions">
-        <button class="btn btn-outline" onclick="resetPuzzle()">↺ Reset</button>
-      </div>
-    </div>
-
-    <!-- Winner Modal -->
-    <div class="modal-overlay" id="winModal">
+    <div class="modal-overlay" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
       <div class="modal">
-        <div class="modal-icon">🎉</div>
-        <h2>Congrats!</h2>
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl"></i></div>
+        <h2 id="winnerTitle" class="font-display">Congrats!</h2>
         <p>You completed the puzzle in</p>
         <div class="final-time" id="finalTime">00:00</div>
         <div class="modal-btns">
-          <button class="btn btn-outline" onclick="closeModal()">Close</button>
-          <button class="btn btn-primary" onclick="resetPuzzle()">↺ Reset & Play Again</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+          <button type="button" class="btn btn-primary" onclick="resetPuzzle()">Reset &amp; Play Again</button>
         </div>
       </div>
     </div>
 
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
     <script>
       const PUZZLES = [
         { word: "FABRIC", answer: "ABC", hiddenIdx: [1, 2, 5] },
@@ -468,13 +283,11 @@
           row.className = "puzzle-row"
           row.id = "row-" + pi
 
-          // Number badge
           const num = document.createElement("div")
           num.className = "row-num"
           num.textContent = pi + 1
           row.appendChild(num)
 
-          // Word display
           const wd = document.createElement("div")
           wd.className = "word-display"
           wd.id = "word-" + pi
@@ -487,14 +300,13 @@
           })
           row.appendChild(wd)
 
-          // Input + checkmark
           const wrap = document.createElement("div")
           wrap.className = "answer-wrap"
 
           const input = document.createElement("input")
           input.type = "text"
           input.maxLength = 3
-          input.className = "answer-input"
+          input.className = "input answer-input"
           input.placeholder = "···"
           input.autocomplete = "off"
           input.autocorrect = "off"
@@ -504,7 +316,6 @@
           input.addEventListener("input", () => onInput(pi, input))
           input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
-              // Move focus to the next unsolved row's input
               const next = PUZZLES.findIndex((_, i) => i > pi && !solved[i])
               if (next >= 0) document.querySelector(`input[data-pi="${next}"]`)?.focus()
             }
@@ -513,12 +324,14 @@
 
           const chk = document.createElement("span")
           chk.className = "row-check"
-          chk.textContent = "✅"
+          chk.innerHTML = '<i data-lucide="check-circle" class="icon icon-md"></i>'
           wrap.appendChild(chk)
 
           row.appendChild(wrap)
           container.appendChild(row)
         })
+
+        PuzzleIcons.initIcons()
       }
 
       function onInput(pi, input) {
@@ -526,14 +339,11 @@
         if (val.length > 3) val = val.slice(0, 3)
         input.value = val
 
-        // Clear wrong state while editing
         const row = document.getElementById("row-" + pi)
         row.classList.remove("wrong")
 
-        // Update preview
         updatePreview(pi, val)
 
-        // Auto-check when 3rd letter typed
         if (val.length === 3) {
           autoCheck(pi, val, row, input)
         }
@@ -571,7 +381,6 @@
         solved[pi] = true
         row.classList.add("correct")
         input.disabled = true
-        // Fill blank cells with the correct letters
         const wd = document.getElementById("word-" + pi)
         const blanks = wd.querySelectorAll(".blank")
         const sortedHidden = [...puz.hiddenIdx].sort((a, b) => a - b)
@@ -584,6 +393,7 @@
         stopTimer()
         document.getElementById("finalTime").textContent = formatTime(Date.now() - startTime)
         document.getElementById("winModal").classList.add("active")
+        PuzzleIcons.initIcons()
       }
 
       function closeModal() {
@@ -605,6 +415,7 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
+        PuzzleIcons.initIcons()
         renderPuzzles()
         startTimer()
       })

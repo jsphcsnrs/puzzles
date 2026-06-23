@@ -4,100 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Syllable Scramble</title>
+    <link rel="stylesheet" href="../styles/neumorphic.css" />
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-family: "Segoe UI", sans-serif;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 30px 16px 50px;
-      }
-
-      .card {
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        width: 100%;
-        max-width: 760px;
-        padding: 36px 40px 40px;
-      }
-
-      /* Header */
-      .header {
-        text-align: center;
-        margin-bottom: 28px;
-      }
-      .header h1 {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 6px;
-      }
-      .header h1 span {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .header p {
-        color: #888;
-        font-size: 0.9rem;
-      }
-
-      .timer-bar {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 24px;
-      }
-      .timer {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: #fff;
-        font-size: 1.4rem;
-        font-weight: 700;
-        padding: 8px 28px;
-        border-radius: 50px;
-        letter-spacing: 2px;
-        font-variant-numeric: tabular-nums;
-      }
-
-      /* Rules */
-      .rules {
-        background: #f8f7ff;
-        border-left: 4px solid #667eea;
-        border-radius: 0 12px 12px 0;
-        padding: 16px 20px;
-        margin-bottom: 28px;
-      }
-      .rules h3 {
-        color: #667eea;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 8px;
-      }
-      .rules p {
-        color: #555;
-        font-size: 0.88rem;
-        line-height: 1.6;
-      }
-
       .section-label {
         font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        color: #999;
+        color: var(--muted);
         font-weight: 700;
         margin-bottom: 10px;
       }
 
-      /* Desktop pool */
       .pool-wrapper {
         margin-bottom: 30px;
       }
@@ -108,19 +25,17 @@
         gap: 8px;
         min-height: 48px;
         padding: 12px;
-        background: #fafafa;
-        border: 2px dashed #ddd;
-        border-radius: 14px;
-        transition:
-          border-color 0.2s,
-          background 0.2s;
-      }
-      .syllable-pool.drag-over {
-        border-color: #667eea;
-        background: #f0f0ff;
+        border-radius: var(--radius-base);
+        background: var(--bg);
+        box-shadow: var(--shadow-inset);
+        transition: box-shadow var(--transition), background var(--transition);
       }
 
-      /* Sticky pool bar (mobile) */
+      .syllable-pool.drag-over {
+        background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+        box-shadow: var(--shadow-inset-deep), var(--focus-ring);
+      }
+
       .sticky-pool-bar {
         display: none;
         position: fixed;
@@ -128,32 +43,27 @@
         left: 0;
         right: 0;
         z-index: 50;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--bg);
         padding: 10px 14px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: var(--shadow-extruded);
       }
+
       .sticky-pool-bar .sticky-label {
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--muted);
         font-weight: 700;
         margin-bottom: 7px;
       }
+
       .sticky-pool-bar .syllable-pool {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
         min-height: 40px;
         padding: 8px 10px;
         gap: 7px;
       }
-      .sticky-pool-bar .syllable-pool.drag-over {
-        background: rgba(255, 255, 255, 0.28);
-        border-color: #fff;
-      }
+
       .sticky-pool-bar .syllable {
-        background: rgba(255, 255, 255, 0.25);
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
         font-size: 0.78rem;
         padding: 6px 11px;
       }
@@ -162,52 +72,48 @@
         display: none;
       }
 
-      /* Syllables */
       .syllable {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--accent);
         color: #fff;
         padding: 7px 14px;
-        border-radius: 8px;
+        border-radius: var(--radius-inner);
         font-size: 0.85rem;
         font-weight: 700;
         cursor: grab;
         user-select: none;
         touch-action: none;
         letter-spacing: 0.5px;
-        transition:
-          transform 0.15s,
-          box-shadow 0.15s,
-          opacity 0.2s;
-        box-shadow: 0 2px 6px rgba(102, 126, 234, 0.35);
+        box-shadow: var(--shadow-extruded-small);
+        transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
       }
+
       .syllable:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.45);
+        box-shadow: var(--shadow-extruded);
       }
+
       .syllable.dragging {
         opacity: 0.35;
         cursor: grabbing;
       }
 
-      /* Touch drag ghost */
       .touch-ghost {
         position: fixed;
         pointer-events: none;
         z-index: 9999;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--accent);
         color: #fff;
         padding: 8px 16px;
-        border-radius: 8px;
+        border-radius: var(--radius-inner);
         font-size: 0.9rem;
         font-weight: 700;
         letter-spacing: 0.5px;
-        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.55);
+        box-shadow: var(--shadow-extruded-hover);
         transform: translate(-50%, -50%) scale(1.12);
         opacity: 0.93;
         transition: none;
       }
 
-      /* Clues */
       .clues {
         display: flex;
         flex-direction: column;
@@ -219,28 +125,29 @@
         align-items: center;
         gap: 12px;
         padding: 14px 16px;
-        background: #f8f7ff;
-        border-radius: 14px;
-        border: 2px solid transparent;
-        transition:
-          border-color 0.2s,
-          background 0.2s;
+        border-radius: var(--radius-base);
+        background: var(--bg);
+        box-shadow: var(--shadow-extruded-small);
+        transition: box-shadow var(--transition), background var(--transition);
       }
+
       .clue-row.drag-over {
-        border-color: #667eea;
-        background: #eeeeff;
+        background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+        box-shadow: var(--shadow-inset), var(--focus-ring);
       }
+
       .clue-row.solved {
-        background: #f0fff4;
-        border-color: #52c87a;
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        box-shadow: var(--shadow-inset);
       }
+
       .clue-row.wrong {
-        border-color: #e74c3c;
-        background: #fff5f5;
+        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        box-shadow: var(--shadow-inset);
       }
 
       .clue-number {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--accent);
         color: #fff;
         width: 28px;
         height: 28px;
@@ -251,20 +158,23 @@
         font-size: 0.8rem;
         font-weight: 800;
         flex-shrink: 0;
+        box-shadow: var(--shadow-extruded-small);
       }
+
       .clue-row.solved .clue-number {
-        background: linear-gradient(135deg, #52c87a, #27ae60);
+        background: var(--success);
       }
 
       .clue-text {
         flex: 0 0 160px;
         font-size: 0.92rem;
-        color: #444;
+        color: var(--fg);
         font-weight: 600;
       }
+
       .clue-syllable-count {
         font-size: 0.75rem;
-        color: #aaa;
+        color: var(--muted);
         flex: 0 0 60px;
       }
 
@@ -275,27 +185,30 @@
         gap: 6px;
         min-height: 36px;
         padding: 6px 10px;
-        background: #fff;
-        border: 2px dashed #ddd;
-        border-radius: 10px;
+        border-radius: var(--radius-inner);
+        background: var(--bg);
+        box-shadow: var(--shadow-inset-small);
         align-items: center;
-        transition: border-color 0.2s;
+        transition: box-shadow var(--transition);
       }
+
       .clue-row.drag-over .clue-drop-zone {
-        border-color: #667eea;
+        box-shadow: var(--shadow-inset-deep);
       }
+
       .clue-drop-zone .syllable {
-        background: #667eea;
         font-size: 0.8rem;
         padding: 5px 10px;
         cursor: pointer;
       }
+
       .clue-drop-zone .syllable:hover {
-        background: #e74c3c;
+        background: var(--error);
         transform: none;
       }
+
       .clue-drop-zone .placeholder {
-        color: #ccc;
+        color: var(--placeholder);
         font-size: 0.8rem;
         font-style: italic;
         pointer-events: none;
@@ -303,16 +216,21 @@
 
       .solve-check {
         flex-shrink: 0;
-        font-size: 1.2rem;
         display: none;
       }
+
       .clue-row.solved .solve-check {
         display: block;
+      }
+
+      .solve-check .icon {
+        stroke: var(--success);
       }
 
       .wrong-shake {
         animation: shake 0.4s ease;
       }
+
       @keyframes shake {
         0%,
         100% {
@@ -332,42 +250,11 @@
         }
       }
 
-      /* Actions */
       .actions {
         display: flex;
         justify-content: center;
         gap: 12px;
         margin-top: 28px;
-      }
-      .btn {
-        padding: 10px 24px;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        cursor: pointer;
-        border: none;
-        transition:
-          transform 0.15s,
-          box-shadow 0.15s;
-      }
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-      }
-      .btn:disabled {
-        opacity: 0.45;
-        cursor: default;
-        transform: none !important;
-        box-shadow: none !important;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: #fff;
-      }
-      .btn-outline {
-        background: transparent;
-        border: 2px solid #ccc;
-        color: #888;
       }
 
       .status-msg {
@@ -375,173 +262,100 @@
         margin-top: 12px;
         font-size: 0.88rem;
         font-weight: 600;
-        color: #e74c3c;
+        color: var(--error);
         min-height: 20px;
         opacity: 0;
         transform: translateY(-4px);
-        transition:
-          opacity 0.2s,
-          transform 0.2s;
+        transition: opacity var(--transition), transform var(--transition);
       }
+
       .status-msg.visible {
         opacity: 1;
         transform: translateY(0);
       }
 
-      /* Modal */
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s;
-        z-index: 100;
-        padding: 16px;
-      }
-      .modal-overlay.active {
-        opacity: 1;
-        pointer-events: all;
-      }
-      .modal {
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-        padding: 40px 36px;
-        max-width: 420px;
-        width: 100%;
-        text-align: center;
-        transform: scale(0.85);
-        transition: transform 0.3s;
-      }
-      .modal-overlay.active .modal {
-        transform: scale(1);
-      }
-      .modal-icon {
-        font-size: 3rem;
-        margin-bottom: 12px;
-      }
-      .modal h2 {
-        font-size: 1.8rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 8px;
-      }
-      .modal p {
-        color: #666;
-        margin-bottom: 6px;
-        font-size: 0.95rem;
-      }
-      .modal .final-time {
-        font-size: 2.2rem;
-        font-weight: 900;
-        color: #667eea;
-        margin: 16px 0 24px;
-        letter-spacing: 2px;
-      }
-      .modal-btns {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-        flex-wrap: wrap;
+      .sticky-pool-bar.is-visible {
+        display: block;
       }
 
-      /* Mobile */
+      .sticky-spacer.is-visible {
+        display: block;
+      }
+
       @media (max-width: 600px) {
-        body {
-          padding: 16px 10px 60px;
-        }
-        .card {
-          padding: 20px 16px 28px;
-          border-radius: 16px;
-        }
-        .header h1 {
-          font-size: 1.5rem;
-        }
         .clue-row {
           flex-wrap: wrap;
         }
+
         .clue-text {
           flex: 0 0 100%;
         }
+
         .clue-syllable-count {
           flex: 0 0 auto;
         }
       }
-
-      /* Sticky bar — hidden by default, shown by JS when pool scrolls out of view */
-      .sticky-pool-bar.is-visible {
-        display: block;
-      }
-      .sticky-spacer.is-visible {
-        display: block;
-      }
     </style>
   </head>
   <body>
-    <!-- Sticky pool (mobile only) -->
     <div class="sticky-pool-bar" id="stickyBar">
       <div class="sticky-label">Syllable Pool</div>
       <div class="syllable-pool" id="stickyPool"></div>
     </div>
     <div class="sticky-spacer" id="stickySpacer"></div>
 
-    <div class="card">
-      <div class="header">
-        <h1>🧩 <span>Syllable Scramble</span></h1>
-        <p>Group syllables to form words matching each clue</p>
-      </div>
+    <main class="container container-narrow">
+      <section class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md"><i data-lucide="puzzle" class="icon icon-md"></i></span>
+            <span class="title-text">Syllable Scramble</span>
+          </h1>
+          <p class="subtitle">Group syllables to form words matching each clue</p>
+          <div class="timer" id="timer">00:00</div>
+        </header>
 
-      <div class="timer-bar">
-        <div class="timer" id="timer">00:00</div>
-      </div>
+        <section class="rules" aria-labelledby="rules-heading">
+          <h2 id="rules-heading">How to Play</h2>
+          <p>
+            Below are <strong>22 syllables</strong> and <strong>6 clues</strong>. Drag syllables in
+            order onto the matching clue to build a word. The number in parentheses tells you how many
+            syllables each answer has. Each syllable is used exactly once. You must place
+            <em>all</em> syllables before checking. Good luck!
+          </p>
+        </section>
 
-      <div class="rules">
-        <h3>📖 How to Play</h3>
-        <p>
-          Below are <strong>22 syllables</strong> and <strong>6 clues</strong>. Drag syllables in
-          order onto the matching clue to build a word. The number in parentheses tells you how many
-          syllables each answer has. Each syllable is used exactly once. You must place
-          <em>all</em> syllables before checking. Good luck!
-        </p>
-      </div>
+        <div class="pool-wrapper">
+          <div class="section-label">Syllable Pool</div>
+          <div class="syllable-pool" id="pool"></div>
+        </div>
 
-      <!-- Desktop pool -->
-      <div class="pool-wrapper">
-        <div class="section-label">Syllable Pool</div>
-        <div class="syllable-pool" id="pool"></div>
-      </div>
+        <div class="section-label">Clues</div>
+        <div class="clues" id="clues"></div>
 
-      <div class="section-label">Clues</div>
-      <div class="clues" id="clues"></div>
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" onclick="resetPuzzle()">Reset</button>
+          <button type="button" class="btn btn-primary" id="checkAllBtn" onclick="checkAll()">Check All</button>
+        </div>
+        <div id="statusMsg" class="status-msg"></div>
+      </section>
+    </main>
 
-      <div class="actions">
-        <button class="btn btn-outline" onclick="resetPuzzle()">↺ Reset</button>
-        <button class="btn btn-primary" id="checkAllBtn" onclick="checkAll()">✓ Check All</button>
-      </div>
-      <div id="statusMsg" class="status-msg"></div>
-    </div>
-
-    <!-- Winner Modal -->
-    <div class="modal-overlay" id="winModal">
+    <div class="modal-overlay" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
       <div class="modal">
-        <div class="modal-icon">🎉</div>
-        <h2>Puzzle Solved!</h2>
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl"></i></div>
+        <h2 id="winnerTitle" class="font-display">Puzzle Solved!</h2>
         <p>You completed Syllable Scramble in</p>
         <div class="final-time" id="finalTime">00:00</div>
         <div class="modal-btns">
-          <button class="btn btn-outline" onclick="closeModal()">Close</button>
-          <button class="btn btn-primary" onclick="resetPuzzle()">↺ Play Again</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+          <button type="button" class="btn btn-primary" onclick="resetPuzzle()">Reset &amp; Play Again</button>
         </div>
       </div>
     </div>
 
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
     <script>
       const SYLLABLES = [
         "A",
@@ -577,17 +391,14 @@
         { id: 6, text: "Scholar", count: 4, answer: ["AC", "A", "DEM", "IC"] },
       ]
 
-      // ── State ──────────────────────────────────────────────
       let pool = [...SYLLABLES]
       let clueSlots = CLUES.map(() => [])
       let solved = CLUES.map(() => false)
       let timerInterval, startTime
 
-      // Mouse drag state
       let dragSyl = null,
         dragSource = null
 
-      // Touch drag state
       let touchGhost = null
       let touchDragSyl = null,
         touchDragSource = null,
@@ -596,7 +407,6 @@
       let lastHighlighted = null
       let touchMoved = false
 
-      // ── Timer ──────────────────────────────────────────────
       const pad = (n) => String(n).padStart(2, "0")
       function formatTime(ms) {
         const s = Math.floor(ms / 1000)
@@ -613,7 +423,6 @@
         clearInterval(timerInterval)
       }
 
-      // ── Helpers ────────────────────────────────────────────
       function isMobile() {
         return window.innerWidth <= 600
       }
@@ -624,23 +433,20 @@
         if (bar && spacer) spacer.style.height = bar.offsetHeight + 4 + "px"
       }
 
-      // ── Render ─────────────────────────────────────────────
       function render() {
         renderPools()
         renderClues()
       }
 
       function renderPools() {
-        // Render into both pool elements; CSS hides whichever isn't active
         ;["pool", "stickyPool"].forEach((id) => {
           const el = document.getElementById(id)
           if (!el) return
           el.innerHTML = ""
           if (pool.length === 0) {
             const msg = document.createElement("span")
-            msg.style.cssText = "font-size:0.82rem;font-style:italic;"
-            msg.style.color = id === "stickyPool" ? "rgba(255,255,255,0.6)" : "#ccc"
-            msg.textContent = "All syllables placed ✓"
+            msg.style.cssText = "font-size:0.82rem;font-style:italic;color:var(--muted);"
+            msg.textContent = "All syllables placed"
             el.appendChild(msg)
             return
           }
@@ -656,7 +462,6 @@
           row.className = "clue-row" + (solved[ci] ? " solved" : "")
           row.dataset.clue = ci
 
-          // Mouse drag-over
           row.addEventListener("dragover", (e) => {
             e.preventDefault()
             row.classList.add("drag-over")
@@ -686,22 +491,21 @@
 
           const chk = document.createElement("span")
           chk.className = "solve-check"
-          chk.textContent = "✅"
+          chk.innerHTML = '<i data-lucide="check-circle" class="icon icon-md"></i>'
           row.appendChild(chk)
 
           cluesEl.appendChild(row)
         })
         updateCheckAllBtn()
+        PuzzleIcons.initIcons()
       }
 
-      // ── Syllable element factory ───────────────────────────
       function makeSylEl(syl, source, idx) {
         const el = document.createElement("div")
         el.className = "syllable"
         el.textContent = syl
         el.draggable = true
 
-        // Mouse drag
         el.addEventListener("dragstart", () => {
           dragSyl = syl
           dragSource = source
@@ -709,13 +513,11 @@
         })
         el.addEventListener("dragend", () => el.classList.remove("dragging"))
 
-        // Click (desktop shortcut / tap fallback)
         el.addEventListener("click", () => {
-          if (touchMoved) return // was a touch drag, ignore click
+          if (touchMoved) return
           handleTap(syl, source, idx)
         })
 
-        // Touch drag
         el.addEventListener("touchstart", onTouchStart, { passive: false })
 
         return el
@@ -736,7 +538,6 @@
         }
       }
 
-      // ── Touch drag ─────────────────────────────────────────
       function onTouchStart(e) {
         if (e.touches.length !== 1) return
         e.preventDefault()
@@ -756,7 +557,6 @@
         }
         touchOriginEl = el
 
-        // Create floating ghost
         touchGhost = document.createElement("div")
         touchGhost.className = "touch-ghost"
         touchGhost.textContent = touchDragSyl
@@ -798,12 +598,10 @@
       }
 
       function findDropTarget(x, y) {
-        // Clue rows (unsolved)
         for (const row of document.querySelectorAll(".clue-row:not(.solved)")) {
           const r = row.getBoundingClientRect()
           if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return row
         }
-        // Pool zones (return path)
         for (const p of document.querySelectorAll(".syllable-pool")) {
           const r = p.getBoundingClientRect()
           if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return p
@@ -841,7 +639,6 @@
           return
         }
 
-        // Drop on pool → return syllable
         if (target.classList.contains("syllable-pool")) {
           if (touchDragSource !== "pool") {
             clueSlots[touchDragSource].splice(touchDragIdx, 1)
@@ -852,7 +649,6 @@
           return
         }
 
-        // Drop on clue row
         if (target.classList.contains("clue-row")) {
           const ci = parseInt(target.dataset.clue)
           if (isNaN(ci) || solved[ci]) {
@@ -877,13 +673,11 @@
         touchDragSource = null
         touchDragIdx = null
         touchOriginEl = null
-        // Reset touchMoved after a short delay so the click handler can check it
         setTimeout(() => {
           touchMoved = false
         }, 50)
       }
 
-      // ── Mouse drop ─────────────────────────────────────────
       function dropOnClue(ci) {
         if (dragSyl === null || solved[ci]) return
         if (dragSource === "pool") {
@@ -909,7 +703,6 @@
         render()
       }
 
-      // ── Check / Win ────────────────────────────────────────
       function updateCheckAllBtn() {
         const btn = document.getElementById("checkAllBtn")
         if (btn) btn.disabled = solved.every(Boolean)
@@ -965,6 +758,7 @@
           stopTimer()
           document.getElementById("finalTime").textContent = formatTime(Date.now() - startTime)
           document.getElementById("winModal").classList.add("active")
+          PuzzleIcons.initIcons()
         }
       }
 
@@ -982,9 +776,9 @@
         startTimer()
       }
 
-      // ── Boot ───────────────────────────────────────────────
       document.addEventListener("DOMContentLoaded", () => {
-        // Wire up mouse drop-back-to-pool for both pool elements
+        PuzzleIcons.initIcons()
+
         ;["pool", "stickyPool"].forEach((id) => {
           const el = document.getElementById(id)
           if (!el) return
@@ -1000,7 +794,6 @@
           })
         })
 
-        // Sticky pool: appear only when the in-card pool scrolls off screen (mobile only)
         const stickyBar = document.getElementById("stickyBar")
         const stickySpacer = document.getElementById("stickySpacer")
         const poolWrapper = document.getElementById("pool").closest(".pool-wrapper")
@@ -1019,7 +812,6 @@
         observer.observe(poolWrapper)
 
         window.addEventListener("resize", () => {
-          // If resized to desktop, always hide the sticky bar
           if (!isMobile()) {
             stickyBar.classList.remove("is-visible")
             stickySpacer.classList.remove("is-visible")

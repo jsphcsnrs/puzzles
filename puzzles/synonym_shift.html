@@ -4,139 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Synonym Shift - Puzzle</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/neumorphic.css" />
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: 'Outfit', sans-serif;
-        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
-        min-height: 100vh;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 24px 16px;
-        color: #f1f5f9;
-        overflow-x: hidden;
-      }
-
-      .card {
-        background: rgba(30, 41, 59, 0.7);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      .page-wrap {
         max-width: 800px;
         width: 100%;
-        padding: 32px 32px 40px;
-        margin-bottom: 40px;
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 24px;
-      }
-
-      .header h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-        letter-spacing: -0.5px;
-      }
-
-      .header h1 span {
-        background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .header .subtitle {
-        color: #94a3b8;
-        font-size: 1.05rem;
-        margin-bottom: 16px;
-      }
-
-      .timer {
-        display: inline-block;
-        background: linear-gradient(135deg, #4f46e5, #7c3aed);
-        color: #fff;
-        font-weight: 700;
-        font-size: 1.25rem;
-        padding: 8px 24px;
-        border-radius: 999px;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        letter-spacing: 0.5px;
-        font-variant-numeric: tabular-nums;
-      }
-
-      .rules {
-        background: rgba(15, 23, 42, 0.4);
-        border-left: 4px solid #818cf8;
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin: 20px 0 28px;
-        font-size: 0.98rem;
-        line-height: 1.6;
-        color: #cbd5e1;
-      }
-
-      .rules strong {
-        color: #f8fafc;
+        margin: 0 auto;
+        padding: 24px 16px;
       }
 
       .rules .example {
         margin-top: 12px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 8px;
+        border-radius: var(--radius-inner);
         padding: 10px 14px;
         font-size: 0.92rem;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        color: #94a3b8;
+        background: var(--bg);
+        box-shadow: var(--shadow-inset-small);
+        color: var(--muted);
       }
 
       .rules .example em {
-        color: #e2e8f0;
+        color: var(--fg);
         font-style: normal;
         font-weight: 600;
       }
 
       .puzzle-row {
-        background: rgba(15, 23, 42, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 18px;
+        background: var(--bg);
+        border-radius: var(--radius-base);
         padding: 20px;
         margin-bottom: 20px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-extruded-small);
+        transition: box-shadow var(--transition), background var(--transition);
         position: relative;
         overflow: hidden;
       }
 
-      .puzzle-row::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: transparent;
-        transition: background-color 0.3s;
-      }
-
       .puzzle-row.solved {
-        border-color: rgba(34, 197, 94, 0.4);
-        background: rgba(20, 83, 45, 0.15);
-      }
-
-      .puzzle-row.solved::before {
-        background-color: #22c55e;
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        box-shadow: var(--shadow-inset);
       }
 
       .row-header {
@@ -148,7 +54,7 @@
 
       .row-num {
         font-weight: 700;
-        color: #818cf8;
+        color: var(--accent);
         font-size: 0.85rem;
         letter-spacing: 1px;
         text-transform: uppercase;
@@ -161,7 +67,7 @@
       }
 
       .row-status {
-        color: #22c55e;
+        color: var(--success);
         font-size: 0.9rem;
         font-weight: 600;
         opacity: 0;
@@ -178,25 +84,27 @@
       }
 
       .reset-row-btn {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #94a3b8;
+        background: var(--bg);
+        border: none;
+        color: var(--muted);
         cursor: pointer;
         padding: 6px 12px;
-        border-radius: 8px;
+        border-radius: var(--radius-inner);
         font-size: 0.8rem;
         font-weight: 600;
         font-family: inherit;
-        transition: all 0.2s;
+        box-shadow: var(--shadow-extruded-small);
+        transition: transform var(--transition), box-shadow var(--transition);
         display: flex;
         align-items: center;
         gap: 4px;
+        min-height: 44px;
       }
 
       .reset-row-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #f1f5f9;
-        border-color: rgba(255, 255, 255, 0.2);
+        color: var(--fg);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-extruded);
       }
 
       .word-pair-container {
@@ -216,7 +124,7 @@
       .word-title {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #64748b;
+        color: var(--muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
@@ -224,40 +132,39 @@
       .letter-container {
         display: flex;
         align-items: center;
-        gap: 0; /* Let slots control spacing */
+        gap: 0;
         flex-wrap: wrap;
         min-height: 58px;
-        background: rgba(15, 23, 42, 0.2);
+        background: var(--bg);
         padding: 6px 8px;
-        border-radius: 12px;
-        border: 1px dashed rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-inner);
+        box-shadow: var(--shadow-inset);
       }
 
       .letter-tile {
         width: 44px;
         height: 44px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
+        background: var(--bg);
+        border: none;
+        border-radius: var(--radius-inner);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.35rem;
         font-weight: 700;
-        color: #fff;
+        color: var(--fg);
         cursor: grab;
         user-select: none;
-        transition: transform 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
-        touch-action: none; /* Disable native panning/zooming during drag */
+        box-shadow: var(--shadow-extruded-small);
+        transition: transform 0.2s, box-shadow 0.2s;
+        touch-action: none;
         flex-shrink: 0;
         margin: 0 2px;
       }
 
       .letter-tile:hover {
-        background: rgba(255, 255, 255, 0.14);
-        border-color: rgba(255, 255, 255, 0.3);
         transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-extruded);
       }
 
       .letter-tile:active {
@@ -267,17 +174,16 @@
       .letter-tile.dragging {
         opacity: 0.3;
         transform: scale(0.9);
-        border-style: dashed;
+        box-shadow: var(--shadow-inset-small);
       }
 
-      /* Floating tile representation following the mouse */
       .floating-tile {
         position: fixed;
         width: 44px;
         height: 44px;
-        background: linear-gradient(135deg, #6366f1, #a855f7);
-        border: 2px solid #c084fc;
-        border-radius: 10px;
+        background: var(--accent);
+        border: none;
+        border-radius: var(--radius-inner);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -286,7 +192,7 @@
         color: #fff;
         pointer-events: none;
         z-index: 9999;
-        box-shadow: 0 12px 28px rgba(124, 58, 237, 0.5);
+        box-shadow: var(--shadow-extruded-hover);
         transform: scale(1.15);
       }
 
@@ -305,179 +211,39 @@
         border-radius: 10px;
       }
 
-      /* Expanded and visible slot when dragging a letter over it */
       .slot.active-drag-hover {
         width: 48px;
-        background: rgba(168, 85, 247, 0.15);
-        border: 2px dashed rgba(192, 132, 252, 0.6);
+        background: color-mix(in srgb, var(--accent) 15%, var(--bg));
+        box-shadow: var(--shadow-inset);
         margin: 0 4px;
+        border-radius: var(--radius-inner);
       }
 
       .swap-divider {
         font-size: 1.8rem;
-        color: rgba(255, 255, 255, 0.15);
+        color: var(--muted);
         user-select: none;
         padding: 0 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         pointer-events: none;
+        opacity: 0.5;
       }
 
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, 0.8);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        z-index: 100;
-      }
-
-      .modal-overlay.active {
-        display: flex;
-      }
-
-      .modal {
-        background: #1e293b;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 24px;
-        max-width: 460px;
-        width: 100%;
-        padding: 40px 32px;
-        text-align: center;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-        animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      @keyframes modalPop {
-        from {
-          transform: scale(0.9);
-          opacity: 0;
-        }
-        to {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
-
-      .modal h2 {
-        font-size: 2rem;
-        margin-bottom: 8px;
-        font-weight: 800;
-      }
-
-      .modal h2 span {
-        background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .modal .final-time {
-        font-size: 3.5rem;
-        font-weight: 800;
-        margin: 20px 0 6px;
-        background: linear-gradient(135deg, #818cf8, #f472b6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-variant-numeric: tabular-nums;
-      }
-
-      .modal .final-label {
-        color: #94a3b8;
-        font-size: 0.95rem;
-        margin-bottom: 30px;
-      }
-
-      .modal-buttons {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-      }
-
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 12px;
-        font-size: 1rem;
-        font-weight: 700;
-        cursor: pointer;
-        font-family: inherit;
-        transition: all 0.2s;
-      }
-
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      }
-
-      .btn-primary {
-        background: linear-gradient(135deg, #4f46e5, #7c3aed);
-        color: #fff;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-      }
-
-      .btn-primary:hover {
-        background: linear-gradient(135deg, #5a52e6, #8b4bf0);
-        box-shadow: 0 8px 24px rgba(79, 70, 229, 0.5);
-      }
-
-      .btn-secondary {
-        background: rgba(255, 255, 255, 0.1);
-        color: #e2e8f0;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
-      }
-
-      /* Home Link */
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #94a3b8;
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 600;
-        margin-bottom: 24px;
-        transition: color 0.2s;
-      }
-
-      .back-link:hover {
-        color: #f1f5f9;
-      }
-
-      /* Solved state locking */
       .puzzle-row.solved .letter-tile {
         cursor: default;
-        background: rgba(34, 197, 94, 0.1);
-        border-color: rgba(34, 197, 94, 0.3);
-        color: #86efac;
+        background: color-mix(in srgb, var(--success) 15%, var(--bg));
+        color: color-mix(in srgb, var(--success) 70%, var(--fg));
+        box-shadow: var(--shadow-inset-small);
       }
 
       .puzzle-row.solved .letter-tile:hover {
         transform: none;
-        box-shadow: none;
+        box-shadow: var(--shadow-inset-small);
       }
 
-      /* Mobile styles */
       @media (max-width: 640px) {
-        .card {
-          padding: 24px 16px 30px;
-        }
-
-        .header h1 {
-          font-size: 2rem;
-        }
-
         .word-pair-container {
           flex-direction: column;
           align-items: stretch;
@@ -490,12 +256,7 @@
           font-size: 1.5rem;
         }
 
-        .letter-tile {
-          width: 40px;
-          height: 40px;
-          font-size: 1.2rem;
-        }
-
+        .letter-tile,
         .floating-tile {
           width: 40px;
           height: 40px;
@@ -514,12 +275,15 @@
     </style>
   </head>
   <body>
-    <div style="max-width: 800px; width: 100%;">
+    <div class="page-wrap">
       <a href="../index.html" class="back-link">← Back to Puzzles</a>
 
-      <div class="card">
+      <div class="card card-extruded">
         <div class="header">
-          <h1>🔀 <span>Synonym Shift</span></h1>
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md"><i data-lucide="shuffle" class="icon icon-md"></i></span>
+            <span class="title-text">Synonym Shift</span>
+          </h1>
           <div class="subtitle">
             Move a single letter from one word to the other to make a pair of synonyms.
           </div>
@@ -545,16 +309,19 @@
       aria-labelledby="winTitle"
     >
       <div class="modal">
-        <h2 id="winTitle">🎉 <span>Superb shifting!</span></h2>
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl"></i></div>
+        <h2 id="winTitle" class="font-display">Superb shifting!</h2>
         <div class="final-time" id="finalTime">0:00</div>
-        <div class="final-label">Your completion time</div>
-        <div class="modal-buttons">
+        <p class="text-muted">Your completion time</p>
+        <div class="modal-btns">
           <button class="btn btn-secondary" id="closeBtn">Close</button>
           <button class="btn btn-primary" id="resetBtn">Play Again</button>
         </div>
       </div>
     </div>
 
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
     <script>
       const INITIAL_PUZZLES = [
         {
@@ -916,7 +683,10 @@
       });
 
       // Start the game
-      initGame();
+      document.addEventListener("DOMContentLoaded", () => {
+        PuzzleIcons.initIcons()
+        initGame()
+      })
     </script>
   </body>
 </html>

@@ -4,54 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Missing Fourth</title>
+    <link rel="stylesheet" href="../styles/neumorphic.css" />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 24px 16px 48px;
-        color: #333;
-      }
-
-      .wrap {
-        max-width: 760px;
-        margin: 0 auto;
-      }
-
-      .card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        padding: 28px 24px 32px;
-      }
-
-      .header h1 {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 6px;
-        line-height: 1.2;
-      }
-
-      .header h1 span {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .sub {
-        color: #666;
-        font-size: 0.95rem;
-        margin-bottom: 18px;
-        line-height: 1.45;
-      }
-
       .timer-row {
         display: flex;
         align-items: center;
@@ -59,28 +13,6 @@
         flex-wrap: wrap;
         gap: 12px;
         margin-bottom: 20px;
-      }
-
-      .timer {
-        font-size: 1.75rem;
-        font-weight: 800;
-        font-variant-numeric: tabular-nums;
-        color: #667eea;
-      }
-
-      .rules {
-        background: #f4f6ff;
-        border-radius: 14px;
-        padding: 14px 16px;
-        font-size: 0.92rem;
-        line-height: 1.5;
-        color: #444;
-        margin-bottom: 22px;
-        border: 1px solid rgba(102, 126, 234, 0.2);
-      }
-
-      .rules strong {
-        color: #764ba2;
       }
 
       .sequence {
@@ -97,17 +29,16 @@
       }
 
       .seq-cell {
-        background: linear-gradient(145deg, #fafbff 0%, #f0f2ff 100%);
-        border-radius: 14px;
+        background: var(--bg);
+        border-radius: var(--radius-base);
         padding: 16px 14px;
-        border: 2px solid rgba(102, 126, 234, 0.35);
+        box-shadow: var(--shadow-extruded-small);
         text-align: center;
       }
 
       .seq-cell .label {
         font-size: 1.35rem;
         font-weight: 800;
-        color: #333;
         font-family: "Consolas", "Segoe UI Mono", monospace;
         margin-bottom: 6px;
       }
@@ -115,16 +46,19 @@
       .seq-cell .val {
         font-size: 1.6rem;
         font-weight: 800;
-        color: #667eea;
+        color: var(--accent);
       }
 
       .seq-cell.mystery {
-        border-style: dashed;
-        background: #fff;
+        box-shadow: var(--shadow-inset-small);
       }
 
       .seq-cell.mystery .label {
-        color: #764ba2;
+        color: var(--accent);
+      }
+
+      .seq-cell.mystery .val {
+        color: var(--placeholder);
       }
 
       .answer-block {
@@ -134,17 +68,8 @@
       .answer-heading {
         font-weight: 700;
         margin-bottom: 10px;
-        color: #444;
       }
 
-      .answer-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        align-items: stretch;
-      }
-
-      /* Answer: grid keeps letters / : / number / Check aligned; no flex overlap */
       .answer-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto minmax(5.5rem, 7.5rem) auto;
@@ -157,7 +82,7 @@
         display: block;
         font-size: 0.8rem;
         font-weight: 700;
-        color: #666;
+        color: var(--muted);
         margin: 0;
         padding: 0;
       }
@@ -175,17 +100,6 @@
       .answer-grid .ag-inp {
         width: 100%;
         min-width: 0;
-        padding: 14px 16px;
-        border-radius: 12px;
-        border: 2px solid #ddd;
-        font-size: 1rem;
-        font-family: inherit;
-        box-sizing: border-box;
-      }
-
-      .answer-grid .ag-inp:focus {
-        outline: none;
-        border-color: #667eea;
       }
 
       .answer-grid .ag-inp-letters {
@@ -199,7 +113,7 @@
         align-self: center;
         font-weight: 800;
         font-size: 1.5rem;
-        color: #764ba2;
+        color: var(--accent);
         line-height: 1;
         padding: 0 4px;
         margin: 0;
@@ -216,7 +130,6 @@
         white-space: nowrap;
       }
 
-      /* Narrow / small tablet: keep inputs + colon on one row; Check full width below */
       @media (max-width: 680px) and (min-width: 421px) {
         .answer-grid {
           grid-template-columns: minmax(0, 1fr) auto minmax(5.25rem, 6.75rem);
@@ -256,7 +169,6 @@
         }
       }
 
-      /* Phone: single column, colon hidden */
       @media (max-width: 420px) {
         .answer-grid {
           grid-template-columns: 1fr;
@@ -296,52 +208,26 @@
         }
       }
 
-      .btn {
-        padding: 14px 20px;
-        border-radius: 12px;
-        border: none;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        font-family: inherit;
-        min-height: 48px;
-        touch-action: manipulation;
-      }
-
-      .btn-primary {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-      }
-
-      .btn-primary:active {
-        transform: scale(0.98);
-      }
-
-      .btn-ghost {
-        background: #eee;
-        color: #444;
-      }
-
       .feedback {
         margin-top: 12px;
         padding: 12px 14px;
-        border-radius: 12px;
+        border-radius: var(--radius-inner);
         font-size: 0.95rem;
         display: none;
       }
 
       .feedback.bad {
         display: block;
-        background: #ffe8e8;
-        color: #a32020;
-        border: 1px solid #f5b5b5;
+        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        box-shadow: var(--shadow-inset-small);
+        color: color-mix(in srgb, var(--error) 80%, var(--fg));
       }
 
       .feedback.ok {
         display: block;
-        background: #e8fff0;
-        color: #1a6b3a;
-        border: 1px solid #9ee5b8;
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        box-shadow: var(--shadow-inset-small);
+        color: color-mix(in srgb, var(--success) 80%, var(--fg));
       }
 
       .helpers {
@@ -349,17 +235,17 @@
       }
 
       .helper-section {
-        border: 1px solid #e8e8e8;
-        border-radius: 14px;
+        border-radius: var(--radius-base);
         margin-bottom: 12px;
         overflow: hidden;
+        box-shadow: var(--shadow-extruded-small);
       }
 
       .helper-toggle {
         width: 100%;
         text-align: left;
         padding: 14px 16px;
-        background: #f8f8fc;
+        background: var(--bg);
         border: none;
         font-weight: 700;
         font-size: 1rem;
@@ -371,22 +257,24 @@
         font-family: inherit;
         min-height: 48px;
         touch-action: manipulation;
+        box-shadow: var(--shadow-extruded-small);
+        transition: box-shadow var(--transition);
       }
 
       .helper-toggle:hover {
-        background: #f0f0fa;
+        box-shadow: var(--shadow-extruded);
       }
 
       .helper-toggle .chev {
-        color: #667eea;
+        color: var(--accent);
         font-size: 0.85rem;
       }
 
       .helper-body {
         padding: 16px;
         display: none;
-        border-top: 1px solid #eee;
-        background: #fff;
+        background: var(--bg);
+        box-shadow: var(--shadow-inset-small);
       }
 
       .helper-body.open {
@@ -407,95 +295,41 @@
         width: 100%;
         text-align: left;
         padding: 12px 14px;
-        border-radius: 10px;
-        border: 1px solid #ddd;
-        background: #fafafa;
+        border-radius: var(--radius-inner);
+        border: none;
+        background: var(--bg);
         font-family: inherit;
         font-size: 0.95rem;
         cursor: pointer;
         min-height: 48px;
         touch-action: manipulation;
+        box-shadow: var(--shadow-extruded-small);
+        transition: box-shadow var(--transition);
       }
 
       .hint-list button:disabled {
         opacity: 0.55;
         cursor: default;
+        box-shadow: var(--shadow-inset-small);
       }
 
       .hint-reveal {
         margin-top: 8px;
         padding: 10px 12px;
-        background: #f4f6ff;
-        border-radius: 10px;
+        background: var(--bg);
+        border-radius: var(--radius-inner);
         font-size: 0.9rem;
-        color: #333;
         display: none;
+        box-shadow: var(--shadow-inset-small);
       }
 
       .hint-reveal.show {
         display: block;
       }
 
-      .modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.45);
-        z-index: 100;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      }
-
-      .modal-overlay.open {
-        display: flex;
-      }
-
-      .modal-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-        max-width: 520px;
-        width: 100%;
-        padding: 28px 24px;
-        text-align: center;
-      }
-
-      .modal-card h2 {
-        font-size: 1.75rem;
-        margin-bottom: 12px;
-      }
-
-      .modal-card h2 span {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .final-time {
-        font-size: 2.25rem;
-        font-weight: 800;
-        color: #667eea;
-        margin: 16px 0;
-        font-variant-numeric: tabular-nums;
-      }
-
-      .modal-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 20px;
-      }
-
-      .modal-actions .btn {
-        width: 100%;
-      }
-
       .back-link {
         display: inline-block;
-        margin-top: 18px;
-        color: #667eea;
+        color: var(--accent);
         font-weight: 600;
         text-decoration: none;
       }
@@ -503,26 +337,36 @@
       .back-link:hover {
         text-decoration: underline;
       }
+
+      .modal-explanation {
+        font-size: 0.95rem;
+        color: var(--muted);
+        line-height: 1.45;
+        text-align: left;
+      }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <div class="card">
-        <div class="header">
-          <h1>🏛️ <span>Missing Fourth</span></h1>
-        </div>
+    <main class="container container-narrow">
+      <section class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md"><i data-lucide="landmark" class="icon icon-md"></i></span>
+            <span class="title-text">Missing Fourth</span>
+          </h1>
+        </header>
 
         <div class="timer-row">
           <div class="timer" id="timer" aria-live="polite">0:00</div>
           <a class="back-link" href="../index.html">← All puzzles</a>
         </div>
 
-        <div class="rules">
+        <section class="rules">
           <strong>Rules.</strong> Study the first three terms. Work out the pattern, then enter the
           fourth term in two parts: <strong>letters</strong> (e.g., "Fe" and "Seen") and a <strong>number</strong>
           (e.g., "4" and "9"). Both fields must be filled before you check. The timer
           starts when the page loads. You can reset below without reloading.
-        </div>
+        </section>
 
         <div class="sequence" aria-label="Sequence clues">
           <div class="seq-cell">
@@ -539,7 +383,7 @@
           </div>
           <div class="seq-cell mystery">
             <div class="label">?</div>
-            <div class="val" style="color: #aaa">—</div>
+            <div class="val">—</div>
           </div>
         </div>
 
@@ -548,7 +392,7 @@
           <div class="answer-grid" role="group" aria-labelledby="answerGroupLabel">
             <span class="answer-colon" aria-hidden="true">-</span>
             <input
-              class="ag-inp ag-inp-letters"
+              class="input ag-inp ag-inp-letters"
               id="answerLetters"
               type="text"
               autocomplete="off"
@@ -558,7 +402,7 @@
               spellcheck="false"
             />
             <input
-              class="ag-inp ag-inp-num"
+              class="input ag-inp ag-inp-num"
               id="answerNumber"
               type="text"
               inputmode="numeric"
@@ -571,8 +415,8 @@
           <div class="feedback" id="feedback" role="status"></div>
         </div>
 
-        <div class="answer-row" style="margin-bottom: 22px">
-          <button type="button" class="btn btn-ghost" id="resetBtn">Reset puzzle &amp; timer</button>
+        <div style="margin-bottom: 22px">
+          <button type="button" class="btn btn-secondary" id="resetBtn">Reset puzzle &amp; timer</button>
         </div>
 
         <div class="helpers">
@@ -611,28 +455,31 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
 
     <div class="modal-overlay" id="winnerModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
-      <div class="modal-card">
-        <h2 id="winnerTitle">🎉 <span>Well connected!</span></h2>
+      <div class="modal">
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl"></i></div>
+        <h2 id="winnerTitle" class="font-display">Well connected!</h2>
         <p>You cracked it in</p>
         <div class="final-time" id="finalTime">0:00</div>
-        <p style="font-size: 0.95rem; color: #555; line-height: 1.45">
+        <p class="modal-explanation">
           <strong>Eght</strong> and <strong>1</strong> — The sequence is the words <strong>five</strong>,
           <strong>six</strong>, <strong>seven</strong>, <strong>eight</strong>. In each, remove a substring
           that forms a Roman numeral: <strong>five</strong> minus <strong>IV</strong> → Fe and 4;
           <strong>six</strong> minus <strong>IX</strong> → S and 9; <strong>seven</strong> minus
           <strong>V</strong> → seen and 5; <strong>eight</strong> minus <strong>I</strong> → Eght and 1.
         </p>
-        <div class="modal-actions">
+        <div class="modal-btns">
           <button type="button" class="btn btn-primary" id="modalClose">Close</button>
-          <button type="button" class="btn btn-ghost" id="modalReset">Reset &amp; Play Again</button>
+          <button type="button" class="btn btn-secondary" id="modalReset">Reset &amp; Play Again</button>
         </div>
       </div>
     </div>
 
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
     <script>
       ;(function () {
         let startTime = Date.now()
@@ -704,7 +551,7 @@
           if (rafId) cancelAnimationFrame(rafId)
           timerEl.textContent = formatTime(elapsed)
           finalTime.textContent = formatTime(elapsed)
-          winnerModal.classList.add("open")
+          winnerModal.classList.add("active")
         }
 
         function trySubmit() {
@@ -740,7 +587,7 @@
           answerLetters.value = ""
           answerNumber.value = ""
           clearFeedback()
-          winnerModal.classList.remove("open")
+          winnerModal.classList.remove("active")
           hintLevel = 0
           ;["hint1", "hint2", "hint3", "hint4"].forEach(function (id) {
             document.getElementById(id).classList.remove("show")
@@ -754,14 +601,14 @@
 
         resetBtn.addEventListener("click", resetAll)
         document.getElementById("modalClose").addEventListener("click", function () {
-          winnerModal.classList.remove("open")
+          winnerModal.classList.remove("active")
         })
         document.getElementById("modalReset").addEventListener("click", function () {
-          winnerModal.classList.remove("open")
+          winnerModal.classList.remove("active")
           resetAll()
         })
         winnerModal.addEventListener("click", function (e) {
-          if (e.target === winnerModal) winnerModal.classList.remove("open")
+          if (e.target === winnerModal) winnerModal.classList.remove("active")
         })
 
         document.querySelectorAll(".helper-toggle").forEach(function (btn) {
@@ -773,7 +620,6 @@
           })
         })
 
-        /* Hints (must open in order) */
         let hintLevel = 0
         document.getElementById("hintBtn1").addEventListener("click", function () {
           document.getElementById("hint1").classList.add("show")
@@ -802,7 +648,10 @@
           hintLevel = 4
         })
 
-        startTimerLoop()
+        document.addEventListener("DOMContentLoaded", function () {
+          PuzzleIcons.initIcons()
+          startTimerLoop()
+        })
       })()
     </script>
   </body>

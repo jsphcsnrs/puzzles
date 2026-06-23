@@ -4,69 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Einstein's Riddle</title>
+    <link rel="stylesheet" href="../styles/neumorphic.css" />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      .hidden {
+        display: none !important;
       }
 
-      body {
-        .hidden {
-          display: none !important;
-        }
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 20px;
-      }
-
-      .container {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
+      .container-wide {
         max-width: 1200px;
-        margin: 0 auto;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      }
-
-      h1 {
-        color: #667eea;
-        text-align: center;
-        margin-bottom: 10px;
-        font-size: 2.5em;
-      }
-
-      .subtitle {
-        text-align: center;
-        color: #666;
-        margin-bottom: 25px;
-        font-size: 1.1em;
       }
 
       .info {
         font-style: italic;
-        color: #888;
-        font-size: 1em;
-      }
-
-      .rules {
-        background: #f8f9fa;
-        padding: 20px;
-        margin-bottom: 25px;
-        border-radius: 8px;
-      }
-
-      h3 {
-        color: #333;
-        margin-bottom: 15px;
-        font-size: 1.1em;
-        -webkit-touch-callout: none; /* iOS Safari */
-        -webkit-user-select: none; /* Safari, Chrome, Opera */
-        -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-        user-select: none; /* Standard property */
+        font-size: 0.95rem;
+        margin-top: 4px;
       }
 
       .rules-grid {
@@ -77,58 +28,51 @@
       }
 
       .rule-item {
-        background: white;
+        background: var(--bg);
         padding: 8px 12px;
-        border-radius: 6px;
+        border-radius: var(--radius-inner);
         font-size: 0.85em;
-        color: #555;
+        color: var(--fg);
         line-height: 1.4;
-        border-left: 3px solid transparent;
-        transition: all 0.3s ease;
+        box-shadow: var(--shadow-extruded-small);
+        transition: box-shadow var(--transition), background var(--transition);
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
       .rule-item.violated {
-        background: #f8d7da;
-        border-left-color: #dc3545;
+        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        box-shadow: var(--shadow-inset);
       }
 
       .rule-item.satisfied {
-        background: #d4edda;
-        border-left-color: #28a745;
-      }
-
-      .timer {
-        text-align: center;
-        font-size: 1.3em;
-        color: #764ba2;
-        margin-bottom: 20px;
-        padding: 12px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        font-weight: 600;
-        font-family: "Courier New", monospace;
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        box-shadow: var(--shadow-inset);
       }
 
       .street-container {
-        background: #e9ecef;
-        border-radius: 10px;
+        background: var(--bg);
+        border-radius: var(--radius-base);
         padding: 20px;
         margin-bottom: 20px;
-        -webkit-touch-callout: none; /* iOS Safari */
-        -webkit-user-select: none; /* Safari, Chrome, Opera */
-        -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-        user-select: none; /* Standard property */
+        box-shadow: var(--shadow-inset);
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
       .street-label {
         text-align: center;
         font-weight: 600;
-        color: #666;
+        color: var(--muted);
         margin-bottom: 15px;
         font-size: 0.9em;
         text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
       }
 
       .street {
@@ -139,15 +83,16 @@
       }
 
       .street-spot {
-        border: 3px dashed #adb5bd;
-        border-radius: 10px;
+        border-radius: var(--radius-inner);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(255, 255, 255, 0.5);
-        transition: all 0.3s ease;
+        background: var(--bg);
+        box-shadow: var(--shadow-inset-small);
+        transition: box-shadow var(--transition), transform var(--transition);
         position: relative;
         padding: 0;
+        min-height: 200px;
       }
 
       .street-spot .house {
@@ -158,22 +103,32 @@
       }
 
       .street-spot.drag-over {
-        background: rgba(255, 255, 255, 0.8);
-        border-color: #667eea;
-        transform: scale(1.05);
+        box-shadow: var(--shadow-inset-deep), 0 0 0 2px var(--accent);
+        transform: scale(1.02);
       }
 
       .street-spot-label {
-        color: #adb5bd;
+        color: var(--placeholder);
         font-weight: 600;
         font-size: 1.2em;
       }
 
       .houses-palette {
-        background: #f8f9fa;
-        border-radius: 10px;
+        background: var(--bg);
+        border-radius: var(--radius-base);
         padding: 20px;
         margin-bottom: 20px;
+        box-shadow: var(--shadow-inset);
+      }
+
+      .houses-palette h3,
+      .palette h3 {
+        color: var(--fg);
+        margin-bottom: 12px;
+        font-size: 1.1em;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
       .houses-grid {
@@ -184,13 +139,13 @@
       }
 
       .house {
-        border-radius: 10px;
+        border-radius: var(--radius-inner);
         padding: 15px;
         min-height: 200px;
         cursor: grab;
-        transition: all 0.3s ease;
+        transition: transform var(--transition), box-shadow var(--transition);
         position: relative;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-extruded-small);
         pointer-events: auto;
         max-width: 208px;
       }
@@ -201,7 +156,7 @@
 
       .house:hover {
         transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-extruded);
       }
 
       .house.dragging {
@@ -214,8 +169,7 @@
       }
 
       .house.drag-over {
-        outline: 3px solid #667eea;
-        outline-offset: 3px;
+        box-shadow: 0 0 0 3px var(--accent), var(--shadow-extruded-small);
       }
 
       .house.red {
@@ -252,7 +206,7 @@
 
       .house-attribute-slot {
         background: rgba(255, 255, 255, 0.3);
-        border-radius: 6px;
+        border-radius: var(--radius-inner);
         padding: 6px 10px;
         min-height: 32px;
         display: flex;
@@ -278,22 +232,22 @@
       }
 
       .attribute-chip {
-        background: #f0f1ff;
+        background: var(--bg);
         padding: 5px 10px;
-        border-radius: 20px;
+        border-radius: 999px;
         font-size: 0.85em;
         font-weight: 600;
         cursor: grab;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-extruded-small);
         display: flex;
         align-items: center;
         gap: 6px;
-        transition: all 0.2s ease;
+        transition: transform var(--transition), box-shadow var(--transition);
       }
 
       .attribute-chip:hover {
         transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-extruded);
       }
 
       .attribute-chip.dragging {
@@ -306,14 +260,11 @@
       }
 
       .palette {
-        background: #f8f9fa;
-        border-radius: 10px;
+        background: var(--bg);
+        border-radius: var(--radius-base);
         padding: 15px;
         margin-bottom: 20px;
-      }
-
-      .palette h3 {
-        margin-bottom: 12px;
+        box-shadow: var(--shadow-inset);
       }
 
       .palette-sections {
@@ -323,23 +274,21 @@
       }
 
       .palette-section {
-        background: white;
-        border-radius: 8px;
+        background: var(--bg);
+        border-radius: var(--radius-inner);
         padding: 10px;
+        box-shadow: var(--shadow-extruded-small);
       }
 
       .palette-label {
         font-size: 0.8em;
-        color: #666;
+        color: var(--muted);
         font-weight: 600;
         margin-bottom: 6px;
         text-transform: uppercase;
-        -webkit-touch-callout: none; /* iOS Safari */
-        -webkit-user-select: none; /* Safari, Chrome, Opera */
-        -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-        user-select: none; /* Standard property */
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
       .chips-container {
@@ -355,141 +304,18 @@
 
       .controls {
         display: flex;
-        gap: 15px;
+        gap: 12px;
         justify-content: center;
-        margin-bottom: 20px;
+        margin-top: 24px;
         flex-wrap: wrap;
       }
 
-      button {
-        padding: 12px 24px;
-        background: #667eea;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1em;
-        font-weight: 600;
-        transition: background 0.3s ease;
-      }
-
-      button:hover {
-        background: #5568d3;
-      }
-
-      button.secondary {
-        background: #764ba2;
-      }
-
-      button.secondary:hover {
-        background: #643a8a;
-      }
-
-      .winner-modal {
-        display: none;
-        position: fixed;
-        z-index: 1001;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-      }
-
-      .winner-modal.show {
-        display: flex;
-      }
-
-      .winner-content {
-        background: white;
-        padding: 50px;
-        border-radius: 20px;
-        max-width: 500px;
-        width: 100%;
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        animation: celebrate 0.5s ease;
-        max-height: 90vh;
-        overflow-y: auto;
-      }
-
-      @keyframes celebrate {
-        0%,
-        100% {
-          transform: scale(1) rotate(0deg);
-        }
-        25% {
-          transform: scale(1.1) rotate(-5deg);
-        }
-        75% {
-          transform: scale(1.1) rotate(5deg);
-        }
-      }
-
-      .winner-content h2 {
-        color: #4caf50;
-        font-size: 2.5em;
-        margin-bottom: 20px;
-      }
-
-      .winner-content .trophy {
-        font-size: 5em;
-        margin-bottom: 20px;
-      }
-
-      .winner-content .time {
-        font-size: 1.5em;
-        color: #764ba2;
-        margin-bottom: 20px;
-        font-weight: 600;
-      }
-
-      .winner-content .message {
-        font-size: 1.2em;
-        color: #555;
-        margin-bottom: 30px;
-      }
-
-      .winner-buttons {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .play-again-btn {
-        padding: 15px 40px;
-        background: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 1.2em;
-        font-weight: 600;
-        transition: background 0.3s ease;
-      }
-
-      .play-again-btn:hover {
-        background: #45a049;
-      }
-
-      .close-btn {
-        padding: 15px 40px;
-        background: #667eea;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 1.2em;
-        font-weight: 600;
-        transition: background 0.3s ease;
-      }
-
-      .close-btn:hover {
-        background: #5568d3;
+      .completion-time {
+        margin: 16px 0;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--fg);
       }
 
       @media (max-width: 1024px) {
@@ -507,14 +333,6 @@
       }
 
       @media (max-width: 768px) {
-        .container {
-          padding: 20px;
-        }
-
-        h1 {
-          font-size: 1.8em;
-        }
-
         .street {
           grid-template-columns: 1fr;
         }
@@ -527,114 +345,99 @@
           min-height: auto;
         }
 
-        .winner-content {
-          padding: 30px 20px;
-        }
-
-        .winner-content .trophy {
-          font-size: 3em;
-        }
-
-        .winner-content h2 {
-          font-size: 1.8em;
-        }
-
-        .winner-content .time {
-          font-size: 1.2em;
-        }
-
-        .winner-content .message {
-          font-size: 1em;
-        }
-
-        .play-again-btn,
-        .close-btn {
-          padding: 12px 24px;
-          font-size: 1em;
+        .controls .btn {
           width: 100%;
         }
       }
     </style>
   </head>
   <body>
-    <!-- Winner Modal -->
-    <div class="winner-modal" id="winnerModal">
-      <div class="winner-content">
-        <div class="trophy">🏆</div>
-        <h2>Genius!</h2>
-        <div class="time">Time: <span id="finalTime">00:00</span></div>
-        <div class="message">You've solved Einstein's Riddle!</div>
-        <div class="winner-buttons">
-          <button class="close-btn" onclick="closeWinnerModal()">Close</button>
-          <button class="play-again-btn" onclick="playAgain()">Reset & Play Again</button>
+    <div class="modal-overlay" id="winnerModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
+      <div class="modal">
+        <div class="modal-icon"><i data-lucide="trophy" class="icon icon-xl icon-accent"></i></div>
+        <h2 id="winnerTitle" class="font-display">Genius!</h2>
+        <p>You've solved Einstein's Riddle in</p>
+        <div class="completion-time" id="finalTime">0:00</div>
+        <div class="modal-btns">
+          <button type="button" class="btn btn-secondary" onclick="closeWinnerModal()">Close</button>
+          <button type="button" class="btn btn-primary" onclick="playAgain()">Reset &amp; Play Again</button>
         </div>
       </div>
     </div>
 
-    <div class="container">
-      <h1>🧠 Einstein's Riddle</h1>
-      <p class="subtitle">Who owns the fish? Arrange the houses and attributes using logic!</p>
-      <p class="subtitle info">
-        Touchscreen is not currently supported. Desktop browsers offer the best experience.
-      </p>
+    <main class="container container-wide">
+      <section class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md"><i data-lucide="brain" class="icon icon-md"></i></span>
+            <span class="title-text">Einstein's Riddle</span>
+          </h1>
+          <p class="subtitle">Who owns the fish? Arrange the houses and attributes using logic!</p>
+          <p class="subtitle info">
+            Touchscreen is not currently supported. Desktop browsers offer the best experience.
+          </p>
+          <div class="timer" id="timer">0:00</div>
+        </header>
 
-      <div class="timer">⏱️ Time: <span id="timer">00:00</span></div>
+        <section class="rules" aria-labelledby="rules-heading">
+          <h2 id="rules-heading">The Clues</h2>
+          <div class="rules-grid" id="rulesGrid"></div>
+        </section>
 
-      <div class="rules">
-        <h3>The Clues</h3>
-        <div class="rules-grid" id="rulesGrid">
-          <!-- Rules will be populated here -->
-        </div>
-      </div>
-
-      <div class="street-container">
-        <div class="street-label">🏘️ The Street (Drag houses here in order)</div>
-        <div class="street" id="street">
-          <div class="street-spot" data-position="0"><span class="street-spot-label">1</span></div>
-          <div class="street-spot" data-position="1"><span class="street-spot-label">2</span></div>
-          <div class="street-spot" data-position="2"><span class="street-spot-label">3</span></div>
-          <div class="street-spot" data-position="3"><span class="street-spot-label">4</span></div>
-          <div class="street-spot" data-position="4"><span class="street-spot-label">5</span></div>
-        </div>
-      </div>
-
-      <div class="houses-palette">
-        <h3>Houses (Drag to the street above)</h3>
-        <div class="houses-grid" id="housesGrid"></div>
-      </div>
-
-      <div class="palette">
-        <h3>Drag these attributes to the houses:</h3>
-
-        <div class="palette-sections">
-          <div class="palette-section">
-            <div class="palette-label">Nationalities</div>
-            <div class="chips-container" id="nationalityPalette"></div>
+        <div class="street-container">
+          <div class="street-label">
+            <i data-lucide="home" class="icon icon-sm"></i>
+            The Street (Drag houses here in order)
           </div>
-
-          <div class="palette-section">
-            <div class="palette-label">Drinks</div>
-            <div class="chips-container" id="drinkPalette"></div>
-          </div>
-
-          <div class="palette-section">
-            <div class="palette-label">Cigarettes</div>
-            <div class="chips-container" id="cigarettePalette"></div>
-          </div>
-
-          <div class="palette-section">
-            <div class="palette-label">Pets</div>
-            <div class="chips-container" id="petPalette"></div>
+          <div class="street" id="street">
+            <div class="street-spot" data-position="0"><span class="street-spot-label">1</span></div>
+            <div class="street-spot" data-position="1"><span class="street-spot-label">2</span></div>
+            <div class="street-spot" data-position="2"><span class="street-spot-label">3</span></div>
+            <div class="street-spot" data-position="3"><span class="street-spot-label">4</span></div>
+            <div class="street-spot" data-position="4"><span class="street-spot-label">5</span></div>
           </div>
         </div>
-      </div>
 
-      <div class="controls">
-        <button onclick="checkSolution()">Check Solution</button>
-        <button class="secondary" onclick="clearAll()">Clear All</button>
-      </div>
-    </div>
+        <div class="houses-palette">
+          <h3>Houses (Drag to the street above)</h3>
+          <div class="houses-grid" id="housesGrid"></div>
+        </div>
 
+        <div class="palette">
+          <h3>Drag these attributes to the houses:</h3>
+
+          <div class="palette-sections">
+            <div class="palette-section">
+              <div class="palette-label">Nationalities</div>
+              <div class="chips-container" id="nationalityPalette"></div>
+            </div>
+
+            <div class="palette-section">
+              <div class="palette-label">Drinks</div>
+              <div class="chips-container" id="drinkPalette"></div>
+            </div>
+
+            <div class="palette-section">
+              <div class="palette-label">Cigarettes</div>
+              <div class="chips-container" id="cigarettePalette"></div>
+            </div>
+
+            <div class="palette-section">
+              <div class="palette-label">Pets</div>
+              <div class="chips-container" id="petPalette"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button type="button" class="btn btn-primary" onclick="checkSolution()">Check Solution</button>
+          <button type="button" class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
     <script>
       const HOUSE_COLORS = ["red", "green", "white", "yellow", "blue"]
 
@@ -726,14 +529,19 @@
         },
       ]
 
-      let streetState = [null, null, null, null, null] // Which house is in each position
-      let houseAttributes = {} // { color: { nationality, drink, cigarette, pet } }
+      let streetState = [null, null, null, null, null]
+      let houseAttributes = {}
       let timerInterval = null
       let startTime = null
       let elapsedSeconds = 0
 
+      function formatTime(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60)
+        const seconds = totalSeconds % 60
+        return `${minutes}:${String(seconds).padStart(2, "0")}`
+      }
+
       function initializeGame() {
-        // Initialize house attributes
         HOUSE_COLORS.forEach((color) => {
           houseAttributes[color] = {
             nationality: null,
@@ -743,7 +551,6 @@
           }
         })
 
-        // Create houses in palette
         const housesGrid = document.getElementById("housesGrid")
         housesGrid.innerHTML = ""
 
@@ -752,13 +559,11 @@
           housesGrid.appendChild(house)
         })
 
-        // Create attribute chips in palettes
         createPalette("nationalityPalette", "nationality")
         createPalette("drinkPalette", "drink")
         createPalette("cigarettePalette", "cigarette")
         createPalette("petPalette", "pet")
 
-        // Create rules display
         const rulesGrid = document.getElementById("rulesGrid")
         rulesGrid.innerHTML = ""
         rules.forEach((rule, index) => {
@@ -769,17 +574,13 @@
           rulesGrid.appendChild(ruleEl)
         })
 
-        // Setup drag and drop for street spots
         document.querySelectorAll(".street-spot").forEach((spot) => {
           spot.addEventListener("dragover", handleStreetDragOver)
           spot.addEventListener("drop", handleStreetDrop)
           spot.addEventListener("dragleave", handleDragLeave)
         })
 
-        // Ensure houses palette visibility is correct
         updateHousesPaletteVisibility()
-
-        // Start timer
         startTimer()
       }
 
@@ -830,7 +631,6 @@
         })
       }
 
-      // House drag handlers
       function handleHouseDragStart(e) {
         e.stopPropagation()
         e.target.classList.add("dragging")
@@ -844,7 +644,6 @@
         e.stopPropagation()
         e.dataTransfer.dropEffect = "move"
 
-        // Find the actual street spot
         let spot = e.currentTarget
         if (spot.classList.contains("house")) {
           spot = spot.parentElement
@@ -858,7 +657,6 @@
         e.preventDefault()
         e.stopPropagation()
 
-        // Find the actual street spot (might be dropping on house or spot)
         let spot = e.currentTarget
         if (spot.classList.contains("house")) {
           spot = spot.parentElement
@@ -873,11 +671,9 @@
         const color = e.dataTransfer.getData("color")
         const position = parseInt(spot.dataset.position)
 
-        // Find the house element
         let house = document.querySelector(`.house[data-color="${color}"]`)
         if (!house) return
 
-        // Remove house from current position if placed on street
         const currentPos = streetState.indexOf(color)
         if (currentPos !== -1 && currentPos !== position) {
           const oldSpot = document.querySelector(`.street-spot[data-position="${currentPos}"]`)
@@ -885,32 +681,27 @@
           streetState[currentPos] = null
         }
 
-        // If there's already a house in this spot, swap them
         if (streetState[position] && streetState[position] !== color) {
           const oldColor = streetState[position]
           const oldHouse = document.querySelector(`.house[data-color="${oldColor}"]`)
 
           if (currentPos !== -1) {
-            // Swap positions
             const oldSpot = document.querySelector(`.street-spot[data-position="${currentPos}"]`)
             oldSpot.innerHTML = ""
             oldSpot.appendChild(oldHouse)
             streetState[currentPos] = oldColor
           } else {
-            // Move old house back to palette
             const housesGrid = document.getElementById("housesGrid")
             housesGrid.appendChild(oldHouse)
             oldHouse.classList.remove("placed")
           }
         }
 
-        // Place new house
         streetState[position] = color
         spot.innerHTML = ""
         spot.appendChild(house)
         house.classList.add("placed")
 
-        // Re-add event listeners for houses on the street
         house.addEventListener("dragover", handleStreetDragOver)
         house.addEventListener("drop", handleStreetDrop)
 
@@ -918,7 +709,6 @@
         updateHousesPaletteVisibility()
       }
 
-      // Attribute drag handlers
       function handleAttributeDragStart(e) {
         e.target.classList.add("dragging")
         e.dataTransfer.effectAllowed = "move"
@@ -950,13 +740,11 @@
 
         if (!color) return
 
-        // Remove from source house if dragged from a house
         if (fromHouse && fromHouse !== color) {
           houseAttributes[fromHouse][type] = null
           updateHouseDisplay(fromHouse)
         }
 
-        // Check if this attribute is already placed in another house (not the source)
         Object.keys(houseAttributes).forEach((houseColor) => {
           if (houseColor !== fromHouse && houseAttributes[houseColor][type] === value) {
             houseAttributes[houseColor][type] = null
@@ -964,7 +752,6 @@
           }
         })
 
-        // Remove old attribute from target house if exists
         if (houseAttributes[color][type]) {
           const oldChip = document.querySelector(
             `.attribute-chip[data-value="${houseAttributes[color][type]}"]`,
@@ -972,11 +759,9 @@
           if (oldChip) oldChip.classList.remove("placed")
         }
 
-        // Place new attribute
         houseAttributes[color][type] = value
         updateHouseDisplay(color)
 
-        // Mark chip as placed
         const chip = document.querySelector(`.attribute-chip[data-value="${value}"]`)
         if (chip) chip.classList.add("placed")
 
@@ -1009,7 +794,6 @@
             slot.dataset.value = value
             slot.dataset.type = type
 
-            // Add drag handlers to filled slots
             slot.ondragstart = (e) => {
               e.stopPropagation()
               e.dataTransfer.effectAllowed = "move"
@@ -1036,7 +820,6 @@
       }
 
       function validateRules() {
-        // Build state array from street positions
         const state = streetState.map((color) => {
           if (!color)
             return { color: null, nationality: null, drink: null, cigarette: null, pet: null }
@@ -1070,7 +853,6 @@
         }
       }
 
-      // Rule checking functions
       function checkAttribute(state, attr1, attr2) {
         const house = state.find(
           (h) => h && Object.values(h).includes(attr1) && Object.values(h).includes(attr2),
@@ -1133,7 +915,6 @@
       }
 
       function clearAll() {
-        // Move all houses back to palette
         streetState.forEach((color, position) => {
           if (color) {
             const house = document.querySelector(`.house[data-color="${color}"]`)
@@ -1143,12 +924,10 @@
         })
         streetState = [null, null, null, null, null]
 
-        // Reset street spots
         document.querySelectorAll(".street-spot").forEach((spot, index) => {
           spot.innerHTML = `<span class="street-spot-label">${index + 1}</span>`
         })
 
-        // Clear attributes
         Object.keys(houseAttributes).forEach((color) => {
           houseAttributes[color] = {
             nationality: null,
@@ -1159,7 +938,6 @@
           updateHouseDisplay(color)
         })
 
-        // Clear chip markers
         document.querySelectorAll(".attribute-chip").forEach((chip) => {
           chip.classList.remove("placed")
         })
@@ -1184,19 +962,14 @@
       }
 
       function updateTimerDisplay() {
-        const minutes = Math.floor(elapsedSeconds / 60)
-        const seconds = elapsedSeconds % 60
-        const display = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
-        document.getElementById("timer").textContent = display
+        document.getElementById("timer").textContent = formatTime(elapsedSeconds)
       }
 
       function showWinnerModal() {
         stopTimer()
-        const minutes = Math.floor(elapsedSeconds / 60)
-        const seconds = elapsedSeconds % 60
-        const timeDisplay = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
-        document.getElementById("finalTime").textContent = timeDisplay
+        document.getElementById("finalTime").textContent = formatTime(elapsedSeconds)
         document.getElementById("winnerModal").classList.add("show")
+        PuzzleIcons.initIcons()
       }
 
       function closeWinnerModal() {
@@ -1211,8 +984,10 @@
         startTimer()
       }
 
-      // Initialize on load
-      window.addEventListener("DOMContentLoaded", initializeGame)
+      window.addEventListener("DOMContentLoaded", () => {
+        PuzzleIcons.initIcons()
+        initializeGame()
+      })
     </script>
   </body>
 </html>

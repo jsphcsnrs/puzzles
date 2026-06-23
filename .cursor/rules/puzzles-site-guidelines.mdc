@@ -5,12 +5,15 @@ alwaysApply: true
 
 # Project Overview
 
-This repository is a static HTML puzzle website — no build system, no framework, no dependencies. Each puzzle is a self-contained `.html` file with all CSS and JS inline. The site is opened directly in a browser from the filesystem.
+This repository is a static HTML puzzle website — no build system, no framework, no dependencies. Each puzzle is a self-contained `.html` file with inline CSS and JS for puzzle-specific layout only. Shared styling and icons live in central assets. The site is opened directly in a browser from the filesystem.
 
 ```
 puzzles/
 ├── index.html
-└── puzzles/        ← all puzzle .html files live here
+├── styles/neumorphic.css   ← shared design system
+├── js/lucide.min.js        ← vendored Lucide icons (v0.468.0)
+├── js/icons.js             ← icon helper (initIcons, iconEl)
+└── puzzles/                ← puzzle .html files
 ```
 
 # Adding a New Puzzle
@@ -27,44 +30,95 @@ For `releaseDate`, default to the **later** of:
 
 In other words: keep the weekly Friday cadence, but never assign a date in the past. Override only if explicitly told otherwise.
 
-# Design System
+# Shared Assets
 
-Every puzzle page must follow this style to match the site:
-
-- **Background:** `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`
-- **Card:** white, `border-radius: 20px`, `box-shadow: 0 20px 60px rgba(0,0,0,0.3)`, `max-width` around 760px
-- **Primary color:** `#667eea` — Secondary: `#764ba2`
-- **Font:** `Segoe UI`
-- **Timer:** starts on page load, displayed prominently, and formatted as minutes and seconds only (`M:SS`, no milliseconds/centiseconds)
-- **Rules:** always visible on screen (no modal to hide them)
-- **Winner modal:** triggered on puzzle completion; shows a "Congrats" / celebratory heading (🎉), the player's completion time in large text, a "Close" button, and a "Reset & Play Again" button; uses the same card style (white, `border-radius: 20px`, gradient heading text)
-- **Mobile:** full touchscreen support required
-
-## Heading with gradient text
-
-Apply the gradient only to a `<span>` inside the `<h1>`, never to the `<h1>` itself — otherwise emojis get clipped and turn invisible.
+Every page must link the shared assets. From `index.html`:
 
 ```html
-<h1>🎯 <span>Puzzle Title</span></h1>
+<link rel="stylesheet" href="styles/neumorphic.css" />
+<script src="js/lucide.min.js"></script>
+<script src="js/icons.js"></script>
 ```
 
-```css
-.header h1 {
- font-size: 2rem;
- font-weight: 800;
- margin-bottom: 6px;
-}
-.header h1 span {
- background: linear-gradient(135deg, #667eea, #764ba2);
- -webkit-background-clip: text;
- -webkit-text-fill-color: transparent;
- background-clip: text;
-}
+From puzzle pages under `puzzles/`:
+
+```html
+<link rel="stylesheet" href="../styles/neumorphic.css" />
+<script src="../js/lucide.min.js"></script>
+<script src="../js/icons.js"></script>
 ```
 
-## Workflow
+Call `PuzzleIcons.initIcons()` after DOM ready (and after any dynamic icon injection).
 
-Do **not** read existing puzzle files when creating a new one. All necessary patterns are documented in this specification alone.
+# Design System — Neumorphism (Soft UI)
+
+## Core tokens
+
+- **Background:** `#E0E5EC` — no gradients on the root background
+- **Foreground:** `#3D4852` — primary text
+- **Muted:** `#6B7280` — secondary text
+- **Accent:** `#6C63FF` — CTAs and focus states only (not headings)
+- **Success:** `#38B2AC` — correct/success states
+- **Fonts:** Plus Jakarta Sans (display headings), DM Sans (body) — loaded via `neumorphic.css`
+- **Container radius:** `32px` — **Button/input radius:** `16px`
+- **Shadows:** dual RGBA shadows only (never opaque hex shadows, never borders)
+- **Transitions:** `300ms ease-out`
+
+## Anti-patterns
+
+- No `bg-white` or white cards — surfaces match `#E0E5EC`
+- No flat buttons — always use extruded/inset shadows
+- No `rounded-lg` or sharper — minimum `16px` on interactive elements
+- No emoji for UI iconography — use Lucide icons
+- No gradient text on headings — use `#3D4852` display type
+- All interactive elements need visible accent focus rings
+
+## Page structure
+
+```html
+<body>
+  <div class="container container-narrow">
+    <div class="card card-extruded">
+      <header class="header">...</header>
+      <!-- puzzle content -->
+    </div>
+  </div>
+</body>
+```
+
+## Heading with Lucide icon in inset well
+
+```html
+<h1 class="font-display">
+  <span class="icon-well icon-well-md"><i data-lucide="link" class="icon icon-md"></i></span>
+  <span class="title-text">Puzzle Title</span>
+</h1>
+```
+
+## Icons
+
+- UI/decorative icons: **Lucide** via `data-lucide="icon-name"` (kebab-case)
+- Dynamic icons: `PuzzleIcons.iconEl("shuffle", { size: 32 })`
+- Gameplay emojis in Einstein's Riddle and Nine Cats are intentionally preserved — do not replace those
+
+## Required puzzle chrome
+
+- **Timer:** starts on page load, displayed prominently, formatted as `M:SS` (no milliseconds)
+- **Rules:** always visible on screen (no modal to hide them) — use `.rules` or `.rules-panel`
+- **Winner modal:** triggered on completion; Lucide `party-popper` or `trophy` icon (not emoji), completion time in large text, "Close" and "Reset & Play Again" buttons using `.btn` / `.btn-primary` / `.btn-secondary`
+- **Mobile:** full touchscreen support, minimum 44px touch targets
+
+## Buttons and inputs
+
+```html
+<button class="btn btn-primary">Submit</button>
+<button class="btn btn-secondary">Clear</button>
+<input class="input" type="text" placeholder="..." />
+```
+
+## Feedback states
+
+Use `.state-correct` and `.state-incorrect` on neumorphic surfaces with semantic teal/red tints — no hard borders.
 
 # index.html Puzzle Registration
 
@@ -73,7 +127,7 @@ Each entry in the `puzzles` array:
 ```js
 {
   title: "...",
-  icon: "...", // single emoji, but not any that are already used for a puzzle
+  icon: "shuffle", // Lucide icon name (kebab-case), must be unique per puzzle
   description: "...", // 1-2 sentences, enticing but no spoilers
   file: "puzzles/...", // snake_case .html filename under the puzzles/ folder
   releaseDate: "YYYY-MM-DD",
@@ -82,3 +136,6 @@ Each entry in the `puzzles` array:
 
 Puzzles with a future `releaseDate` are hidden from the grid and replaced with a single "Coming Soon" card showing the next release date.
 
+# Workflow
+
+Do **not** read existing puzzle files when creating a new one. All necessary patterns are documented in this specification alone. Use inline `<style>` only for puzzle-specific layout (grids, custom shapes, etc.) — never duplicate shared tokens or base components.

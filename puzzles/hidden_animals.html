@@ -4,91 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hidden Animal Puzzle</title>
+    <link rel="stylesheet" href="../styles/neumorphic.css" />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .container {
-        background: white;
-        border-radius: 20px;
-        padding: 40px;
-        max-width: 800px;
-        width: 100%;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      }
-
-      h1 {
-        color: #667eea;
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 2.5em;
-      }
-
-      .rules {
-        background: #f8f9fa;
-        border-left: 4px solid #667eea;
-        padding: 20px;
-        margin-bottom: 30px;
-        border-radius: 8px;
-      }
-
-      .rules h2 {
-        color: #333;
-        margin-bottom: 10px;
-        font-size: 1.3em;
-      }
-
-      .rules p {
-        color: #555;
-        line-height: 1.6;
-        margin-bottom: 10px;
-      }
-
-      .example {
-        background: #e3f2fd;
-        padding: 10px;
-        border-radius: 5px;
+      .rules .example {
         margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: var(--radius-inner);
+        background: var(--bg);
+        box-shadow: var(--shadow-inset-small);
         font-style: italic;
       }
 
       .puzzle-item {
-        background: #fafafa;
+        background: var(--bg);
         padding: 20px;
         margin-bottom: 20px;
-        border-radius: 10px;
-        border: 2px solid #e0e0e0;
-        transition: all 0.3s ease;
+        border-radius: var(--radius-base);
+        box-shadow: var(--shadow-extruded-small);
+        transition: box-shadow var(--transition), background var(--transition);
       }
 
       .puzzle-item.correct {
-        border-color: #4caf50;
-        background: #f1f8f4;
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        box-shadow: var(--shadow-inset);
       }
 
       .sentence {
         font-size: 1.1em;
-        color: #333;
+        color: var(--fg);
         margin-bottom: 15px;
         line-height: 1.6;
       }
 
       .sentence-number {
         font-weight: bold;
-        color: #667eea;
+        color: var(--accent);
       }
 
       .input-group {
@@ -97,321 +47,123 @@
         align-items: center;
       }
 
-      input[type="text"] {
-        flex: 1;
-        padding: 12px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        font-size: 1em;
-        transition: border-color 0.3s ease;
-      }
-
-      input[type="text"]:focus {
-        outline: none;
-        border-color: #667eea;
-      }
-
-      input[type="text"].correct {
-        border-color: #4caf50;
-        background: #f1f8f4;
-      }
-
-      button {
-        padding: 12px 24px;
-        background: #667eea;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1em;
+      .input-group .input.correct {
+        background: color-mix(in srgb, var(--success) 10%, var(--bg));
+        color: color-mix(in srgb, var(--success) 80%, var(--fg));
         font-weight: 600;
-        transition: background 0.3s ease;
-      }
-
-      button:hover {
-        background: #5568d3;
       }
 
       .feedback {
         margin-top: 10px;
-        padding: 8px;
-        border-radius: 5px;
+        padding: 8px 12px;
+        border-radius: var(--radius-inner);
         font-weight: 600;
         display: none;
       }
 
       .feedback.correct {
         display: block;
-        background: #d4edda;
-        color: #155724;
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        color: var(--fg);
+        box-shadow: var(--shadow-inset-small);
       }
 
       .feedback.incorrect {
         display: block;
-        background: #f8d7da;
-        color: #721c24;
+        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        color: var(--fg);
+        box-shadow: var(--shadow-inset-small);
       }
 
       .score {
         text-align: center;
         font-size: 1.3em;
-        color: #667eea;
-        margin-top: 30px;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        font-weight: 600;
+        color: var(--fg);
+        margin-top: 24px;
+        padding: 15px 20px;
+        background: var(--bg);
+        border-radius: var(--radius-base);
+        font-weight: 700;
+        box-shadow: var(--shadow-inset);
       }
 
-      .reset-btn {
-        display: block;
-        margin: 20px auto 0;
-        background: #764ba2;
-      }
-
-      .reset-btn:hover {
-        background: #643a8a;
-      }
-
-      .modal {
+      .actions {
         display: flex;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
         justify-content: center;
-        align-items: center;
+        margin-top: 20px;
       }
 
-      .modal.hidden {
-        display: none;
+      .completion-time {
+        margin: 16px 0;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--fg);
       }
 
-      .modal-content {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        max-width: 600px;
-        width: 90%;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        animation: slideIn 0.3s ease;
+      .intro-modal .modal {
+        max-width: 520px;
+        text-align: left;
       }
 
-      @keyframes slideIn {
-        from {
-          transform: translateY(-50px);
-          opacity: 0;
-        }
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-
-      .modal-content h2 {
-        color: #667eea;
-        margin-bottom: 20px;
-        font-size: 2em;
+      .intro-modal h2 {
         text-align: center;
-      }
-
-      .modal-rules {
-        background: #f8f9fa;
-        border-left: 4px solid #667eea;
-        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         margin-bottom: 20px;
-        border-radius: 8px;
       }
 
-      .modal-rules p {
-        color: #555;
+      .intro-rules {
+        margin-bottom: 20px;
+        padding: 18px 20px;
+        border-radius: var(--radius-base);
+        background: var(--bg);
+        box-shadow: var(--shadow-inset);
         line-height: 1.6;
+      }
+
+      .intro-rules h3 {
+        color: var(--fg);
+        margin-bottom: 12px;
+        font-size: 1.1rem;
+      }
+
+      .intro-rules p {
+        color: var(--fg);
         margin-bottom: 10px;
       }
 
-      .begin-btn {
-        display: block;
-        width: 100%;
-        padding: 15px;
-        background: #667eea;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 1.2em;
-        font-weight: 600;
-        transition: background 0.3s ease;
-      }
-
-      .begin-btn:hover {
-        background: #5568d3;
-      }
-
-      .timer {
+      .begin-btn-wrap {
         text-align: center;
-        font-size: 1.5em;
-        color: #764ba2;
-        margin-bottom: 20px;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        font-weight: 600;
-        font-family: "Courier New", monospace;
-      }
-
-      .winner-modal {
-        display: none;
-        position: fixed;
-        z-index: 1001;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        justify-content: center;
-        align-items: center;
-      }
-
-      .winner-modal.show {
-        display: flex;
-      }
-
-      .winner-content {
-        background: white;
-        padding: 50px;
-        border-radius: 20px;
-        max-width: 500px;
-        width: 90%;
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        animation: celebrate 0.5s ease;
-      }
-
-      @keyframes celebrate {
-        0%,
-        100% {
-          transform: scale(1) rotate(0deg);
-        }
-        25% {
-          transform: scale(1.1) rotate(-5deg);
-        }
-        75% {
-          transform: scale(1.1) rotate(5deg);
-        }
-      }
-
-      .winner-content h2 {
-        color: #4caf50;
-        font-size: 2.5em;
-        margin-bottom: 20px;
-      }
-
-      .winner-content .trophy {
-        font-size: 5em;
-        margin-bottom: 20px;
-      }
-
-      .winner-content .time {
-        font-size: 1.5em;
-        color: #764ba2;
-        margin-bottom: 20px;
-        font-weight: 600;
-      }
-
-      .winner-content .message {
-        font-size: 1.2em;
-        color: #555;
-        margin-bottom: 30px;
-      }
-
-      .play-again-btn {
-        padding: 15px 40px;
-        background: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 1.2em;
-        font-weight: 600;
-        transition: background 0.3s ease;
-      }
-
-      .play-again-btn:hover {
-        background: #45a049;
       }
 
       @media (max-width: 600px) {
-        .container {
-          padding: 20px;
-        }
-
-        h1 {
-          font-size: 1.8em;
-        }
-
         .input-group {
           flex-direction: column;
           align-items: stretch;
         }
 
-        .input-group button {
+        .input-group .btn {
           width: 100%;
         }
 
-        .winner-modal {
-          padding: 20px;
-          align-items: center;
-        }
-
-        .winner-content {
-          padding: 30px 20px;
-          width: 100%;
-          max-height: 90vh;
-          overflow-y: auto;
-        }
-
-        .winner-content .trophy {
-          font-size: 3em;
-          margin-bottom: 10px;
-        }
-
-        .winner-content h2 {
-          font-size: 1.8em;
-          margin-bottom: 12px;
-        }
-
-        .winner-content .time {
-          font-size: 1.2em;
-          margin-bottom: 12px;
-        }
-
-        .winner-content .message {
-          font-size: 1em;
-          margin-bottom: 20px;
-        }
-
-        .play-again-btn {
-          padding: 12px 24px;
-          font-size: 1em;
-          width: 100%;
-        }
-
-        .modal-content {
-          padding: 25px 20px;
+        .intro-modal .modal {
+          padding: 28px 20px;
         }
       }
     </style>
   </head>
   <body>
-    <!-- Rules Modal -->
-    <div class="modal" id="rulesModal">
-      <div class="modal-content">
-        <h2>🦁 Hidden Animal Puzzle 🐱</h2>
-        <div class="modal-rules">
-          <h3 style="margin-bottom: 15px; color: #333">How to Play</h3>
+    <div class="modal-overlay show intro-modal" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+      <div class="modal">
+        <h2 id="introTitle" class="font-display">
+          <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md"></i></span>
+          <span class="title-text">Hidden Animal Puzzle</span>
+        </h2>
+        <div class="intro-rules">
+          <h3>How to Play</h3>
           <p>
             In each sentence below, an animal is concealed within the words. The animal's name is
             hidden across consecutive letters in the sentence.
@@ -424,100 +176,125 @@
             <strong>Your mission:</strong> Find all 6 hidden animals as fast as you can!
           </p>
         </div>
-        <button class="begin-btn" onclick="startGame()">🎮 Begin Game</button>
+        <div class="begin-btn-wrap">
+          <button type="button" class="btn btn-primary" onclick="startGame()">Begin Game</button>
+        </div>
       </div>
     </div>
 
-    <!-- Winner Modal -->
-    <div class="winner-modal" id="winnerModal">
-      <div class="winner-content">
-        <div class="trophy">🏆</div>
-        <h2>Congratulations!</h2>
-        <div class="time">Time: <span id="finalTime">00:00</span></div>
-        <div class="message">You found all the hidden animals!</div>
-        <button class="play-again-btn" onclick="playAgain()">Play Again</button>
+    <div class="modal-overlay" id="winnerModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
+      <div class="modal">
+        <div class="modal-icon"><i data-lucide="trophy" class="icon icon-xl icon-accent"></i></div>
+        <h2 id="winnerTitle" class="font-display">Congratulations!</h2>
+        <p>You found all the hidden animals in</p>
+        <div class="completion-time" id="finalTime">0:00</div>
+        <div class="modal-btns">
+          <button type="button" class="btn btn-primary" onclick="playAgain()">Reset &amp; Play Again</button>
+        </div>
       </div>
     </div>
 
-    <div class="container">
-      <h1>🦁 Hidden Animal Puzzle 🐱</h1>
+    <main class="container container-narrow">
+      <section class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md"></i></span>
+            <span class="title-text">Hidden Animal Puzzle</span>
+          </h1>
+          <div class="timer" id="timer">0:00</div>
+        </header>
 
-      <div class="timer">⏱️ Time: <span id="timer">00:00</span></div>
+        <section class="rules" aria-labelledby="rules-heading">
+          <h2 id="rules-heading">How to Play</h2>
+          <p>
+            In each sentence, an animal's name is hidden across consecutive letters. Find all six
+            hidden animals as fast as you can.
+          </p>
+          <div class="example">
+            <strong>Example:</strong> "What shall I <strong>do, G</strong>ertrude?" =
+            <strong>DOG</strong>
+          </div>
+        </section>
 
-      <div id="puzzles">
-        <div class="puzzle-item" data-answer="monkey">
-          <div class="sentence">
-            <span class="sentence-number">1.</span> A gold key is not a common key.
+        <div id="puzzles">
+          <div class="puzzle-item" data-answer="monkey">
+            <div class="sentence">
+              <span class="sentence-number">1.</span> A gold key is not a common key.
+            </div>
+            <div class="input-group">
+              <input class="input" type="text" placeholder="Enter the hidden animal..." data-index="0" />
+              <button type="button" class="btn btn-primary btn-sm" onclick="checkAnswer(0)">Check</button>
+            </div>
+            <div class="feedback"></div>
           </div>
-          <div class="input-group">
-            <input type="text" placeholder="Enter the hidden animal..." data-index="0" />
-            <button onclick="checkAnswer(0)">Check</button>
+
+          <div class="puzzle-item" data-answer="beaver">
+            <div class="sentence">
+              <span class="sentence-number">2.</span> Horace tries in school to be a very good boy.
+            </div>
+            <div class="input-group">
+              <input class="input" type="text" placeholder="Enter the hidden animal..." data-index="1" />
+              <button type="button" class="btn btn-primary btn-sm" onclick="checkAnswer(1)">Check</button>
+            </div>
+            <div class="feedback"></div>
           </div>
-          <div class="feedback"></div>
+
+          <div class="puzzle-item" data-answer="bear">
+            <div class="sentence">
+              <span class="sentence-number">3.</span> People who drive too fast are likely to be
+              arrested.
+            </div>
+            <div class="input-group">
+              <input class="input" type="text" placeholder="Enter the hidden animal..." data-index="2" />
+              <button type="button" class="btn btn-primary btn-sm" onclick="checkAnswer(2)">Check</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="puzzle-item" data-answer="lion">
+            <div class="sentence">
+              <span class="sentence-number">4.</span> Did I ever tell you, Bill, I once found a
+              dollar?
+            </div>
+            <div class="input-group">
+              <input class="input" type="text" placeholder="Enter the hidden animal..." data-index="3" />
+              <button type="button" class="btn btn-primary btn-sm" onclick="checkAnswer(3)">Check</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="puzzle-item" data-answer="camel">
+            <div class="sentence">
+              <span class="sentence-number">5.</span> John came late to his arithmetic class.
+            </div>
+            <div class="input-group">
+              <input class="input" type="text" placeholder="Enter the hidden animal..." data-index="4" />
+              <button type="button" class="btn btn-primary btn-sm" onclick="checkAnswer(4)">Check</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+
+          <div class="puzzle-item" data-answer="cat">
+            <div class="sentence">
+              <span class="sentence-number">6.</span> I enjoy listening to music at night.
+            </div>
+            <div class="input-group">
+              <input class="input" type="text" placeholder="Enter the hidden animal..." data-index="5" />
+              <button type="button" class="btn btn-primary btn-sm" onclick="checkAnswer(5)">Check</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
         </div>
 
-        <div class="puzzle-item" data-answer="beaver">
-          <div class="sentence">
-            <span class="sentence-number">2.</span> Horace tries in school to be a very good boy.
-          </div>
-          <div class="input-group">
-            <input type="text" placeholder="Enter the hidden animal..." data-index="1" />
-            <button onclick="checkAnswer(1)">Check</button>
-          </div>
-          <div class="feedback"></div>
+        <div class="score">Score: <span id="score">0</span> / 6</div>
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" onclick="resetGame()">Reset Game</button>
         </div>
+      </section>
+    </main>
 
-        <div class="puzzle-item" data-answer="bear">
-          <div class="sentence">
-            <span class="sentence-number">3.</span> People who drive too fast are likely to be
-            arrested.
-          </div>
-          <div class="input-group">
-            <input type="text" placeholder="Enter the hidden animal..." data-index="2" />
-            <button onclick="checkAnswer(2)">Check</button>
-          </div>
-          <div class="feedback"></div>
-        </div>
-
-        <div class="puzzle-item" data-answer="lion">
-          <div class="sentence">
-            <span class="sentence-number">4.</span> Did I ever tell you, Bill, I once found a
-            dollar?
-          </div>
-          <div class="input-group">
-            <input type="text" placeholder="Enter the hidden animal..." data-index="3" />
-            <button onclick="checkAnswer(3)">Check</button>
-          </div>
-          <div class="feedback"></div>
-        </div>
-
-        <div class="puzzle-item" data-answer="camel">
-          <div class="sentence">
-            <span class="sentence-number">5.</span> John came late to his arithmetic class.
-          </div>
-          <div class="input-group">
-            <input type="text" placeholder="Enter the hidden animal..." data-index="4" />
-            <button onclick="checkAnswer(4)">Check</button>
-          </div>
-          <div class="feedback"></div>
-        </div>
-
-        <div class="puzzle-item" data-answer="cat">
-          <div class="sentence">
-            <span class="sentence-number">6.</span> I enjoy listening to music at night.
-          </div>
-          <div class="input-group">
-            <input type="text" placeholder="Enter the hidden animal..." data-index="5" />
-            <button onclick="checkAnswer(5)">Check</button>
-          </div>
-          <div class="feedback"></div>
-        </div>
-      </div>
-
-      <div class="score">Score: <span id="score">0</span> / 6</div>
-      <button class="reset-btn" onclick="resetGame()">Reset Game</button>
-    </div>
-
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
     <script>
       let correctAnswers = 0
       const solved = new Set()
@@ -525,8 +302,14 @@
       let startTime = null
       let elapsedSeconds = 0
 
+      function formatTime(totalSeconds) {
+        const minutes = Math.floor(totalSeconds / 60)
+        const seconds = totalSeconds % 60
+        return `${minutes}:${String(seconds).padStart(2, "0")}`
+      }
+
       function startGame() {
-        document.getElementById("rulesModal").classList.add("hidden")
+        document.getElementById("rulesModal").classList.remove("show")
         startTimer()
       }
 
@@ -546,19 +329,14 @@
       }
 
       function updateTimerDisplay() {
-        const minutes = Math.floor(elapsedSeconds / 60)
-        const seconds = elapsedSeconds % 60
-        const display = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
-        document.getElementById("timer").textContent = display
+        document.getElementById("timer").textContent = formatTime(elapsedSeconds)
       }
 
       function showWinnerModal() {
         stopTimer()
-        const minutes = Math.floor(elapsedSeconds / 60)
-        const seconds = elapsedSeconds % 60
-        const timeDisplay = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
-        document.getElementById("finalTime").textContent = timeDisplay
+        document.getElementById("finalTime").textContent = formatTime(elapsedSeconds)
         document.getElementById("winnerModal").classList.add("show")
+        PuzzleIcons.initIcons()
       }
 
       function checkAnswer(index) {
@@ -582,10 +360,9 @@
           puzzleItem.classList.add("correct")
           input.classList.add("correct")
           input.disabled = true
-          feedback.textContent = `✓ Correct! The hidden animal is "${correctAnswer.toUpperCase()}"`
+          feedback.textContent = `Correct! The hidden animal is "${correctAnswer.toUpperCase()}"`
           feedback.className = "feedback correct"
 
-          // Auto-focus next input field
           const nextInput = document.querySelector(`input[data-index="${index + 1}"]`)
           if (nextInput && !nextInput.disabled) {
             setTimeout(() => {
@@ -593,7 +370,6 @@
             }, 100)
           }
 
-          // Check if all puzzles are solved
           if (correctAnswers === 6) {
             setTimeout(() => {
               showWinnerModal()
@@ -601,7 +377,7 @@
           }
         } else {
           feedback.style.display = ""
-          feedback.textContent = `✗ Not quite! Try again.`
+          feedback.textContent = "Not quite! Try again."
           feedback.className = "feedback incorrect"
           setTimeout(() => {
             feedback.style.display = "none"
@@ -641,7 +417,6 @@
         resetGame()
       }
 
-      // Allow Enter key to submit
       document.querySelectorAll('input[type="text"]').forEach((input) => {
         input.addEventListener("keypress", function (e) {
           if (e.key === "Enter") {
@@ -649,6 +424,10 @@
             checkAnswer(index)
           }
         })
+      })
+
+      document.addEventListener("DOMContentLoaded", () => {
+        PuzzleIcons.initIcons()
       })
     </script>
   </body>
