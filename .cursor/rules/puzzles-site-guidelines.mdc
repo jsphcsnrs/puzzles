@@ -48,7 +48,7 @@ From puzzle pages under `puzzles/`:
 <script src="../js/icons.js"></script>
 ```
 
-Every puzzle page uses a themed body, puzzle-texture background, and back navigation:
+Every puzzle page uses a themed body, plain background with subtle corner gradients, and back navigation:
 
 ```html
 <body data-theme="link">
@@ -68,9 +68,10 @@ Call `PuzzleIcons.initIcons()` after DOM ready (and after any dynamic icon injec
 
 ## Core tokens
 
-- **Background:** `#E0E5EC` — no gradients on the root background
-- **Foreground:** `#3D4852` — primary text
-- **Muted:** `#6B7280` — secondary text
+- **Background:** `#232936` — dark cool-grey page surface (`--bg`)
+- **Cards / chrome:** `#2C3342` — slightly elevated surface (`--surface`)
+- **Foreground:** `#EDF0F5` — primary text
+- **Muted:** `#9AA5B5` — secondary text
 - **Accent:** `#6C63FF` — CTAs and focus states only (not headings)
 - **Success:** `#38B2AC` — correct/success states
 - **Fonts:** Plus Jakarta Sans (display headings), DM Sans (body) — loaded via `neumorphic.css`
@@ -80,7 +81,6 @@ Call `PuzzleIcons.initIcons()` after DOM ready (and after any dynamic icon injec
 
 ## Anti-patterns
 
-- No `bg-white` or white cards — surfaces match `#E0E5EC`
 - No flat buttons — always use extruded/inset shadows
 - No `rounded-lg` or sharper — minimum `16px` on interactive elements
 - No emoji for UI iconography — use Lucide icons

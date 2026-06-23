@@ -1,6 +1,6 @@
 /* global lucide */
 ;(function () {
-  const DEFAULT_STROKE = "#3d4852"
+  const DEFAULT_STROKE = "#edf0f5"
   const ACCENT_STROKE = "#6c63ff"
   const WHITE_STROKE = "#ffffff"
 

@@ -1,40 +1,44 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap");
 
 :root {
-  --bg: #e0e5ec;
-  --fg: #3d4852;
-  --muted: #6b7280;
+  --bg: #232936;
+  --surface: #2c3342;
+  --fg: #edf0f5;
+  --muted: #9aa5b5;
   --accent: #6c63ff;
   --accent-light: #8b84ff;
-  --success: #38b2ac;
-  --error: #e53e3e;
-  --placeholder: #a0aec0;
+  --success: #4fd1c5;
+  --error: #fc8181;
+  --placeholder: #6b7588;
 
   --theme-color: #6c63ff;
   --theme-hue: 252;
   --theme-soft: #a89fff;
 
-  --shadow-extruded: 9px 9px 16px rgb(163 177 198 / 0.6),
-    -9px -9px 16px rgb(255 255 255 / 0.5);
-  --shadow-extruded-hover: 12px 12px 20px rgb(163 177 198 / 0.7),
-    -12px -12px 20px rgb(255 255 255 / 0.6);
-  --shadow-extruded-small: 5px 5px 10px rgb(163 177 198 / 0.6),
-    -5px -5px 10px rgb(255 255 255 / 0.5);
-  --shadow-inset: inset 6px 6px 10px rgb(163 177 198 / 0.6),
-    inset -6px -6px 10px rgb(255 255 255 / 0.5);
-  --shadow-inset-deep: inset 10px 10px 20px rgb(163 177 198 / 0.7),
-    inset -10px -10px 20px rgb(255 255 255 / 0.6);
-  --shadow-inset-small: inset 3px 3px 6px rgb(163 177 198 / 0.6),
-    inset -3px -3px 6px rgb(255 255 255 / 0.5);
-  --shadow-inset-accent: inset 4px 4px 8px rgb(80 70 180 / 0.4),
-    inset -4px -4px 8px rgb(160 150 255 / 0.3);
+  --shadow-dark: rgb(10 12 18 / 0.55);
+  --shadow-light: rgb(255 255 255 / 0.045);
+
+  --shadow-extruded: 9px 9px 18px var(--shadow-dark),
+    -7px -7px 16px var(--shadow-light);
+  --shadow-extruded-hover: 12px 12px 22px rgb(6 8 14 / 0.62),
+    -9px -9px 18px rgb(255 255 255 / 0.055);
+  --shadow-extruded-small: 5px 5px 10px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+  --shadow-inset: inset 6px 6px 12px var(--shadow-dark),
+    inset -5px -5px 10px var(--shadow-light);
+  --shadow-inset-deep: inset 10px 10px 20px rgb(6 8 14 / 0.65),
+    inset -8px -8px 16px rgb(255 255 255 / 0.035);
+  --shadow-inset-small: inset 3px 3px 6px var(--shadow-dark),
+    inset -3px -3px 5px var(--shadow-light);
+  --shadow-inset-accent: inset 4px 4px 10px rgb(40 30 120 / 0.55),
+    inset -3px -3px 8px rgb(140 130 255 / 0.15);
 
   --radius-container: 32px;
   --radius-base: 16px;
   --radius-inner: 12px;
   --transition: 300ms ease-out;
 
-  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--theme-color);
+  --focus-ring: 0 0 0 2px var(--surface), 0 0 0 4px var(--theme-color);
 }
 
 /* ── Per-page theme accents ── */
@@ -152,7 +156,7 @@ body {
   isolation: isolate;
 }
 
-/* ── Page background: subtle neumorphic puzzle texture ── */
+/* ── Page background: plain surface with subtle corner washes ── */
 
 .ambient-bg {
   position: fixed;
@@ -161,29 +165,30 @@ body {
   pointer-events: none;
   background-color: var(--bg);
   background-image:
-    url("puzzle-texture.svg"),
-    linear-gradient(
-      155deg,
-      color-mix(in srgb, var(--theme-color) 7%, var(--bg)) 0%,
-      var(--bg) 48%,
-      color-mix(in srgb, var(--theme-soft) 5%, var(--bg)) 100%
+    radial-gradient(
+      ellipse 85% 65% at 0% 0%,
+      color-mix(in srgb, var(--theme-color) 26%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 75% 60% at 100% 100%,
+      color-mix(in srgb, var(--theme-soft) 20%, transparent),
+      transparent 68%
     );
-  background-size: 180px 180px, 100% 100%;
-  background-repeat: repeat, no-repeat;
 }
 
 [data-theme="collection"] .ambient-bg {
   background-image:
-    url("puzzle-texture.svg"),
-    linear-gradient(
-      160deg,
-      color-mix(in srgb, #6c63ff 6%, var(--bg)) 0%,
-      var(--bg) 40%,
-      color-mix(in srgb, #38b2ac 4%, var(--bg)) 72%,
-      color-mix(in srgb, #ec6b9a 4%, var(--bg)) 100%
+    radial-gradient(
+      ellipse 85% 65% at 0% 0%,
+      rgb(108 99 255 / 0.2),
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 75% 60% at 100% 100%,
+      rgb(56 178 172 / 0.14),
+      transparent 68%
     );
-  background-size: 180px 180px, 100% 100%;
-  background-repeat: repeat, no-repeat;
 }
 
 .font-display {
@@ -210,13 +215,13 @@ body {
 /* ── Surfaces ── */
 
 .card {
-  background: var(--bg);
+  background: var(--surface);
   border-radius: var(--radius-container);
   padding: 32px;
 }
 
 .card-extruded {
-  background: var(--bg);
+  background: var(--surface);
   border-radius: var(--radius-container);
   box-shadow: var(--shadow-extruded);
   transition: transform var(--transition), box-shadow var(--transition);
@@ -231,7 +236,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--theme-color) 6%, var(--bg));
+  background: color-mix(in srgb, var(--theme-color) 12%, var(--surface));
   border-radius: var(--radius-base);
   box-shadow: var(--shadow-inset-deep);
   flex-shrink: 0;
@@ -365,7 +370,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  background: var(--bg);
+  background: var(--surface);
   color: var(--fg);
   box-shadow: var(--shadow-extruded);
   transition: transform var(--transition), box-shadow var(--transition),
@@ -407,7 +412,7 @@ body {
 }
 
 .btn-secondary {
-  background: var(--bg);
+  background: var(--surface);
   color: var(--fg);
 }
 
@@ -424,7 +429,7 @@ body {
   padding: 12px 16px;
   border: none;
   border-radius: var(--radius-base);
-  background: var(--bg);
+  background: var(--surface);
   color: var(--fg);
   font-family: inherit;
   font-size: 1rem;
@@ -450,7 +455,7 @@ body {
   margin-top: 16px;
   padding: 10px 20px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--theme-color) 8%, var(--bg));
+  background: color-mix(in srgb, var(--theme-color) 14%, var(--surface));
   color: var(--theme-color);
   font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.35rem;
@@ -466,7 +471,7 @@ body {
   margin-bottom: 24px;
   padding: 18px 20px;
   border-radius: var(--radius-base);
-  background: var(--bg);
+  background: var(--surface);
   box-shadow: var(--shadow-inset);
   line-height: 1.6;
 }
@@ -482,13 +487,13 @@ body {
 /* ── Feedback states ── */
 
 .state-correct {
-  background: color-mix(in srgb, var(--success) 12%, var(--bg));
+  background: color-mix(in srgb, var(--success) 16%, var(--surface));
   box-shadow: var(--shadow-inset),
     inset 0 0 0 1px color-mix(in srgb, var(--success) 30%, transparent);
 }
 
 .state-incorrect {
-  background: color-mix(in srgb, var(--error) 10%, var(--bg));
+  background: color-mix(in srgb, var(--error) 14%, var(--surface));
   box-shadow: var(--shadow-inset),
     inset 0 0 0 1px color-mix(in srgb, var(--error) 25%, transparent);
 }
@@ -499,7 +504,7 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgb(61 72 82 / 0.35);
+  background: rgb(8 10 16 / 0.62);
   backdrop-filter: blur(4px);
   z-index: 1000;
   align-items: center;
@@ -513,7 +518,7 @@ body {
 }
 
 .modal {
-  background: var(--bg);
+  background: var(--surface);
   border-radius: var(--radius-container);
   box-shadow: var(--shadow-extruded-hover);
   padding: 40px 32px;
@@ -584,7 +589,7 @@ body {
 }
 
 .puzzle-card {
-  background: var(--bg);
+  background: var(--surface);
   border-radius: var(--radius-container);
   padding: 28px;
   box-shadow: var(--shadow-extruded);
@@ -609,7 +614,7 @@ body {
   width: 64px;
   height: 64px;
   border-radius: var(--radius-base);
-  background: color-mix(in srgb, var(--theme-color) 8%, var(--bg));
+  background: color-mix(in srgb, var(--theme-color) 14%, var(--surface));
   box-shadow: var(--shadow-inset-deep);
   display: flex;
   align-items: center;
@@ -691,7 +696,7 @@ body {
   padding: 10px 16px;
   min-height: 44px;
   border-radius: var(--radius-base);
-  background: var(--bg);
+  background: var(--surface);
   color: var(--muted);
   text-decoration: none;
   font-weight: 600;
