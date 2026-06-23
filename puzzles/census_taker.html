@@ -163,22 +163,6 @@
         color: var(--muted);
       }
 
-      .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        margin-top: 8px;
-        font-size: 0.85rem;
-        color: var(--accent);
-        text-decoration: none;
-        font-weight: 600;
-      }
-
-      .back-link span {
-        text-decoration: underline;
-        text-underline-offset: 2px;
-      }
-
       .solution {
         margin-top: 10px;
         font-size: 0.9rem;
@@ -220,13 +204,15 @@
       }
     </style>
   </head>
-  <body>
-    <main class="container container-narrow">
+  <body data-theme="home">
+    <div class="ambient-bg" aria-hidden="true"></div>
+<main class="container container-narrow">
+    <a href="../index.html" class="back-nav"><i data-lucide="arrow-left" class="icon icon-sm icon-themed"></i> All Puzzles</a>
       <section class="card card-extruded">
         <div class="header-row">
           <header class="header">
             <h1 class="font-display">
-              <span class="icon-well icon-well-md"><i data-lucide="home" class="icon icon-md"></i></span>
+              <span class="icon-well icon-well-md"><i data-lucide="home" class="icon icon-md icon-themed"></i></span>
               <span class="title-text">Census-Taker Problem</span>
             </h1>
             <p class="subtitle">
@@ -294,9 +280,6 @@
               Use the clues together to narrow down the possibilities, then enter the only triple that fits
               <em>all</em> of them.
             </p>
-            <a class="back-link" href="../index.html">
-              ← <span>Back to puzzle collection</span>
-            </a>
           </aside>
         </div>
       </section>
@@ -304,7 +287,7 @@
 
     <div class="modal-overlay" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
       <div class="modal">
-        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl"></i></div>
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl icon-themed"></i></div>
         <h2 id="winTitle" class="font-display">Well done!</h2>
         <p>You cracked the Census-Taker Problem.</p>
         <div class="final-time" id="finalTime">0:00</div>
@@ -317,8 +300,7 @@
         </div>
       </div>
     </div>
-
-    <script src="../js/lucide.min.js"></script>
+<script src="../js/lucide.min.js"></script>
     <script src="../js/icons.js"></script>
     <script>
       ;(() => {

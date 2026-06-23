@@ -274,14 +274,15 @@
       }
     </style>
   </head>
-  <body>
-    <div class="page-wrap">
-      <a href="../index.html" class="back-link">← Back to Puzzles</a>
+  <body data-theme="shuffle">
+    <div class="ambient-bg" aria-hidden="true"></div>
+<div class="page-wrap">
+      <a href="../index.html" class="back-nav"><i data-lucide="arrow-left" class="icon icon-sm icon-themed"></i> All Puzzles</a>
 
       <div class="card card-extruded">
         <div class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="shuffle" class="icon icon-md"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="shuffle" class="icon icon-md icon-themed"></i></span>
             <span class="title-text">Synonym Shift</span>
           </h1>
           <div class="subtitle">
@@ -309,7 +310,7 @@
       aria-labelledby="winTitle"
     >
       <div class="modal">
-        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl"></i></div>
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl icon-themed"></i></div>
         <h2 id="winTitle" class="font-display">Superb shifting!</h2>
         <div class="final-time" id="finalTime">0:00</div>
         <p class="text-muted">Your completion time</p>
@@ -319,8 +320,7 @@
         </div>
       </div>
     </div>
-
-    <script src="../js/lucide.min.js"></script>
+<script src="../js/lucide.min.js"></script>
     <script src="../js/icons.js"></script>
     <script>
       const INITIAL_PUZZLES = [

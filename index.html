@@ -9,11 +9,12 @@
   <link rel="stylesheet" href="styles/neumorphic.css" />
 </head>
 
-<body>
+<body data-theme="collection">
+  <div class="ambient-bg" aria-hidden="true"></div>
   <div class="container">
     <header class="page-header">
       <h1 class="font-display">
-        <span class="icon-well icon-well-lg"><i data-lucide="puzzle" class="icon icon-lg"></i></span>
+        <span class="icon-well icon-well-lg"><i data-lucide="puzzle" class="icon icon-lg icon-themed"></i></span>
         <span class="title-text">Puzzle Collection</span>
       </h1>
       <p class="subtitle">Challenge your mind with these fun brain teasers!</p>
@@ -29,8 +30,7 @@
       </p>
     </footer>
   </div>
-
-  <script src="js/lucide.min.js"></script>
+<script src="js/lucide.min.js"></script>
   <script src="js/icons.js"></script>
   <script>
     // ============================================================
@@ -105,7 +105,7 @@
       },
       {
         title: "Word Pyramid",
-        icon: "layers",
+        icon: "pyramid",
         description:
           "Start with a tiny word, add one letter at a time, and rearrange them all into something new. Can you build the pyramid from top to bottom?",
         file: "puzzles/word_pyramid.html",
@@ -113,7 +113,7 @@
       },
       {
         title: "Syllable Scramble",
-        icon: "puzzle",
+        icon: "whole-word",
         description:
           "Twenty-two syllables, six mystery words — can you piece them all together? A satisfying challenge of language and logic.",
         file: "puzzles/syllable_scramble.html",
@@ -179,10 +179,10 @@
           const card = document.createElement("a")
           card.href = puzzle.file
           card.className = "puzzle-card"
+          card.dataset.theme = puzzle.icon
 
           const iconWell = document.createElement("div")
           iconWell.className = "puzzle-icon-well"
-          iconWell.appendChild(PuzzleIcons.iconEl(puzzle.icon, { size: 32 }))
 
           const title = document.createElement("h2")
           title.textContent = puzzle.title
@@ -201,6 +201,12 @@
 
           card.append(iconWell, title, date, desc, playBtn)
           grid.appendChild(card)
+          iconWell.appendChild(
+            PuzzleIcons.iconEl(puzzle.icon, {
+              size: 32,
+              theme: puzzle.icon,
+            }),
+          )
         })
 
       if (unreleased.length > 0) {

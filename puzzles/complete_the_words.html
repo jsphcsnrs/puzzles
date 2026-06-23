@@ -194,12 +194,14 @@
       }
     </style>
   </head>
-  <body>
-    <main class="container container-narrow">
+  <body data-theme="text-cursor-input">
+    <div class="ambient-bg" aria-hidden="true"></div>
+<main class="container container-narrow">
+    <a href="../index.html" class="back-nav"><i data-lucide="arrow-left" class="icon icon-sm icon-themed"></i> All Puzzles</a>
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="text-cursor-input" class="icon icon-md"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="text-cursor-input" class="icon icon-md icon-themed"></i></span>
             <span class="title-text">Complete the Words</span>
           </h1>
           <p class="subtitle">Fill in the blanks with three consecutive alphabet letters</p>
@@ -229,7 +231,7 @@
 
     <div class="modal-overlay" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
       <div class="modal">
-        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl"></i></div>
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl icon-themed"></i></div>
         <h2 id="winnerTitle" class="font-display">Congrats!</h2>
         <p>You completed the puzzle in</p>
         <div class="final-time" id="finalTime">00:00</div>
@@ -239,8 +241,7 @@
         </div>
       </div>
     </div>
-
-    <script src="../js/lucide.min.js"></script>
+<script src="../js/lucide.min.js"></script>
     <script src="../js/icons.js"></script>
     <script>
       const PUZZLES = [

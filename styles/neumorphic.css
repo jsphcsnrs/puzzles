@@ -10,6 +10,10 @@
   --error: #e53e3e;
   --placeholder: #a0aec0;
 
+  --theme-color: #6c63ff;
+  --theme-hue: 252;
+  --theme-soft: #a89fff;
+
   --shadow-extruded: 9px 9px 16px rgb(163 177 198 / 0.6),
     -9px -9px 16px rgb(255 255 255 / 0.5);
   --shadow-extruded-hover: 12px 12px 20px rgb(163 177 198 / 0.7),
@@ -30,7 +34,99 @@
   --radius-inner: 12px;
   --transition: 300ms ease-out;
 
-  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--theme-color);
+}
+
+/* ── Per-page theme accents ── */
+
+[data-theme="collection"] {
+  --theme-color: #6c63ff;
+  --theme-hue: 252;
+  --theme-soft: #a89fff;
+}
+
+[data-theme="shuffle"] {
+  --theme-color: #7c5cff;
+  --theme-hue: 255;
+  --theme-soft: #b4a4ff;
+}
+
+[data-theme="scissors"] {
+  --theme-color: #e86b8a;
+  --theme-hue: 342;
+  --theme-soft: #f5a3b8;
+}
+
+[data-theme="link"] {
+  --theme-color: #4f8cff;
+  --theme-hue: 218;
+  --theme-soft: #93bfff;
+}
+
+[data-theme="landmark"] {
+  --theme-color: #d4a034;
+  --theme-hue: 42;
+  --theme-soft: #e8c878;
+}
+
+[data-theme="lock"] {
+  --theme-color: #5b7fd6;
+  --theme-hue: 222;
+  --theme-soft: #9bb5ef;
+}
+
+[data-theme="home"] {
+  --theme-color: #38b2ac;
+  --theme-hue: 174;
+  --theme-soft: #7fd4cf;
+}
+
+[data-theme="paw-print"] {
+  --theme-color: #f07848;
+  --theme-hue: 18;
+  --theme-soft: #f5a882;
+}
+
+[data-theme="text-cursor-input"] {
+  --theme-color: #6366f1;
+  --theme-hue: 239;
+  --theme-soft: #a5a7f7;
+}
+
+[data-theme="layers"] {
+  --theme-color: #a855f7;
+  --theme-hue: 271;
+  --theme-soft: #c99bfa;
+}
+
+[data-theme="puzzle"] {
+  --theme-color: #8b5cf6;
+  --theme-hue: 258;
+  --theme-soft: #b794f6;
+}
+
+[data-theme="brain"] {
+  --theme-color: #ec6b9a;
+  --theme-hue: 330;
+  --theme-soft: #f5a3c0;
+}
+
+[data-theme="cat"] {
+  --theme-color: #f59e42;
+  --theme-hue: 28;
+  --theme-soft: #f8c078;
+}
+
+[data-theme="scan-search"] {
+  --theme-color: #34a06e;
+  --theme-hue: 152;
+  --theme-soft: #72c99a;
+}
+
+[data-theme="lock-keyhole"] {
+  --theme-color: #9b6bff;
+  --theme-hue: 265;
+  --theme-soft: #c4a3ff;
 }
 
 *,
@@ -52,6 +148,42 @@ body {
   min-height: 100vh;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  isolation: isolate;
+}
+
+/* ── Page background: subtle neumorphic puzzle texture ── */
+
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image:
+    url("puzzle-texture.svg"),
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--theme-color) 7%, var(--bg)) 0%,
+      var(--bg) 48%,
+      color-mix(in srgb, var(--theme-soft) 5%, var(--bg)) 100%
+    );
+  background-size: 180px 180px, 100% 100%;
+  background-repeat: repeat, no-repeat;
+}
+
+[data-theme="collection"] .ambient-bg {
+  background-image:
+    url("puzzle-texture.svg"),
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, #6c63ff 6%, var(--bg)) 0%,
+      var(--bg) 40%,
+      color-mix(in srgb, #38b2ac 4%, var(--bg)) 72%,
+      color-mix(in srgb, #ec6b9a 4%, var(--bg)) 100%
+    );
+  background-size: 180px 180px, 100% 100%;
+  background-repeat: repeat, no-repeat;
 }
 
 .font-display {
@@ -99,7 +231,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
+  background: color-mix(in srgb, var(--theme-color) 6%, var(--bg));
   border-radius: var(--radius-base);
   box-shadow: var(--shadow-inset-deep);
   flex-shrink: 0;
@@ -198,8 +330,14 @@ body {
   height: 48px;
 }
 
+.icon-themed,
+.icon-well .icon,
+[data-theme] .puzzle-icon-well .icon {
+  stroke: var(--theme-color);
+}
+
 .icon-accent {
-  stroke: var(--accent);
+  stroke: var(--theme-color, var(--accent));
 }
 
 .icon-success {
@@ -312,8 +450,8 @@ body {
   margin-top: 16px;
   padding: 10px 20px;
   border-radius: 999px;
-  background: var(--bg);
-  color: var(--fg);
+  background: color-mix(in srgb, var(--theme-color) 8%, var(--bg));
+  color: var(--theme-color);
   font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.35rem;
   font-weight: 800;
@@ -335,7 +473,7 @@ body {
 
 .rules h2,
 .rules-panel h2 {
-  color: var(--fg);
+  color: var(--theme-color);
   font-size: 1.1rem;
   font-weight: 700;
   margin-bottom: 8px;
@@ -397,6 +535,11 @@ body {
   align-items: center;
   justify-content: center;
   margin: 0 auto 16px;
+}
+
+.modal-icon .icon,
+.modal-icon .icon-themed {
+  stroke: var(--theme-color);
 }
 
 .modal h2 {
@@ -466,7 +609,7 @@ body {
   width: 64px;
   height: 64px;
   border-radius: var(--radius-base);
-  background: var(--bg);
+  background: color-mix(in srgb, var(--theme-color) 8%, var(--bg));
   box-shadow: var(--shadow-inset-deep);
   display: flex;
   align-items: center;
@@ -499,7 +642,7 @@ body {
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
-  background: var(--accent);
+  background: var(--theme-color, var(--accent));
   color: #fff;
   border-radius: var(--radius-base);
   font-weight: 600;
@@ -510,7 +653,7 @@ body {
 }
 
 .puzzle-card:hover .play-button {
-  background: var(--accent-light);
+  background: color-mix(in srgb, var(--theme-color, var(--accent)) 88%, white);
   transform: translateY(-1px);
   box-shadow: var(--shadow-extruded);
 }
@@ -537,29 +680,46 @@ body {
   box-shadow: var(--shadow-inset-small);
 }
 
-/* ── Back link ── */
+/* ── Back navigation ── */
 
+.back-nav,
 .back-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 20px;
+  padding: 10px 16px;
+  min-height: 44px;
+  border-radius: var(--radius-base);
+  background: var(--bg);
   color: var(--muted);
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.95rem;
-  transition: color var(--transition);
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-extruded-small);
+  transition: color var(--transition), transform var(--transition),
+    box-shadow var(--transition);
 }
 
+.back-nav:hover,
 .back-link:hover {
-  color: var(--accent);
+  color: var(--theme-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-extruded);
 }
 
+.back-nav:focus-visible,
 .back-link:focus-visible {
   outline: none;
-  border-radius: 4px;
-  box-shadow: var(--focus-ring);
+  box-shadow: var(--focus-ring), var(--shadow-extruded-small);
 }
+
+.back-nav .icon,
+.back-link .icon {
+  stroke: var(--theme-color);
+}
+
+/* legacy alias — prefer .back-nav */
 
 /* ── Footer ── */
 

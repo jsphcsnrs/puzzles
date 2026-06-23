@@ -155,11 +155,12 @@
       }
     </style>
   </head>
-  <body>
-    <div class="modal-overlay show intro-modal" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <body data-theme="scan-search">
+    <div class="ambient-bg" aria-hidden="true"></div>
+<div class="modal-overlay show intro-modal" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
       <div class="modal">
         <h2 id="introTitle" class="font-display">
-          <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md"></i></span>
+          <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md icon-themed"></i></span>
           <span class="title-text">Hidden Animal Puzzle</span>
         </h2>
         <div class="intro-rules">
@@ -184,7 +185,7 @@
 
     <div class="modal-overlay" id="winnerModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
       <div class="modal">
-        <div class="modal-icon"><i data-lucide="trophy" class="icon icon-xl icon-accent"></i></div>
+        <div class="modal-icon"><i data-lucide="trophy" class="icon icon-xl icon-themed"></i></div>
         <h2 id="winnerTitle" class="font-display">Congratulations!</h2>
         <p>You found all the hidden animals in</p>
         <div class="completion-time" id="finalTime">0:00</div>
@@ -195,10 +196,11 @@
     </div>
 
     <main class="container container-narrow">
+    <a href="../index.html" class="back-nav"><i data-lucide="arrow-left" class="icon icon-sm icon-themed"></i> All Puzzles</a>
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md icon-themed"></i></span>
             <span class="title-text">Hidden Animal Puzzle</span>
           </h1>
           <div class="timer" id="timer">0:00</div>
@@ -292,8 +294,7 @@
         </div>
       </section>
     </main>
-
-    <script src="../js/lucide.min.js"></script>
+<script src="../js/lucide.min.js"></script>
     <script src="../js/icons.js"></script>
     <script>
       let correctAnswers = 0

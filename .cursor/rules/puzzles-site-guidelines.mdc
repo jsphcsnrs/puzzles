@@ -48,6 +48,20 @@ From puzzle pages under `puzzles/`:
 <script src="../js/icons.js"></script>
 ```
 
+Every puzzle page uses a themed body, puzzle-texture background, and back navigation:
+
+```html
+<body data-theme="link">
+  <div class="ambient-bg" aria-hidden="true"></div>
+  <main class="container container-narrow">
+    <a href="../index.html" class="back-nav">
+      <i data-lucide="arrow-left" class="icon icon-sm icon-themed"></i> All Puzzles
+    </a>
+    ...
+```
+
+Set `data-theme` to the same Lucide icon name used for that puzzle (e.g. `shuffle`, `link`, `brain`). The index page uses `data-theme="collection"`.
+
 Call `PuzzleIcons.initIcons()` after DOM ready (and after any dynamic icon injection).
 
 # Design System — Neumorphism (Soft UI)
@@ -90,10 +104,12 @@ Call `PuzzleIcons.initIcons()` after DOM ready (and after any dynamic icon injec
 
 ```html
 <h1 class="font-display">
-  <span class="icon-well icon-well-md"><i data-lucide="link" class="icon icon-md"></i></span>
+  <span class="icon-well icon-well-md"><i data-lucide="link" class="icon icon-md icon-themed"></i></span>
   <span class="title-text">Puzzle Title</span>
 </h1>
 ```
+
+Use the `icon-themed` class on decorative Lucide icons so they pick up each page's `--theme-color`.
 
 ## Icons
 
