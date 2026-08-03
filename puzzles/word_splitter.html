@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Splitter</title>
+    <link rel="stylesheet" href="../styles/neumorphic.css" />
+    <style>
+      .example {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 12px;
+        padding: 14px;
+        border-radius: var(--radius-inner);
+        background: var(--bg);
+        box-shadow: var(--shadow-inset-small);
+      }
+
+      .example-master {
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        color: var(--theme-color);
+        font-size: 1.05rem;
+      }
+
+      .example-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: monospace;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--fg);
+      }
+
+      .example-arrow {
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+
+      .example-answer {
+        color: var(--success);
+        font-weight: 700;
+      }
+
+      .round-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 20px 0 16px 0;
+      }
+
+      .round-badge {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--theme-color);
+        background: var(--bg);
+        padding: 6px 16px;
+        border-radius: 999px;
+        box-shadow: var(--shadow-extruded-small);
+      }
+
+      .master-card {
+        background: var(--bg);
+        border-radius: var(--radius-base);
+        padding: 20px;
+        box-shadow: var(--shadow-extruded);
+        margin-bottom: 24px;
+        text-align: center;
+      }
+
+      .master-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        margin-bottom: 12px;
+        font-weight: 700;
+      }
+
+      .letter-bank {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .bank-tile {
+        width: 38px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 800;
+        border-radius: var(--radius-inner);
+        background: var(--bg);
+        box-shadow: var(--shadow-extruded-small);
+        color: var(--fg);
+        transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .bank-tile.used {
+        opacity: 0.35;
+        box-shadow: var(--shadow-inset-small);
+        transform: scale(0.92);
+        color: var(--muted);
+      }
+
+      .words-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .word-row-card {
+        background: var(--bg);
+        border-radius: var(--radius-base);
+        padding: 16px;
+        box-shadow: var(--shadow-extruded-small);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: box-shadow var(--transition), background var(--transition);
+      }
+
+      .word-row-card.correct {
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        box-shadow: var(--shadow-inset);
+      }
+
+      .word-row-card.wrong {
+        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        animation: shake 0.4s ease;
+      }
+
+      .word-row-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      .word-row-slots {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .slot-cell {
+        width: 40px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: 800;
+        border-radius: var(--radius-inner);
+        text-transform: uppercase;
+        user-select: none;
+      }
+
+      .slot-cell.clue {
+        background: var(--surface);
+        color: var(--theme-color);
+        box-shadow: var(--shadow-extruded-small);
+        border: 2px solid color-mix(in srgb, var(--theme-color) 30%, transparent);
+      }
+
+      .slot-input {
+        width: 40px;
+        height: 48px;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: none;
+        outline: none;
+        border-radius: var(--radius-inner);
+        background: var(--bg);
+        color: var(--fg);
+        box-shadow: var(--shadow-inset);
+        transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+        padding: 0;
+        font-family: inherit;
+      }
+
+      .slot-input:focus {
+        box-shadow: var(--focus-ring);
+        background: color-mix(in srgb, var(--theme-color) 12%, var(--bg));
+      }
+
+      .slot-input.filled {
+        color: var(--accent-light);
+        font-weight: 800;
+      }
+
+      .slot-input:disabled {
+        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        color: var(--success);
+        box-shadow: var(--shadow-inset-small);
+        cursor: default;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 28px;
+        flex-wrap: wrap;
+      }
+
+      .progress-bar-wrap {
+        width: 100%;
+        height: 8px;
+        background: var(--bg);
+        border-radius: 999px;
+        box-shadow: var(--shadow-inset-small);
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--theme-color);
+        border-radius: 999px;
+        transition: width 0.4s ease;
+      }
+
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-6px); }
+        40% { transform: translateX(6px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+      }
+
+      @media (max-width: 520px) {
+        .bank-tile {
+          width: 32px;
+          height: 38px;
+          font-size: 1.05rem;
+        }
+
+        .slot-cell, .slot-input {
+          width: 34px;
+          height: 42px;
+          font-size: 1.1rem;
+        }
+
+        .word-row-slots {
+          gap: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="split">
+    <div class="ambient-bg" aria-hidden="true"></div>
+    <main class="container container-narrow">
+      <a href="../index.html" class="back-nav">
+        <i data-lucide="arrow-left" class="icon icon-sm icon-themed"></i> All Puzzles
+      </a>
+
+      <section class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md">
+              <i data-lucide="split" class="icon icon-md icon-themed"></i>
+            </span>
+            <span class="title-text">Word Splitter</span>
+          </h1>
+          <p class="subtitle">Break up the master 9-letter word to complete all three target words</p>
+          <div class="timer" id="timer">0:00</div>
+        </header>
+
+        <section class="rules" aria-labelledby="rules-heading">
+          <h2 id="rules-heading">How to Play</h2>
+          <p>
+            Break up the 9-letter word into separate letters and place them on the dashes to spell a
+            <strong>7-letter word</strong>, a <strong>5-letter word</strong>, and a <strong>3-letter word</strong>.
+            You must use <strong>each letter of the master word exactly once</strong>!
+          </p>
+          <div class="example">
+            <div class="example-master">SUNFLOWER</div>
+            <div class="example-row"><span>_ T _ A _ G _</span><span class="example-arrow">→</span><span class="example-answer">STRANGE</span></div>
+            <div class="example-row"><span>_ _ R _ D</span><span class="example-arrow">→</span><span class="example-answer">WORLD</span></div>
+            <div class="example-row"><span>_ _ N</span><span class="example-arrow">→</span><span class="example-answer">FUN</span></div>
+          </div>
+        </section>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+
+        <div class="round-nav">
+          <button type="button" class="btn btn-secondary btn-sm" id="prevBtn" onclick="changeRound(-1)">
+            <i data-lucide="chevron-left" class="icon icon-sm"></i> Prev
+          </button>
+          <div class="round-badge" id="roundBadge">Round 1 of 5</div>
+          <button type="button" class="btn btn-secondary btn-sm" id="nextBtn" onclick="changeRound(1)">
+            Next <i data-lucide="chevron-right" class="icon icon-sm"></i>
+          </button>
+        </div>
+
+        <!-- Master Word Letter Bank -->
+        <div class="master-card">
+          <div class="master-label">Master Letter Bank (9 Letters)</div>
+          <div class="letter-bank" id="letterBank"></div>
+        </div>
+
+        <!-- Target Words Rows -->
+        <div class="words-container" id="wordsContainer"></div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button type="button" class="btn btn-primary" onclick="checkCurrentRound()">
+            <i data-lucide="check-circle" class="icon icon-sm"></i> Check Answer
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="giveHint()">
+            <i data-lucide="lightbulb" class="icon icon-sm"></i> Hint
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="resetCurrentRound()">
+            <i data-lucide="rotate-ccw" class="icon icon-sm"></i> Reset
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Completion Modal -->
+    <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
+      <div class="modal">
+        <div class="modal-icon">
+          <i data-lucide="party-popper" class="icon icon-xl icon-themed"></i>
+        </div>
+        <h2 id="winnerTitle" class="font-display">Congratulations!</h2>
+        <p>You split all master words and completed every puzzle in</p>
+        <div class="final-time" id="modalTime">0:00</div>
+        <div class="modal-btns">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+          <button type="button" class="btn btn-primary" onclick="restartGame()">Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
+    <script>
+      // ============================================================
+      // PUZZLE DATA (5 Rounds - All standard dictionary words, no proper nouns or abbreviations, zero duplicate words)
+      // ============================================================
+      const PUZZLES = [
+        {
+          master: "TEMPORARY",
+          targets: [
+            { word: "ANYMORE", clues: [1, 3, 5] }, // _ N _ M _ R _
+            { word: "MOTOR", clues: [1, 3] },      // _ O _ O _
+            { word: "RIP", clues: [1] }             // _ I _
+          ]
+        },
+        {
+          master: "FIREWORKS",
+          targets: [
+            { word: "IMPROVE", clues: [1, 2, 5] }, // _ M P _ _ V _
+            { word: "KNOWS", clues: [1, 2] },      // _ N O _ _
+            { word: "FOR", clues: [1] }             // _ O _
+          ]
+        },
+        {
+          master: "CHOCOLATE",
+          targets: [
+            { word: "HARVEST", clues: [2, 3, 5] }, // _ _ R V _ S _
+            { word: "BLOCK", clues: [0, 4] },      // B _ _ _ K
+            { word: "COW", clues: [2] }             // _ _ W
+          ]
+        },
+        {
+          master: "CHARACTER",
+          targets: [
+            { word: "NUCLEAR", clues: [0, 1, 3] }, // N U _ L _ _ _
+            { word: "REHAB", clues: [1, 4] },      // _ E _ _ B
+            { word: "CAT", clues: [1] }             // _ A _
+          ]
+        },
+        {
+          master: "DISCOVERY",
+          targets: [
+            { word: "EXPORTS", clues: [1, 2, 5] }, // _ X P _ _ T _
+            { word: "CIVIC", clues: [3, 4] },      // _ _ _ I C
+            { word: "DAY", clues: [1] }             // _ A _
+          ]
+        }
+      ]
+
+      let currentRound = 0
+      let solvedRounds = new Array(PUZZLES.length).fill(false)
+      let secondsElapsed = 0
+      let timerInterval = null
+
+      // Timer Logic
+      function startTimer() {
+        if (timerInterval) clearInterval(timerInterval)
+        secondsElapsed = 0
+        updateTimerDisplay()
+        timerInterval = setInterval(() => {
+          secondsElapsed++
+          updateTimerDisplay()
+        }, 1000)
+      }
+
+      function updateTimerDisplay() {
+        const mins = Math.floor(secondsElapsed / 60)
+        const secs = secondsElapsed % 60
+        const str = `${mins}:${secs.toString().padStart(2, "0")}`
+        document.getElementById("timer").textContent = str
+        document.getElementById("modalTime").textContent = str
+      }
+
+      function stopTimer() {
+        if (timerInterval) clearInterval(timerInterval)
+      }
+
+      // Render Puzzle Round
+      function renderRound() {
+        const puzzle = PUZZLES[currentRound]
+        document.getElementById("roundBadge").textContent = `Round ${currentRound + 1} of ${PUZZLES.length}`
+        document.getElementById("prevBtn").disabled = currentRound === 0
+        document.getElementById("nextBtn").disabled = currentRound === PUZZLES.length - 1
+
+        const progressPercent = (solvedRounds.filter(Boolean).length / PUZZLES.length) * 100
+        document.getElementById("progressFill").style.width = `${progressPercent}%`
+
+        // Render Master Letter Bank
+        const bankContainer = document.getElementById("letterBank")
+        bankContainer.innerHTML = ""
+        puzzle.master.split("").forEach((char, idx) => {
+          const tile = document.createElement("div")
+          tile.className = "bank-tile"
+          tile.textContent = char
+          tile.dataset.char = char
+          tile.dataset.idx = idx
+          bankContainer.appendChild(tile)
+        })
+
+        // Render Words Container
+        const container = document.getElementById("wordsContainer")
+        container.innerHTML = ""
+
+        puzzle.targets.forEach((targetObj, rIdx) => {
+          const card = document.createElement("div")
+          card.className = "word-row-card"
+          if (solvedRounds[currentRound]) card.classList.add("correct")
+          card.id = `rowCard-${rIdx}`
+
+          const header = document.createElement("div")
+          header.className = "word-row-header"
+          header.innerHTML = `<span>Word ${rIdx + 1} (${targetObj.word.length} letters)</span>`
+
+          const slots = document.createElement("div")
+          slots.className = "word-row-slots"
+
+          targetObj.word.split("").forEach((char, cIdx) => {
+            const isClue = targetObj.clues.includes(cIdx)
+            if (isClue) {
+              const clueCell = document.createElement("div")
+              clueCell.className = "slot-cell clue"
+              clueCell.textContent = char
+              slots.appendChild(clueCell)
+            } else {
+              const input = document.createElement("input")
+              input.type = "text"
+              input.maxLength = 1
+              input.className = "slot-input"
+              input.dataset.row = rIdx
+              input.dataset.col = cIdx
+              input.dataset.targetChar = char
+              if (solvedRounds[currentRound]) {
+                input.value = char
+                input.disabled = true
+              }
+
+              input.addEventListener("input", (e) => handleSlotInput(e, rIdx, cIdx))
+              input.addEventListener("keydown", (e) => handleSlotKeyDown(e, rIdx, cIdx))
+
+              slots.appendChild(input)
+            }
+          })
+
+          card.appendChild(header)
+          card.appendChild(slots)
+          container.appendChild(card)
+        })
+
+        updateLetterBankTracker()
+      }
+
+      function handleSlotInput(e, rIdx, cIdx) {
+        const val = e.target.value.toUpperCase()
+        e.target.value = val
+        if (val) {
+          e.target.classList.add("filled")
+          focusNextInput(rIdx, cIdx)
+        } else {
+          e.target.classList.remove("filled")
+        }
+        updateLetterBankTracker()
+      }
+
+      function handleSlotKeyDown(e, rIdx, cIdx) {
+        if (e.key === "Backspace" && !e.target.value) {
+          focusPrevInput(rIdx, cIdx)
+        } else if (e.key === "ArrowRight") {
+          focusNextInput(rIdx, cIdx)
+        } else if (e.key === "ArrowLeft") {
+          focusPrevInput(rIdx, cIdx)
+        } else if (e.key === "Enter") {
+          checkCurrentRound()
+        }
+      }
+
+      function getAllDashInputs() {
+        return Array.from(document.querySelectorAll(".slot-input"))
+      }
+
+      function focusNextInput(rIdx, cIdx) {
+        const inputs = getAllDashInputs()
+        const currentInput = document.querySelector(`.slot-input[data-row="${rIdx}"][data-col="${cIdx}"]`)
+        const idx = inputs.indexOf(currentInput)
+        if (idx !== -1 && idx < inputs.length - 1) {
+          inputs[idx + 1].focus()
+        }
+      }
+
+      function focusPrevInput(rIdx, cIdx) {
+        const inputs = getAllDashInputs()
+        const currentInput = document.querySelector(`.slot-input[data-row="${rIdx}"][data-col="${cIdx}"]`)
+        const idx = inputs.indexOf(currentInput)
+        if (idx > 0) {
+          inputs[idx - 1].focus()
+        }
+      }
+
+      // Track used vs available letters from the Master Bank
+      function updateLetterBankTracker() {
+        const puzzle = PUZZLES[currentRound]
+        const inputs = getAllDashInputs()
+        const typedChars = inputs.map((inp) => inp.value.toUpperCase()).filter(Boolean)
+
+        const bankTiles = Array.from(document.querySelectorAll(".bank-tile"))
+        bankTiles.forEach((tile) => tile.classList.remove("used"))
+
+        typedChars.forEach((char) => {
+          const unusedTile = bankTiles.find(
+            (tile) => tile.dataset.char === char && !tile.classList.contains("used")
+          )
+          if (unusedTile) {
+            unusedTile.classList.add("used")
+          }
+        })
+      }
+
+      // Check current round solution
+      function checkCurrentRound() {
+        const puzzle = PUZZLES[currentRound]
+        let isRoundCorrect = true
+
+        puzzle.targets.forEach((targetObj, rIdx) => {
+          const card = document.getElementById(`rowCard-${rIdx}`)
+          card.classList.remove("wrong")
+
+          let rowCorrect = true
+          targetObj.word.split("").forEach((char, cIdx) => {
+            if (!targetObj.clues.includes(cIdx)) {
+              const input = document.querySelector(`.slot-input[data-row="${rIdx}"][data-col="${cIdx}"]`)
+              if (!input || input.value.toUpperCase() !== char) {
+                rowCorrect = false
+              }
+            }
+          })
+
+          if (!rowCorrect) {
+            isRoundCorrect = false
+            card.classList.add("wrong")
+            setTimeout(() => card.classList.remove("wrong"), 600)
+          }
+        })
+
+        if (isRoundCorrect) {
+          solvedRounds[currentRound] = true
+          puzzle.targets.forEach((_, rIdx) => {
+            const card = document.getElementById(`rowCard-${rIdx}`)
+            card.classList.add("correct")
+          })
+
+          getAllDashInputs().forEach((inp) => (inp.disabled = true))
+
+          const progressPercent = (solvedRounds.filter(Boolean).length / PUZZLES.length) * 100
+          document.getElementById("progressFill").style.width = `${progressPercent}%`
+
+          if (solvedRounds.every(Boolean)) {
+            stopTimer()
+            setTimeout(() => {
+              document.getElementById("modalOverlay").classList.add("active")
+            }, 500)
+          } else if (currentRound < PUZZLES.length - 1) {
+            setTimeout(() => {
+              changeRound(1)
+            }, 800)
+          }
+        }
+      }
+
+      function giveHint() {
+        if (solvedRounds[currentRound]) return
+        const inputs = getAllDashInputs()
+        const emptyOrWrongInputs = inputs.filter(
+          (inp) => inp.value.toUpperCase() !== inp.dataset.targetChar
+        )
+
+        if (emptyOrWrongInputs.length > 0) {
+          const targetInp = emptyOrWrongInputs[0]
+          targetInp.value = targetInp.dataset.targetChar
+          targetInp.classList.add("filled")
+          updateLetterBankTracker()
+        }
+      }
+
+      function resetCurrentRound() {
+        if (solvedRounds[currentRound]) return
+        const inputs = getAllDashInputs()
+        inputs.forEach((inp) => {
+          inp.value = ""
+          inp.classList.remove("filled")
+        })
+        updateLetterBankTracker()
+      }
+
+      function changeRound(delta) {
+        const newRound = currentRound + delta
+        if (newRound >= 0 && newRound < PUZZLES.length) {
+          currentRound = newRound
+          renderRound()
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("modalOverlay").classList.remove("active")
+      }
+
+      function restartGame() {
+        closeModal()
+        solvedRounds = new Array(PUZZLES.length).fill(false)
+        currentRound = 0
+        startTimer()
+        renderRound()
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", () => {
+        if (window.PuzzleIcons) {
+          window.PuzzleIcons.initIcons()
+        }
+        startTimer()
+        renderRound()
+      })
+    </script>
+  </body>
+</html>

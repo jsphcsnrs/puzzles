@@ -133,6 +133,12 @@
   --theme-soft: #c4a3ff;
 }
 
+[data-theme="split"] {
+  --theme-color: #ec4899;
+  --theme-hue: 330;
+  --theme-soft: #f472b6;
+}
+
 *,
 *::before,
 *::after {

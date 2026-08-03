@@ -20,6 +20,7 @@
     cat: "#f59e42",
     "scan-search": "#34a06e",
     "lock-keyhole": "#9b6bff",
+    split: "#ec4899",
   }
 
   function toPascalCase(name) {
