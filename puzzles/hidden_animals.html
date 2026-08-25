@@ -4,29 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hidden Animal Puzzle</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
-      .rules .example {
+      .rules .example,
+      .intro-rules .example {
         margin-top: 10px;
         padding: 10px 12px;
-        border-radius: var(--radius-inner);
-        background: var(--bg);
-        box-shadow: var(--shadow-inset-small);
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--tertiary);
         font-style: italic;
       }
 
       .puzzle-item {
-        background: var(--bg);
+        background: var(--card);
         padding: 20px;
         margin-bottom: 20px;
-        border-radius: var(--radius-base);
-        box-shadow: var(--shadow-extruded-small);
-        transition: box-shadow var(--transition), background var(--transition);
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
       }
 
       .puzzle-item.correct {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .sentence {
@@ -37,8 +42,9 @@
       }
 
       .sentence-number {
-        font-weight: bold;
-        color: var(--accent);
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
+        color: var(--theme-color);
       }
 
       .input-group {
@@ -48,43 +54,50 @@
       }
 
       .input-group .input.correct {
-        background: color-mix(in srgb, var(--success) 10%, var(--bg));
-        color: color-mix(in srgb, var(--success) 80%, var(--fg));
-        font-weight: 600;
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
+        color: color-mix(in srgb, var(--success) 45%, var(--fg));
+        font-weight: 700;
       }
 
       .feedback {
         margin-top: 10px;
         padding: 8px 12px;
-        border-radius: var(--radius-inner);
-        font-weight: 600;
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid transparent;
+        font-weight: 700;
         display: none;
       }
 
       .feedback.correct {
         display: block;
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
         color: var(--fg);
-        box-shadow: var(--shadow-inset-small);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 40%, var(--border));
       }
 
       .feedback.incorrect {
         display: block;
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        border-color: var(--error);
         color: var(--fg);
-        box-shadow: var(--shadow-inset-small);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--error) 40%, var(--border));
       }
 
       .score {
         text-align: center;
         font-size: 1.3em;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--fg);
         margin-top: 24px;
         padding: 15px 20px;
-        background: var(--bg);
-        border-radius: var(--radius-base);
-        font-weight: 700;
-        box-shadow: var(--shadow-inset);
+        background: var(--muted);
+        border: var(--border-width) solid var(--border-strong);
+        border-radius: var(--radius-md);
+        font-weight: 800;
+        box-shadow: 4px 4px 0 0 var(--border);
       }
 
       .actions {
@@ -95,10 +108,10 @@
 
       .completion-time {
         margin: 16px 0;
-        font-family: "Plus Jakarta Sans", sans-serif;
+        font-family: "Outfit", system-ui, sans-serif;
         font-size: 2.5rem;
         font-weight: 800;
-        color: var(--fg);
+        color: var(--accent);
       }
 
       .intro-modal .modal {
@@ -118,14 +131,16 @@
       .intro-rules {
         margin-bottom: 20px;
         padding: 18px 20px;
-        border-radius: var(--radius-base);
-        background: var(--bg);
-        box-shadow: var(--shadow-inset);
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--muted);
+        box-shadow: 4px 4px 0 0 var(--border);
         line-height: 1.6;
       }
 
       .intro-rules h3 {
         color: var(--fg);
+        font-family: "Outfit", system-ui, sans-serif;
         margin-bottom: 12px;
         font-size: 1.1rem;
       }
@@ -160,7 +175,7 @@
 <div class="modal-overlay show intro-modal" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
       <div class="modal">
         <h2 id="introTitle" class="font-display">
-          <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md icon-themed"></i></span>
+          <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md icon-white"></i></span>
           <span class="title-text">Hidden Animal Puzzle</span>
         </h2>
         <div class="intro-rules">
@@ -200,7 +215,7 @@
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="scan-search" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Hidden Animal Puzzle</span>
           </h1>
           <div class="timer" id="timer">0:00</div>
