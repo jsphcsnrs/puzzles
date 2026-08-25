@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Safe Code Puzzle</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .code-wrapper {
         margin-bottom: 30px;
@@ -14,14 +14,16 @@
         display: grid;
         grid-template-columns: repeat(10, 1fr);
         gap: 6px;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
       }
 
       .position-label {
         text-align: center;
-        font-size: 0.75em;
-        color: var(--muted);
-        font-weight: 600;
+        font-size: 0.7em;
+        color: var(--muted-fg);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
         padding: 0 2px;
       }
 
@@ -36,34 +38,43 @@
         height: 60px;
         font-size: 1.8em;
         text-align: center;
-        font-weight: bold;
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
         padding: 0;
+        border-radius: var(--radius-sm);
       }
 
+      /* Field validation: emerald = ok, error = conflict, violet = in-progress */
       .digit-box.valid {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset);
-        color: color-mix(in srgb, var(--success) 80%, var(--fg));
+        background: color-mix(in srgb, var(--success) 22%, var(--card));
+        border-color: var(--success);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 55%, var(--border-strong));
+        color: color-mix(in srgb, var(--success) 55%, var(--fg));
       }
 
       .digit-box.invalid {
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
-        box-shadow: var(--shadow-inset);
-        color: color-mix(in srgb, var(--error) 80%, var(--fg));
+        background: color-mix(in srgb, var(--error) 18%, var(--card));
+        border-color: var(--error);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--error) 55%, var(--border-strong));
+        color: color-mix(in srgb, var(--error) 55%, var(--fg));
       }
 
       .digit-box.pending {
-        background: color-mix(in srgb, var(--accent) 8%, var(--bg));
-        box-shadow: var(--shadow-inset-small);
+        background: color-mix(in srgb, var(--accent) 14%, var(--card));
+        border-color: var(--accent);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--accent) 45%, var(--border-strong));
+        color: var(--fg);
       }
 
-      .rule {
+      .rules .rule {
         display: flex;
         align-items: center;
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: var(--radius-inner);
-        transition: background var(--transition), box-shadow var(--transition);
+        padding: 10px 12px;
+        margin: 8px 0;
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid transparent;
+        transition: background var(--transition), box-shadow var(--transition),
+          border-color var(--transition);
       }
 
       .rule-icon {
@@ -74,52 +85,58 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
+        font-weight: 800;
         flex-shrink: 0;
         font-size: 0.9em;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 2px 2px 0 0 var(--border-strong);
       }
 
       .rule.satisfied {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset-small);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 40%, var(--border));
       }
 
       .rule.satisfied .rule-icon {
         background: var(--success);
         color: #fff;
+        border-color: var(--border-strong);
       }
 
       .rule.unsatisfied {
-        background: var(--bg);
-        box-shadow: var(--shadow-extruded-small);
+        background: var(--card);
+        border-color: var(--border);
+        box-shadow: 2px 2px 0 0 var(--border);
       }
 
       .rule.unsatisfied .rule-icon {
-        background: var(--bg);
-        color: var(--muted);
-        box-shadow: var(--shadow-inset-small);
+        background: var(--muted);
+        color: var(--muted-fg);
       }
 
       .rule.violated {
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
-        box-shadow: var(--shadow-inset-small);
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        border-color: var(--error);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--error) 40%, var(--border));
       }
 
       .rule.violated .rule-icon {
         background: var(--error);
         color: #fff;
+        border-color: var(--border-strong);
       }
 
       .rule-text {
         flex: 1;
         font-size: 0.85em;
         line-height: 1.4;
+        color: var(--fg);
       }
 
       .button-container {
         display: flex;
-        gap: 10px;
+        gap: 12px;
         justify-content: center;
         margin-top: 20px;
         flex-wrap: wrap;
@@ -144,7 +161,7 @@
           font-size: 0.65em;
         }
 
-        .rule {
+        .rules .rule {
           padding: 8px;
         }
 
@@ -204,7 +221,7 @@
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="lock-keyhole" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="lock-keyhole" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Safe Code Puzzle</span>
           </h1>
           <p class="subtitle">Enter digits 0-9, each used exactly once</p>

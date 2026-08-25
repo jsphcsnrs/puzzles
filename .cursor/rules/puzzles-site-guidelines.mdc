@@ -90,11 +90,12 @@ Call `PuzzleIcons.initIcons()` after DOM ready (and after any dynamic icon injec
 
 ## Anti-patterns
 
-- No flat buttons — always use extruded/inset shadows
+- No flat buttons — always use extruded/inset shadows (neumorphic) or hard pop shadows (playful)
 - No `rounded-lg` or sharper — minimum `16px` on interactive elements
 - No emoji for UI iconography — use Lucide icons
 - No gradient text on headings — use `#3D4852` display type
 - All interactive elements need visible accent focus rings
+- **Puzzle surface cards are not interactive.** `.card` / `.card-extruded` on puzzle pages is a static background for content — no hover lift, tilt, scale, or shadow change. Index `.puzzle-card` links remain interactive (they are buttons). When migrating a puzzle to `playful.css`, do not reintroduce hover motion on the main content card.
 
 ## Page structure
 

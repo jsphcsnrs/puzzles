@@ -337,12 +337,6 @@ body {
   border: var(--border-width) solid var(--border-strong);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sticker);
-  transition: transform var(--transition), box-shadow var(--transition);
-}
-
-.card-extruded:hover {
-  transform: rotate(-1deg) scale(1.02);
-  box-shadow: 10px 10px 0 0 var(--border);
 }
 
 .icon-well {
@@ -1013,8 +1007,7 @@ footer a:focus-visible {
     transition-duration: 0.01ms !important;
   }
 
-  .puzzle-card:hover,
-  .card-extruded:hover {
+  .puzzle-card:hover {
     transform: none;
   }
 
