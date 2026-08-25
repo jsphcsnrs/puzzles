@@ -1,241 +1,256 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Puzzle Collection</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236C63FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="styles/neumorphic.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Puzzle Collection</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236C63FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z'/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="styles/neumorphic.css" />
-</head>
+  <body data-theme="collection">
+    <div class="ambient-bg" aria-hidden="true"></div>
+    <div class="container">
+      <header class="page-header">
+        <h1 class="font-display">
+          <span class="icon-well icon-well-lg"
+            ><i data-lucide="puzzle" class="icon icon-lg icon-themed"></i
+          ></span>
+          <span class="title-text">Puzzle Collection</span>
+        </h1>
+        <p class="subtitle">Challenge your mind with these fun brain teasers!</p>
+      </header>
 
-<body data-theme="collection">
-  <div class="ambient-bg" aria-hidden="true"></div>
-  <div class="container">
-    <header class="page-header">
-      <h1 class="font-display">
-        <span class="icon-well icon-well-lg"><i data-lucide="puzzle" class="icon icon-lg icon-themed"></i></span>
-        <span class="title-text">Puzzle Collection</span>
-      </h1>
-      <p class="subtitle">Challenge your mind with these fun brain teasers!</p>
-    </header>
+      <div class="puzzle-grid" id="puzzleGrid"></div>
 
-    <div class="puzzle-grid" id="puzzleGrid"></div>
+      <footer class="site-footer">
+        <p class="footer-heart">
+          Made with
+          <i data-lucide="heart" class="icon icon-sm icon-accent"></i>
+          for Daves everywhere
+        </p>
+      </footer>
+    </div>
+    <script src="js/lucide.min.js"></script>
+    <script src="js/icons.js"></script>
+    <script>
+      // ============================================================
+      // ADD NEW PUZZLES HERE
+      // releaseDate: "YYYY-MM-DD" — puzzle won't show until this date
+      // icon: Lucide icon name (kebab-case)
+      // ============================================================
+      const puzzles = [
+        {
+          title: "Password Clues",
+          icon: "key-round",
+          description:
+            "Five clues point to a single secret password. Can you crack it before the clock runs away with you?",
+          file: "puzzles/password_clues.html",
+          releaseDate: "2026-08-25",
+        },
+        {
+          title: "Word Splitter",
+          icon: "split",
+          description:
+            "Break up a 9-letter master word into separate letters and place them on the dashes to spell three target words.",
+          file: "puzzles/word_splitter.html",
+          releaseDate: "2026-08-03",
+        },
+        {
+          title: "Synonym Shift",
+          icon: "shuffle",
+          description:
+            "Move a single letter from one word to the other to make a pair of synonyms. Can you find them all?",
+          file: "puzzles/synonym_shift.html",
+          releaseDate: "2026-06-22",
+        },
+        {
+          title: "Trim the Tail",
+          icon: "scissors",
+          description:
+            "Each clue points to two words — a longer one, and the same word with its last letter snipped off. Can you uncover both?",
+          file: "puzzles/trim_the_tail.html",
+          releaseDate: "2026-05-29",
+        },
+        {
+          title: "Common Connections",
+          icon: "link",
+          description:
+            "Each trio of words has something in common. Can you identify what links them all together?",
+          file: "puzzles/common_connections.html",
+          releaseDate: "2026-05-08",
+        },
+        {
+          title: "Missing Fourth",
+          icon: "landmark",
+          description:
+            "Three seemingly random sets of letters and numbers. Can you find the pattern and fill in the missing fourth?",
+          file: "puzzles/missing_fourth.html",
+          releaseDate: "2026-04-10",
+        },
+        {
+          title: "Three-Digit Padlock",
+          icon: "lock",
+          description:
+            "Five cryptic guesses, one secret combination — use pure logic to find the three digits that open the lock.",
+          file: "puzzles/three_digit_padlock.html",
+          releaseDate: "2026-03-30",
+        },
+        {
+          title: "Census-Taker Problem",
+          icon: "home",
+          description:
+            "A classic logic puzzle about three children, a house number, and one crucial clue. Can you deduce all their ages?",
+          file: "puzzles/census_taker.html",
+          releaseDate: "2026-03-20",
+        },
+        {
+          title: "Animal Anagrams",
+          icon: "paw-print",
+          description:
+            "Each clue is two ordinary words. Combine all their letters to spell the name of a hidden animal — every letter used exactly once.",
+          file: "puzzles/animal_anagrams.html",
+          releaseDate: "2026-03-13",
+        },
+        {
+          title: "Complete the Words",
+          icon: "text-cursor-input",
+          description:
+            "Each word has three missing letters — and they're always three consecutive letters of the alphabet. Can you figure out which trio fits each gap?",
+          file: "puzzles/complete_the_words.html",
+          releaseDate: "2026-03-10",
+        },
+        {
+          title: "Word Pyramid",
+          icon: "pyramid",
+          description:
+            "Start with a tiny word, add one letter at a time, and rearrange them all into something new. Can you build the pyramid from top to bottom?",
+          file: "puzzles/word_pyramid.html",
+          releaseDate: "2026-03-06",
+        },
+        {
+          title: "Syllable Scramble",
+          icon: "whole-word",
+          description:
+            "Twenty-two syllables, six mystery words — can you piece them all together? A satisfying challenge of language and logic.",
+          file: "puzzles/syllable_scramble.html",
+          releaseDate: "2026-03-03",
+        },
+        {
+          title: "Einstein's Riddle",
+          icon: "brain",
+          description:
+            "The famous logic puzzle: 5 houses, nationalities, drinks, cigarettes, and pets. Can you figure out who owns the fish?",
+          file: "puzzles/einsteins_riddle.html",
+          releaseDate: "2026-02-27",
+        },
+        {
+          title: "Nine Cats Puzzle",
+          icon: "cat",
+          description:
+            "Position nine cats in a 3×3 grid following three simple rules. Use logic and deduction to figure out where each cat belongs. Can you solve the arrangement?",
+          file: "puzzles/nine_cats_puzzle.html",
+          releaseDate: "2026-02-20",
+        },
+        {
+          title: "Hidden Animals",
+          icon: "scan-search",
+          description:
+            "Can you find the animals concealed within each sentence? Race against the clock to find them all!",
+          file: "puzzles/hidden_animals.html",
+          releaseDate: "2026-02-17",
+        },
+        {
+          title: "Safe Code Puzzle",
+          icon: "lock-keyhole",
+          description:
+            "Crack the code to unlock the safe! Use logic and deduction to solve the mystery and reveal what's hidden inside. Can you break the code?",
+          file: "puzzles/safe_code_puzzle.html",
+          releaseDate: "2026-02-13",
+        },
+      ]
+      // ============================================================
 
-    <footer class="site-footer">
-      <p class="footer-heart">
-        Made with
-        <i data-lucide="heart" class="icon icon-sm icon-accent"></i>
-        for Daves everywhere
-      </p>
-    </footer>
-  </div>
-<script src="js/lucide.min.js"></script>
-  <script src="js/icons.js"></script>
-  <script>
-    // ============================================================
-    // ADD NEW PUZZLES HERE
-    // releaseDate: "YYYY-MM-DD" — puzzle won't show until this date
-    // icon: Lucide icon name (kebab-case)
-    // ============================================================
-    const puzzles = [
-      {
-        title: "Word Splitter",
-        icon: "split",
-        description:
-          "Break up a 9-letter master word into separate letters and place them on the dashes to spell three target words.",
-        file: "puzzles/word_splitter.html",
-        releaseDate: "2026-08-03",
-      },
-      {
-        title: "Synonym Shift",
-        icon: "shuffle",
-        description:
-          "Move a single letter from one word to the other to make a pair of synonyms. Can you find them all?",
-        file: "puzzles/synonym_shift.html",
-        releaseDate: "2026-06-22",
-      },
-      {
-        title: "Trim the Tail",
-        icon: "scissors",
-        description:
-          "Each clue points to two words — a longer one, and the same word with its last letter snipped off. Can you uncover both?",
-        file: "puzzles/trim_the_tail.html",
-        releaseDate: "2026-05-29",
-      },
-      {
-        title: "Common Connections",
-        icon: "link",
-        description:
-          "Each trio of words has something in common. Can you identify what links them all together?",
-        file: "puzzles/common_connections.html",
-        releaseDate: "2026-05-08",
-      },
-      {
-        title: "Missing Fourth",
-        icon: "landmark",
-        description:
-          "Three seemingly random sets of letters and numbers. Can you find the pattern and fill in the missing fourth?",
-        file: "puzzles/missing_fourth.html",
-        releaseDate: "2026-04-10",
-      },
-      {
-        title: "Three-Digit Padlock",
-        icon: "lock",
-        description:
-          "Five cryptic guesses, one secret combination — use pure logic to find the three digits that open the lock.",
-        file: "puzzles/three_digit_padlock.html",
-        releaseDate: "2026-03-30",
-      },
-      {
-        title: "Census-Taker Problem",
-        icon: "home",
-        description:
-          "A classic logic puzzle about three children, a house number, and one crucial clue. Can you deduce all their ages?",
-        file: "puzzles/census_taker.html",
-        releaseDate: "2026-03-20",
-      },
-      {
-        title: "Animal Anagrams",
-        icon: "paw-print",
-        description:
-          "Each clue is two ordinary words. Combine all their letters to spell the name of a hidden animal — every letter used exactly once.",
-        file: "puzzles/animal_anagrams.html",
-        releaseDate: "2026-03-13",
-      },
-      {
-        title: "Complete the Words",
-        icon: "text-cursor-input",
-        description:
-          "Each word has three missing letters — and they're always three consecutive letters of the alphabet. Can you figure out which trio fits each gap?",
-        file: "puzzles/complete_the_words.html",
-        releaseDate: "2026-03-10",
-      },
-      {
-        title: "Word Pyramid",
-        icon: "pyramid",
-        description:
-          "Start with a tiny word, add one letter at a time, and rearrange them all into something new. Can you build the pyramid from top to bottom?",
-        file: "puzzles/word_pyramid.html",
-        releaseDate: "2026-03-06",
-      },
-      {
-        title: "Syllable Scramble",
-        icon: "whole-word",
-        description:
-          "Twenty-two syllables, six mystery words — can you piece them all together? A satisfying challenge of language and logic.",
-        file: "puzzles/syllable_scramble.html",
-        releaseDate: "2026-03-03",
-      },
-      {
-        title: "Einstein's Riddle",
-        icon: "brain",
-        description:
-          "The famous logic puzzle: 5 houses, nationalities, drinks, cigarettes, and pets. Can you figure out who owns the fish?",
-        file: "puzzles/einsteins_riddle.html",
-        releaseDate: "2026-02-27",
-      },
-      {
-        title: "Nine Cats Puzzle",
-        icon: "cat",
-        description:
-          "Position nine cats in a 3×3 grid following three simple rules. Use logic and deduction to figure out where each cat belongs. Can you solve the arrangement?",
-        file: "puzzles/nine_cats_puzzle.html",
-        releaseDate: "2026-02-20",
-      },
-      {
-        title: "Hidden Animals",
-        icon: "scan-search",
-        description:
-          "Can you find the animals concealed within each sentence? Race against the clock to find them all!",
-        file: "puzzles/hidden_animals.html",
-        releaseDate: "2026-02-17",
-      },
-      {
-        title: "Safe Code Puzzle",
-        icon: "lock-keyhole",
-        description:
-          "Crack the code to unlock the safe! Use logic and deduction to solve the mystery and reveal what's hidden inside. Can you break the code?",
-        file: "puzzles/safe_code_puzzle.html",
-        releaseDate: "2026-02-13",
-      },
-    ]
-    // ============================================================
-
-    function formatDate(dateStr) {
-      const [year, month, day] = dateStr.split("-").map(Number)
-      const date = new Date(year, month - 1, day)
-      return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-    }
-
-    function isReleased(dateStr) {
-      const [year, month, day] = dateStr.split("-").map(Number)
-      const release = new Date(year, month - 1, day)
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      return today >= release
-    }
-
-    function renderPuzzles() {
-      const grid = document.getElementById("puzzleGrid")
-      const released = puzzles.filter((p) => isReleased(p.releaseDate))
-      const unreleased = puzzles.filter((p) => !isReleased(p.releaseDate))
-
-      released
-        .sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate))
-        .forEach((puzzle) => {
-          const card = document.createElement("a")
-          card.href = puzzle.file
-          card.className = "puzzle-card"
-          card.dataset.theme = puzzle.icon
-
-          const iconWell = document.createElement("div")
-          iconWell.className = "puzzle-icon-well"
-
-          const title = document.createElement("h2")
-          title.textContent = puzzle.title
-
-          const date = document.createElement("div")
-          date.className = "puzzle-date"
-          date.textContent = formatDate(puzzle.releaseDate)
-
-          const desc = document.createElement("p")
-          desc.className = "puzzle-description"
-          desc.textContent = puzzle.description
-
-          const playBtn = document.createElement("span")
-          playBtn.className = "play-button"
-          playBtn.textContent = "Play Now →"
-
-          card.append(iconWell, title, date, desc, playBtn)
-          grid.appendChild(card)
-          iconWell.appendChild(
-            PuzzleIcons.iconEl(puzzle.icon, {
-              size: 32,
-              theme: puzzle.icon,
-            }),
-          )
+      function formatDate(dateStr) {
+        const [year, month, day] = dateStr.split("-").map(Number)
+        const date = new Date(year, month - 1, day)
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         })
+      }
 
-      if (unreleased.length > 0) {
-        const next = unreleased.sort(
-          (a, b) => new Date(a.releaseDate) - new Date(b.releaseDate),
-        )[0]
-        const comingSoon = document.createElement("div")
-        comingSoon.className = "puzzle-card coming-soon"
-        comingSoon.innerHTML = `
+      function isReleased(dateStr) {
+        const [year, month, day] = dateStr.split("-").map(Number)
+        const release = new Date(year, month - 1, day)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        return today >= release
+      }
+
+      function renderPuzzles() {
+        const grid = document.getElementById("puzzleGrid")
+        const released = puzzles.filter((p) => isReleased(p.releaseDate))
+        const unreleased = puzzles.filter((p) => !isReleased(p.releaseDate))
+
+        released
+          .sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate))
+          .forEach((puzzle) => {
+            const card = document.createElement("a")
+            card.href = puzzle.file
+            card.className = "puzzle-card"
+            card.dataset.theme = puzzle.icon
+
+            const iconWell = document.createElement("div")
+            iconWell.className = "puzzle-icon-well"
+
+            const title = document.createElement("h2")
+            title.textContent = puzzle.title
+
+            const date = document.createElement("div")
+            date.className = "puzzle-date"
+            date.textContent = formatDate(puzzle.releaseDate)
+
+            const desc = document.createElement("p")
+            desc.className = "puzzle-description"
+            desc.textContent = puzzle.description
+
+            const playBtn = document.createElement("span")
+            playBtn.className = "play-button"
+            playBtn.textContent = "Play Now →"
+
+            card.append(iconWell, title, date, desc, playBtn)
+            grid.appendChild(card)
+            iconWell.appendChild(
+              PuzzleIcons.iconEl(puzzle.icon, {
+                size: 32,
+                theme: puzzle.icon,
+              }),
+            )
+          })
+
+        if (unreleased.length > 0) {
+          const next = unreleased.sort(
+            (a, b) => new Date(a.releaseDate) - new Date(b.releaseDate),
+          )[0]
+          const comingSoon = document.createElement("div")
+          comingSoon.className = "puzzle-card coming-soon"
+          comingSoon.innerHTML = `
             <h2>New Puzzle Coming Soon</h2>
             <div class="puzzle-date">${formatDate(next.releaseDate)}</div>
             <span class="play-button">Coming Soon</span>
           `
-        grid.appendChild(comingSoon)
+          grid.appendChild(comingSoon)
+        }
+
+        PuzzleIcons.initIcons()
       }
 
-      PuzzleIcons.initIcons()
-    }
-
-    document.addEventListener("DOMContentLoaded", renderPuzzles)
-  </script>
-</body>
-
+      document.addEventListener("DOMContentLoaded", renderPuzzles)
+    </script>
+  </body>
 </html>
