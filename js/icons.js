@@ -1,26 +1,29 @@
 /* global lucide */
 ;(function () {
-  const DEFAULT_STROKE = "#edf0f5"
-  const ACCENT_STROKE = "#6c63ff"
+  const DEFAULT_STROKE = "#1e293b"
+  const ACCENT_STROKE = "#8b5cf6"
   const WHITE_STROKE = "#ffffff"
 
   const THEME_COLORS = {
-    collection: "#6c63ff",
-    shuffle: "#7c5cff",
-    scissors: "#e86b8a",
-    link: "#4f8cff",
-    landmark: "#d4a034",
-    lock: "#5b7fd6",
-    home: "#38b2ac",
-    "paw-print": "#f07848",
-    "text-cursor-input": "#6366f1",
+    collection: "#8b5cf6",
+    shuffle: "#8b5cf6",
+    scissors: "#f472b6",
+    link: "#34d399",
+    landmark: "#fbbf24",
+    lock: "#8b5cf6",
+    home: "#34d399",
+    "paw-print": "#f472b6",
+    "text-cursor-input": "#8b5cf6",
     layers: "#a855f7",
     puzzle: "#8b5cf6",
-    brain: "#ec6b9a",
-    cat: "#f59e42",
-    "scan-search": "#34a06e",
-    "lock-keyhole": "#9b6bff",
-    split: "#ec4899",
+    brain: "#f472b6",
+    cat: "#fbbf24",
+    "scan-search": "#34d399",
+    "lock-keyhole": "#8b5cf6",
+    split: "#f472b6",
+    "key-round": "#fbbf24",
+    pyramid: "#fbbf24",
+    "whole-word": "#34d399",
   }
 
   function toPascalCase(name) {
@@ -32,9 +35,20 @@
     return THEME_COLORS[theme] || ACCENT_STROKE
   }
 
+  function cssVar(el, name) {
+    return getComputedStyle(el).getPropertyValue(name).trim()
+  }
+
+  function defaultStroke(context) {
+    const el = context || document.documentElement
+    const fromFg = cssVar(el, "--fg")
+    if (fromFg) return fromFg
+    return DEFAULT_STROKE
+  }
+
   function themeStroke(context) {
     const el = context || document.documentElement
-    const fromCss = getComputedStyle(el).getPropertyValue("--theme-color").trim()
+    const fromCss = cssVar(el, "--theme-color")
     if (fromCss) return fromCss
 
     const theme = el.dataset?.theme
@@ -54,7 +68,9 @@
     } = options
 
     const resolvedStroke =
-      stroke || (theme ? colorForTheme(theme) : themeStroke(context))
+      stroke ||
+      (theme ? colorForTheme(theme) : themeStroke(context)) ||
+      defaultStroke(context)
 
     const iconData = lucide.icons[toPascalCase(name)]
     if (!iconData) {
@@ -68,6 +84,7 @@
       width: size,
       height: size,
       stroke: resolvedStroke,
+      "stroke-width": 2.5,
       class: className,
       "aria-hidden": ariaHidden ? "true" : undefined,
     })
@@ -86,7 +103,7 @@
       if (iconData) icons[toPascalCase(name)] = iconData
     })
 
-    lucide.createIcons({ icons, nameAttr: "data-lucide" })
+    lucide.createIcons({ icons, nameAttr: "data-lucide", attrs: { "stroke-width": 2.5 } })
   }
 
   window.PuzzleIcons = {
@@ -96,6 +113,7 @@
     THEME_COLORS,
     colorForTheme,
     themeStroke,
+    defaultStroke,
     iconEl,
     initIcons,
   }
