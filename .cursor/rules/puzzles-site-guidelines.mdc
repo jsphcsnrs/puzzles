@@ -10,14 +10,14 @@ This repository is a static HTML puzzle website — no build system, no framewor
 ```
 puzzles/
 ├── index.html
-├── styles/playful.css          ← active shared design system (Playful Geometric)
-├── styles/old/neumorphic.css   ← archived dark neumorphic (unmigrated puzzles)
+├── styles/playful.css          ← shared design system (Playful Geometric)
+├── styles/old/neumorphic.css   ← archived dark neumorphic (reference only)
 ├── js/lucide.min.js            ← vendored Lucide icons (v0.468.0)
 ├── js/icons.js                 ← icon helper (initIcons, iconEl)
 └── puzzles/                    ← puzzle .html files
 ```
 
-**Design system transition:** The index and new/migrated puzzles use `styles/playful.css` (Playful Geometric — light cream, hard shadows, chunky borders). Unmigrated puzzles still link `../styles/old/neumorphic.css` until they are updated one-by-one. Prefer `playful.css` for any new work.
+All pages use `styles/playful.css` (Playful Geometric — light cream, hard shadows, chunky borders). The neumorphic sheet is archived for reference only; do not link it from new or existing puzzles.
 
 # Adding a New Puzzle
 
@@ -35,7 +35,7 @@ In other words: keep the weekly Friday cadence, but never assign a date in the p
 
 # Shared Assets
 
-Every page must link the shared assets. From `index.html` (and migrated puzzles):
+Every page must link the shared assets. From `index.html`:
 
 ```html
 <link rel="stylesheet" href="styles/playful.css" />
@@ -43,15 +43,13 @@ Every page must link the shared assets. From `index.html` (and migrated puzzles)
 <script src="js/icons.js"></script>
 ```
 
-From unmigrated puzzle pages under `puzzles/` (temporary):
+From puzzle pages under `puzzles/`:
 
 ```html
-<link rel="stylesheet" href="../styles/old/neumorphic.css" />
+<link rel="stylesheet" href="../styles/playful.css" />
 <script src="../js/lucide.min.js"></script>
 <script src="../js/icons.js"></script>
 ```
-
-Migrated puzzles should use `../styles/playful.css` instead.
 
 Every puzzle page uses a themed body, ambient background, and back navigation:
 
@@ -69,13 +67,13 @@ Set `data-theme` to the same Lucide icon name used for that puzzle (e.g. `shuffl
 
 Call `PuzzleIcons.initIcons()` after DOM ready (and after any dynamic icon injection).
 
-# Design System — Playful Geometric (active) / Neumorphism (archived)
+# Design System — Playful Geometric
 
-**Active system:** Playful Geometric in `styles/playful.css` — warm cream paper (`#FFFDF5`), slate foreground (`#1E293B`), vivid violet accent (`#8B5CF6`), hard offset shadows (no blur), chunky 2px borders, Outfit headings + Plus Jakarta Sans body. Index already uses this; migrate puzzles to it over time.
+**Active system:** Playful Geometric in `styles/playful.css` — warm cream paper (`#FFFDF5`), slate foreground (`#1E293B`), vivid violet accent (`#8B5CF6`), hard offset shadows (no blur), chunky 2px borders, Outfit headings + Plus Jakarta Sans body.
 
-**Archived:** Dark neumorphism remains in `styles/old/neumorphic.css` for unmigrated puzzles only. Details below still describe that archived look until those pages are converted.
+**Archived:** Dark neumorphism remains in `styles/old/neumorphic.css` for historical reference only — do not use for new work.
 
-## Core tokens (archived neumorphic — do not use for new work)
+## Core tokens (archived neumorphic — do not use)
 
 - **Background:** `#232936` — dark cool-grey page surface (`--bg`)
 - **Cards / chrome:** `#2C3342` — slightly elevated surface (`--surface`)
@@ -114,12 +112,12 @@ Call `PuzzleIcons.initIcons()` after DOM ready (and after any dynamic icon injec
 
 ```html
 <h1 class="font-display">
-  <span class="icon-well icon-well-md"><i data-lucide="link" class="icon icon-md icon-themed"></i></span>
+  <span class="icon-well icon-well-md"><i data-lucide="link" class="icon icon-md icon-white"></i></span>
   <span class="title-text">Puzzle Title</span>
 </h1>
 ```
 
-Use the `icon-themed` class on decorative Lucide icons so they pick up each page's `--theme-color`.
+Use the `icon-white` class on Lucide icons inside colored `.icon-well` circles. Use `icon-themed` for icons that should pick up `--theme-color` on light surfaces (e.g. back-nav).
 
 ## Icons
 

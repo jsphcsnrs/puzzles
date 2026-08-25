@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Missing Fourth</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .timer-row {
         display: flex;
@@ -29,10 +29,11 @@
       }
 
       .seq-cell {
-        background: var(--bg);
-        border-radius: var(--radius-base);
+        background: var(--card);
+        border-radius: var(--radius-md);
         padding: 16px 14px;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
         text-align: center;
       }
 
@@ -41,16 +42,19 @@
         font-weight: 800;
         font-family: "Consolas", "Segoe UI Mono", monospace;
         margin-bottom: 6px;
+        color: var(--fg);
       }
 
       .seq-cell .val {
         font-size: 1.6rem;
         font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--accent);
       }
 
       .seq-cell.mystery {
-        box-shadow: var(--shadow-inset-small);
+        background: var(--muted);
+        box-shadow: 2px 2px 0 0 var(--border);
       }
 
       .seq-cell.mystery .label {
@@ -58,7 +62,7 @@
       }
 
       .seq-cell.mystery .val {
-        color: var(--placeholder);
+        color: var(--muted-fg);
       }
 
       .answer-block {
@@ -82,7 +86,7 @@
         display: block;
         font-size: 0.8rem;
         font-weight: 700;
-        color: var(--muted);
+        color: var(--muted-fg);
         margin: 0;
         padding: 0;
       }
@@ -211,23 +215,26 @@
       .feedback {
         margin-top: 12px;
         padding: 12px 14px;
-        border-radius: var(--radius-inner);
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid transparent;
         font-size: 0.95rem;
         display: none;
       }
 
       .feedback.bad {
         display: block;
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
-        box-shadow: var(--shadow-inset-small);
-        color: color-mix(in srgb, var(--error) 80%, var(--fg));
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        border-color: var(--error);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong));
+        color: var(--fg);
       }
 
       .feedback.ok {
         display: block;
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset-small);
-        color: color-mix(in srgb, var(--success) 80%, var(--fg));
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
+        color: var(--fg);
       }
 
       .helpers {
@@ -235,18 +242,21 @@
       }
 
       .helper-section {
-        border-radius: var(--radius-base);
+        border-radius: var(--radius-md);
         margin-bottom: 12px;
         overflow: hidden;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
+        background: var(--card);
       }
 
       .helper-toggle {
         width: 100%;
         text-align: left;
         padding: 14px 16px;
-        background: var(--bg);
+        background: var(--card);
         border: none;
+        color: var(--fg);
         font-weight: 700;
         font-size: 1rem;
         cursor: pointer;
@@ -257,12 +267,12 @@
         font-family: inherit;
         min-height: 48px;
         touch-action: manipulation;
-        box-shadow: var(--shadow-extruded-small);
-        transition: box-shadow var(--transition);
+        transition: background var(--transition), transform var(--transition);
       }
 
       .helper-toggle:hover {
-        box-shadow: var(--shadow-extruded);
+        background: var(--muted);
+        transform: translateY(-1px);
       }
 
       .helper-toggle .chev {
@@ -273,8 +283,8 @@
       .helper-body {
         padding: 16px;
         display: none;
-        background: var(--bg);
-        box-shadow: var(--shadow-inset-small);
+        background: var(--muted);
+        border-top: var(--border-width) solid var(--border);
       }
 
       .helper-body.open {
@@ -295,32 +305,39 @@
         width: 100%;
         text-align: left;
         padding: 12px 14px;
-        border-radius: var(--radius-inner);
-        border: none;
-        background: var(--bg);
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        color: var(--fg);
         font-family: inherit;
         font-size: 0.95rem;
         cursor: pointer;
         min-height: 48px;
         touch-action: manipulation;
-        box-shadow: var(--shadow-extruded-small);
-        transition: box-shadow var(--transition);
+        box-shadow: 3px 3px 0 0 var(--border);
+        transition: box-shadow var(--transition), transform var(--transition);
+      }
+
+      .hint-list button:hover:not(:disabled) {
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 0 var(--border-strong);
       }
 
       .hint-list button:disabled {
         opacity: 0.55;
         cursor: default;
-        box-shadow: var(--shadow-inset-small);
+        box-shadow: 2px 2px 0 0 var(--border);
       }
 
       .hint-reveal {
         margin-top: 8px;
         padding: 10px 12px;
-        background: var(--bg);
-        border-radius: var(--radius-inner);
+        background: var(--card);
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
         font-size: 0.9rem;
         display: none;
-        box-shadow: var(--shadow-inset-small);
+        box-shadow: 2px 2px 0 0 var(--border);
       }
 
       .hint-reveal.show {
@@ -329,7 +346,7 @@
 
       .modal-explanation {
         font-size: 0.95rem;
-        color: var(--muted);
+        color: var(--muted-fg);
         line-height: 1.45;
         text-align: left;
       }
@@ -341,7 +358,7 @@
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="landmark" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="landmark" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Missing Fourth</span>
           </h1>
         </header>

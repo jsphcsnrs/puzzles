@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Three-Digit Padlock</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .clue-list {
         list-style: none;
@@ -37,7 +37,9 @@
       .play-area h2 {
         font-size: 1.05rem;
         margin-bottom: 14px;
-        font-weight: 600;
+        font-weight: 700;
+        font-family: "Outfit", system-ui, sans-serif;
+        color: var(--fg);
       }
 
       .dial-row {
@@ -53,41 +55,49 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
       }
 
       .dial-btn {
         width: 48px;
         height: 40px;
         min-height: 44px;
-        border: none;
-        border-radius: var(--radius-inner);
-        background: var(--bg);
+        border: var(--border-width) solid var(--border-strong);
+        border-radius: var(--radius-sm);
+        background: var(--card);
         color: var(--accent);
         font-size: 1.2rem;
         font-weight: 700;
         cursor: pointer;
-        box-shadow: var(--shadow-extruded-small);
+        box-shadow: 3px 3px 0 0 var(--border);
         transition: box-shadow var(--transition), transform var(--transition);
         font-family: inherit;
       }
 
+      .dial-btn:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 0 var(--border-strong);
+      }
+
       .dial-btn:active {
-        box-shadow: var(--shadow-inset-small);
-        transform: translateY(1px);
+        transform: translate(1px, 1px);
+        box-shadow: 1px 1px 0 0 var(--border);
       }
 
       .dial .window {
         width: 56px;
         height: 56px;
-        border-radius: var(--radius-inner);
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.75rem;
         font-weight: 800;
-        background: var(--bg);
-        box-shadow: var(--shadow-inset);
+        font-family: "Outfit", system-ui, sans-serif;
+        background: var(--muted);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 2px 2px 0 0 var(--border);
+        color: var(--fg);
         user-select: none;
       }
 
@@ -101,17 +111,17 @@
       .feedback {
         min-height: 1.5em;
         margin-top: 12px;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--error);
         font-size: 0.95rem;
       }
 
       .completion-time {
-        margin: 20px 0;
-        font-family: "Plus Jakarta Sans", sans-serif;
+        margin: 16px 0;
+        font-family: "Outfit", system-ui, sans-serif;
         font-size: 2.5rem;
         font-weight: 800;
-        color: var(--fg);
+        color: var(--accent);
       }
 
       @media (max-width: 480px) {
@@ -128,7 +138,7 @@
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="lock" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="lock" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Three-Digit Padlock</span>
           </h1>
           <p class="subtitle">

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Word Splitter</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .example {
         display: flex;
@@ -12,14 +12,16 @@
         gap: 8px;
         margin-top: 12px;
         padding: 14px;
-        border-radius: var(--radius-inner);
-        background: var(--bg);
-        box-shadow: var(--shadow-inset-small);
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--tertiary);
       }
 
       .example-master {
         font-weight: 800;
         letter-spacing: 0.15em;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--theme-color);
         font-size: 1.05rem;
       }
@@ -35,7 +37,7 @@
       }
 
       .example-arrow {
-        color: var(--muted);
+        color: var(--muted-fg);
         flex-shrink: 0;
       }
 
@@ -54,18 +56,21 @@
       .round-badge {
         font-weight: 700;
         font-size: 0.95rem;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--theme-color);
-        background: var(--bg);
+        background: var(--muted);
         padding: 6px 16px;
-        border-radius: 999px;
-        box-shadow: var(--shadow-extruded-small);
+        border-radius: var(--radius-full);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 3px 3px 0 0 var(--border);
       }
 
       .master-card {
-        background: var(--bg);
-        border-radius: var(--radius-base);
+        background: var(--card);
+        border-radius: var(--radius-md);
         padding: 20px;
-        box-shadow: var(--shadow-extruded);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
         margin-bottom: 24px;
         text-align: center;
       }
@@ -74,7 +79,7 @@
         font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 0.1em;
-        color: var(--muted);
+        color: var(--muted-fg);
         margin-bottom: 12px;
         font-weight: 700;
       }
@@ -94,18 +99,22 @@
         justify-content: center;
         font-size: 1.25rem;
         font-weight: 800;
-        border-radius: var(--radius-inner);
-        background: var(--bg);
-        box-shadow: var(--shadow-extruded-small);
+        font-family: "Outfit", system-ui, sans-serif;
+        border-radius: var(--radius-sm);
+        background: var(--muted);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 3px 3px 0 0 var(--border-strong);
         color: var(--fg);
-        transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease,
+          box-shadow 0.2s ease;
       }
 
       .bank-tile.used {
-        opacity: 0.35;
-        box-shadow: var(--shadow-inset-small);
+        opacity: 0.4;
+        background: var(--card);
+        box-shadow: 1px 1px 0 0 var(--border);
         transform: scale(0.92);
-        color: var(--muted);
+        color: var(--muted-fg);
       }
 
       .words-container {
@@ -115,23 +124,28 @@
       }
 
       .word-row-card {
-        background: var(--bg);
-        border-radius: var(--radius-base);
+        background: var(--card);
+        border-radius: var(--radius-md);
         padding: 16px;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
         display: flex;
         flex-direction: column;
         gap: 10px;
-        transition: box-shadow var(--transition), background var(--transition);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
       }
 
       .word-row-card.correct {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .word-row-card.wrong {
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        border-color: var(--error);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong));
         animation: shake 0.4s ease;
       }
 
@@ -141,7 +155,7 @@
         align-items: center;
         font-size: 0.85rem;
         font-weight: 700;
-        color: var(--muted);
+        color: var(--muted-fg);
       }
 
       .word-row-slots {
@@ -160,16 +174,17 @@
         justify-content: center;
         font-size: 1.3rem;
         font-weight: 800;
-        border-radius: var(--radius-inner);
+        font-family: "Outfit", system-ui, sans-serif;
+        border-radius: var(--radius-sm);
         text-transform: uppercase;
         user-select: none;
       }
 
       .slot-cell.clue {
-        background: var(--surface);
+        background: color-mix(in srgb, var(--theme-color) 14%, var(--card));
         color: var(--theme-color);
-        box-shadow: var(--shadow-extruded-small);
-        border: 2px solid color-mix(in srgb, var(--theme-color) 30%, transparent);
+        border: var(--border-width) solid var(--theme-color);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--theme-color) 45%, var(--border-strong));
       }
 
       .slot-input {
@@ -178,32 +193,35 @@
         text-align: center;
         font-size: 1.3rem;
         font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
         text-transform: uppercase;
-        border: none;
         outline: none;
-        border-radius: var(--radius-inner);
-        background: var(--bg);
+        border-radius: var(--radius-sm);
+        background: var(--muted);
         color: var(--fg);
-        box-shadow: var(--shadow-inset);
-        transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 2px 2px 0 0 var(--border);
+        transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease,
+          border-color 0.2s ease;
         padding: 0;
-        font-family: inherit;
       }
 
       .slot-input:focus {
-        box-shadow: var(--focus-ring);
-        background: color-mix(in srgb, var(--theme-color) 12%, var(--bg));
+        border-color: var(--accent);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--accent) 45%, var(--border-strong));
+        background: color-mix(in srgb, var(--accent) 12%, var(--card));
       }
 
       .slot-input.filled {
-        color: var(--accent-light);
+        color: var(--accent);
         font-weight: 800;
       }
 
       .slot-input:disabled {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        color: var(--success);
-        box-shadow: var(--shadow-inset-small);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        color: color-mix(in srgb, var(--success) 55%, var(--fg));
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
         cursor: default;
       }
 
@@ -217,10 +235,11 @@
 
       .progress-bar-wrap {
         width: 100%;
-        height: 8px;
-        background: var(--bg);
-        border-radius: 999px;
-        box-shadow: var(--shadow-inset-small);
+        height: 10px;
+        background: var(--muted);
+        border-radius: var(--radius-full);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 2px 2px 0 0 var(--border);
         overflow: hidden;
         margin-bottom: 20px;
       }
@@ -229,16 +248,27 @@
         height: 100%;
         width: 0%;
         background: var(--theme-color);
-        border-radius: 999px;
+        border-radius: var(--radius-full);
         transition: width 0.4s ease;
       }
 
       @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        20% { transform: translateX(-6px); }
-        40% { transform: translateX(6px); }
-        60% { transform: translateX(-4px); }
-        80% { transform: translateX(4px); }
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-6px);
+        }
+        40% {
+          transform: translateX(6px);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: translateX(4px);
+        }
       }
 
       @media (max-width: 520px) {
@@ -248,7 +278,8 @@
           font-size: 1.05rem;
         }
 
-        .slot-cell, .slot-input {
+        .slot-cell,
+        .slot-input {
           width: 34px;
           height: 42px;
           font-size: 1.1rem;
@@ -271,7 +302,7 @@
         <header class="header">
           <h1 class="font-display">
             <span class="icon-well icon-well-md">
-              <i data-lucide="split" class="icon icon-md icon-themed"></i>
+              <i data-lucide="split" class="icon icon-md icon-white"></i>
             </span>
             <span class="title-text">Word Splitter</span>
           </h1>

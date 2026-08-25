@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Common Connections</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .puzzle-list {
         display: grid;
@@ -17,26 +17,31 @@
         gap: 14px;
         align-items: center;
         padding: 16px;
-        border-radius: var(--radius-base);
-        background: var(--bg);
-        box-shadow: var(--shadow-extruded-small);
-        transition: box-shadow var(--transition), background var(--transition);
+        border-radius: var(--radius-md);
+        background: var(--card);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
       }
 
       .clue-row.correct {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .clue-row.incorrect {
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        border-color: var(--error);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong));
       }
 
       .clue-text {
         font-size: 1.05rem;
         font-weight: 700;
         line-height: 1.4;
+        color: var(--fg);
       }
 
       .clue-number {
@@ -46,11 +51,14 @@
         width: 28px;
         height: 28px;
         margin-right: 8px;
-        border-radius: 50%;
+        border-radius: var(--radius-full);
         background: var(--accent);
         color: #fff;
         font-size: 0.9rem;
-        box-shadow: var(--shadow-extruded-small);
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 2px 2px 0 0 var(--border-strong);
       }
 
       .clue-row input {
@@ -70,16 +78,16 @@
         min-height: 24px;
         margin-top: 16px;
         text-align: center;
-        color: var(--muted);
+        color: var(--muted-fg);
         font-weight: 700;
       }
 
       .completion-time {
         margin: 20px 0;
-        font-family: "Plus Jakarta Sans", sans-serif;
+        font-family: "Outfit", system-ui, sans-serif;
         font-size: 2.5rem;
         font-weight: 800;
-        color: var(--fg);
+        color: var(--accent);
       }
 
       @media (max-width: 640px) {
@@ -105,7 +113,7 @@
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="link" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="link" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Common Connections</span>
           </h1>
           <p class="subtitle">Find the single word that connects each list of three things.</p>

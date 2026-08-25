@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Synonym Shift - Puzzle</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .page-wrap {
         max-width: 800px;
@@ -15,12 +15,13 @@
 
       .rules .example {
         margin-top: 12px;
-        border-radius: var(--radius-inner);
+        border-radius: var(--radius-sm);
         padding: 10px 14px;
         font-size: 0.92rem;
-        background: var(--bg);
-        box-shadow: var(--shadow-inset-small);
-        color: var(--muted);
+        background: var(--card);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 3px 3px 0 0 var(--tertiary);
+        color: var(--muted-fg);
       }
 
       .rules .example em {
@@ -30,19 +31,22 @@
       }
 
       .puzzle-row {
-        background: var(--bg);
-        border-radius: var(--radius-base);
+        background: var(--card);
+        border-radius: var(--radius-md);
         padding: 20px;
         margin-bottom: 20px;
-        box-shadow: var(--shadow-extruded-small);
-        transition: box-shadow var(--transition), background var(--transition);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
         position: relative;
         overflow: hidden;
       }
 
       .puzzle-row.solved {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .row-header {
@@ -53,7 +57,8 @@
       }
 
       .row-num {
-        font-weight: 700;
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--accent);
         font-size: 0.85rem;
         letter-spacing: 1px;
@@ -69,7 +74,7 @@
       .row-status {
         color: var(--success);
         font-size: 0.9rem;
-        font-weight: 600;
+        font-weight: 700;
         opacity: 0;
         transform: translateX(10px);
         transition: all 0.3s ease;
@@ -84,17 +89,17 @@
       }
 
       .reset-row-btn {
-        background: var(--bg);
-        border: none;
-        color: var(--muted);
+        background: var(--card);
+        border: var(--border-width) solid var(--border-strong);
+        color: var(--muted-fg);
         cursor: pointer;
         padding: 6px 12px;
-        border-radius: var(--radius-inner);
+        border-radius: var(--radius-sm);
         font-size: 0.8rem;
-        font-weight: 600;
+        font-weight: 700;
         font-family: inherit;
-        box-shadow: var(--shadow-extruded-small);
-        transition: transform var(--transition), box-shadow var(--transition);
+        box-shadow: 3px 3px 0 0 var(--border-strong);
+        transition: transform var(--transition), box-shadow var(--transition), color var(--transition);
         display: flex;
         align-items: center;
         gap: 4px;
@@ -103,8 +108,8 @@
 
       .reset-row-btn:hover {
         color: var(--fg);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-extruded);
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 0 var(--border-strong);
       }
 
       .word-pair-container {
@@ -123,8 +128,8 @@
 
       .word-title {
         font-size: 0.75rem;
-        font-weight: 600;
-        color: var(--muted);
+        font-weight: 700;
+        color: var(--muted-fg);
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
@@ -135,27 +140,29 @@
         gap: 0;
         flex-wrap: wrap;
         min-height: 58px;
-        background: var(--bg);
+        background: var(--muted);
         padding: 6px 8px;
-        border-radius: var(--radius-inner);
-        box-shadow: var(--shadow-inset);
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 2px 2px 0 0 var(--border);
       }
 
       .letter-tile {
         width: 44px;
         height: 44px;
-        background: var(--bg);
-        border: none;
-        border-radius: var(--radius-inner);
+        background: var(--card);
+        border: var(--border-width) solid var(--border-strong);
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.35rem;
-        font-weight: 700;
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--fg);
         cursor: grab;
         user-select: none;
-        box-shadow: var(--shadow-extruded-small);
+        box-shadow: 3px 3px 0 0 var(--border-strong);
         transition: transform 0.2s, box-shadow 0.2s;
         touch-action: none;
         flex-shrink: 0;
@@ -163,8 +170,8 @@
       }
 
       .letter-tile:hover {
-        transform: scale(1.05);
-        box-shadow: var(--shadow-extruded);
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 0 var(--border-strong);
       }
 
       .letter-tile:active {
@@ -174,7 +181,7 @@
       .letter-tile.dragging {
         opacity: 0.3;
         transform: scale(0.9);
-        box-shadow: var(--shadow-inset-small);
+        box-shadow: 1px 1px 0 0 var(--border);
       }
 
       .floating-tile {
@@ -182,17 +189,18 @@
         width: 44px;
         height: 44px;
         background: var(--accent);
-        border: none;
-        border-radius: var(--radius-inner);
+        border: var(--border-width) solid var(--border-strong);
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.35rem;
-        font-weight: 700;
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
         color: #fff;
         pointer-events: none;
         z-index: 9999;
-        box-shadow: var(--shadow-extruded-hover);
+        box-shadow: 5px 5px 0 0 var(--border-strong);
         transform: scale(1.15);
       }
 
@@ -208,20 +216,21 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        border-radius: 10px;
+        border-radius: var(--radius-sm);
       }
 
       .slot.active-drag-hover {
         width: 48px;
-        background: color-mix(in srgb, var(--accent) 15%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--accent) 14%, var(--card));
+        border: var(--border-width) solid var(--accent);
+        box-shadow: 2px 2px 0 0 color-mix(in srgb, var(--accent) 45%, var(--border-strong));
         margin: 0 4px;
-        border-radius: var(--radius-inner);
+        border-radius: var(--radius-sm);
       }
 
       .swap-divider {
         font-size: 1.8rem;
-        color: var(--muted);
+        color: var(--muted-fg);
         user-select: none;
         padding: 0 10px;
         display: flex;
@@ -233,14 +242,15 @@
 
       .puzzle-row.solved .letter-tile {
         cursor: default;
-        background: color-mix(in srgb, var(--success) 15%, var(--bg));
-        color: color-mix(in srgb, var(--success) 70%, var(--fg));
-        box-shadow: var(--shadow-inset-small);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        color: color-mix(in srgb, var(--success) 55%, var(--fg));
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .puzzle-row.solved .letter-tile:hover {
         transform: none;
-        box-shadow: var(--shadow-inset-small);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       @media (max-width: 640px) {
@@ -282,7 +292,7 @@
       <div class="card card-extruded">
         <div class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="shuffle" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="shuffle" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Synonym Shift</span>
           </h1>
           <div class="subtitle">

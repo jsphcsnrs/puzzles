@@ -4,33 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trim the Tail</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .rules .example {
         margin-top: 10px;
         padding: 10px 12px;
-        border-radius: var(--radius-inner);
-        background: var(--bg);
-        box-shadow: var(--shadow-inset-small);
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--tertiary);
         font-size: 0.9rem;
       }
 
       .clue-row {
-        background: var(--bg);
-        border-radius: var(--radius-base);
+        background: var(--card);
+        border-radius: var(--radius-md);
         padding: 14px 16px 18px;
         margin-bottom: 14px;
-        box-shadow: var(--shadow-extruded-small);
-        transition: box-shadow var(--transition), background var(--transition);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
       }
 
       .clue-row.solved {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .row-num {
-        font-weight: 700;
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--accent);
         font-size: 0.78rem;
         letter-spacing: 0.6px;
@@ -67,7 +72,7 @@
 
       .clue-label {
         font-size: 0.7rem;
-        color: var(--muted);
+        color: var(--muted-fg);
         text-transform: uppercase;
         letter-spacing: 0.6px;
         font-weight: 700;
@@ -76,15 +81,18 @@
       .clue-text {
         font-size: 0.95rem;
         font-style: italic;
+        color: var(--fg);
         min-height: 44px;
         display: flex;
         align-items: center;
       }
 
       .clue-input.correct {
-        background: color-mix(in srgb, var(--success) 10%, var(--bg));
-        color: color-mix(in srgb, var(--success) 80%, var(--fg));
-        font-weight: 600;
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
+        color: color-mix(in srgb, var(--success) 55%, var(--fg));
+        font-weight: 700;
       }
 
       .scissors {
@@ -116,7 +124,7 @@
       <div class="card card-extruded">
         <div class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="scissors" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="scissors" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Trim the Tail</span>
           </h1>
           <div class="subtitle">

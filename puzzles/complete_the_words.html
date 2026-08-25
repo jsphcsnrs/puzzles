@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Complete the Words</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .puzzles {
         display: flex;
@@ -17,20 +17,24 @@
         align-items: center;
         gap: 10px;
         padding: 12px 16px;
-        border-radius: var(--radius-base);
-        background: var(--bg);
-        box-shadow: var(--shadow-extruded-small);
-        transition: box-shadow var(--transition), background var(--transition);
+        border-radius: var(--radius-md);
+        background: var(--card);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
       }
 
       .puzzle-row.correct {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .puzzle-row.wrong {
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        border-color: var(--error);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong));
       }
 
       .row-num {
@@ -38,14 +42,16 @@
         color: #fff;
         min-width: 28px;
         height: 28px;
-        border-radius: 50%;
+        border-radius: var(--radius-full);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 0.8rem;
         font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
         flex-shrink: 0;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 2px 2px 0 0 var(--border-strong);
       }
 
       .puzzle-row.correct .row-num {
@@ -67,30 +73,37 @@
         justify-content: center;
         font-size: 1.1rem;
         font-weight: 700;
-        border-radius: var(--radius-inner);
-        box-shadow: var(--shadow-inset-small);
-        transition: background var(--transition), box-shadow var(--transition), color var(--transition);
+        font-family: "Outfit", system-ui, sans-serif;
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--muted);
+        box-shadow: 2px 2px 0 0 var(--border);
+        transition: background var(--transition), box-shadow var(--transition),
+          color var(--transition), border-color var(--transition);
       }
 
       .lc.known {
-        background: var(--bg);
+        background: var(--muted);
         color: var(--fg);
       }
 
       .lc.blank {
-        background: color-mix(in srgb, var(--accent) 8%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--accent) 14%, var(--card));
+        border-color: var(--accent);
+        box-shadow: 2px 2px 0 0 color-mix(in srgb, var(--accent) 45%, var(--border-strong));
         color: var(--accent);
         font-weight: 800;
       }
 
       .lc.blank.preview {
-        background: color-mix(in srgb, var(--accent) 14%, var(--bg));
+        background: color-mix(in srgb, var(--accent) 22%, var(--card));
       }
 
       .puzzle-row.correct .lc.blank {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        color: var(--success);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 2px 2px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
+        color: color-mix(in srgb, var(--success) 55%, var(--fg));
       }
 
       .answer-wrap {
@@ -112,8 +125,10 @@
       }
 
       .answer-input:disabled {
-        background: color-mix(in srgb, var(--success) 10%, var(--bg));
-        color: var(--success);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
+        color: color-mix(in srgb, var(--success) 45%, var(--fg));
         cursor: default;
       }
 
@@ -140,14 +155,20 @@
       .rules .example {
         margin-top: 10px;
         padding: 10px 14px;
-        border-radius: var(--radius-inner);
-        background: var(--bg);
-        box-shadow: var(--shadow-inset-small);
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--tertiary);
         font-size: 0.88rem;
         color: var(--fg);
       }
 
       .rules .example strong {
+        color: var(--accent);
+      }
+
+      .final-time {
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--accent);
       }
 
@@ -201,7 +222,7 @@
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="text-cursor-input" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="text-cursor-input" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Complete the Words</span>
           </h1>
           <p class="subtitle">Fill in the blanks with three consecutive alphabet letters</p>

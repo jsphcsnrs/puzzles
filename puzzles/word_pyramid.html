@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Word Pyramid</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .pyramid {
         display: flex;
@@ -23,61 +23,70 @@
       .cell {
         width: 44px;
         height: 44px;
-        border: none;
-        border-radius: var(--radius-inner);
+        border: var(--border-width) solid var(--border-strong);
+        border-radius: var(--radius-sm);
         text-align: center;
         font-size: max(1.25rem, 16px);
         font-weight: 700;
-        font-family: inherit;
+        font-family: "Outfit", system-ui, sans-serif;
         text-transform: uppercase;
         color: var(--fg);
-        background: var(--bg);
-        box-shadow: var(--shadow-inset);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--border);
         outline: none;
         padding: 0;
-        transition: box-shadow var(--transition), background var(--transition);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
         caret-color: var(--accent);
       }
 
       .cell:focus {
-        box-shadow: var(--shadow-inset-deep), var(--focus-ring);
+        border-color: var(--accent);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--accent) 45%, var(--border-strong)),
+          var(--focus-ring);
       }
 
       .cell.given {
-        background: var(--bg);
-        color: var(--muted);
-        box-shadow: var(--shadow-inset-small);
+        background: var(--muted);
+        color: var(--muted-fg);
+        box-shadow: 2px 2px 0 0 var(--border);
         cursor: default;
       }
 
       .cell.hint {
         background: var(--accent);
         color: #fff;
-        box-shadow: var(--shadow-extruded-small);
+        border-color: var(--border-strong);
+        box-shadow: 3px 3px 0 0 var(--border-strong);
         cursor: default;
       }
 
       .cell.solved {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg)) !important;
-        color: var(--success) !important;
-        box-shadow: var(--shadow-inset) !important;
+        background: color-mix(in srgb, var(--success) 18%, var(--card)) !important;
+        border-color: var(--success) !important;
+        color: color-mix(in srgb, var(--success) 55%, var(--fg)) !important;
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong)) !important;
         cursor: default;
       }
 
       .cell.solved.hint {
         background: var(--success) !important;
         color: #fff !important;
+        border-color: var(--border-strong) !important;
+        box-shadow: 3px 3px 0 0 var(--border-strong) !important;
       }
 
       .cell.solved.given {
-        background: var(--bg) !important;
-        color: var(--muted) !important;
-        box-shadow: var(--shadow-inset-small) !important;
+        background: var(--muted) !important;
+        color: var(--muted-fg) !important;
+        border-color: var(--border-strong) !important;
+        box-shadow: 2px 2px 0 0 var(--border) !important;
       }
 
       .cell.wrong {
-        background: color-mix(in srgb, var(--error) 10%, var(--bg)) !important;
-        box-shadow: var(--shadow-inset) !important;
+        background: color-mix(in srgb, var(--error) 16%, var(--card)) !important;
+        border-color: var(--error) !important;
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong)) !important;
       }
 
       .wrong-shake {
@@ -107,6 +116,11 @@
         display: flex;
         justify-content: center;
         margin-top: 28px;
+      }
+
+      .final-time {
+        font-family: "Outfit", system-ui, sans-serif;
+        color: var(--accent);
       }
 
       @media (max-width: 600px) {
@@ -143,7 +157,7 @@
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="layers" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="layers" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Word Pyramid</span>
           </h1>
           <p class="subtitle">Add one letter per row, rearrange them all, and build the pyramid</p>

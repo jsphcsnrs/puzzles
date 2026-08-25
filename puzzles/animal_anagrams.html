@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Animal Anagrams</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .example {
         display: flex;
@@ -18,20 +18,22 @@
         background: var(--accent);
         color: #fff;
         padding: 4px 13px;
-        border-radius: 999px;
+        border-radius: var(--radius-full);
         font-weight: 700;
         font-size: 0.9rem;
         letter-spacing: 0.05em;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 3px 3px 0 0 var(--border-strong);
       }
 
       .word-chip.answer {
         background: var(--success);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .sym {
         font-weight: 700;
-        color: var(--muted);
+        color: var(--muted-fg);
         font-size: 1rem;
       }
 
@@ -42,16 +44,19 @@
       }
 
       .anagram-card {
-        border-radius: var(--radius-base);
+        border-radius: var(--radius-md);
         padding: 16px;
-        background: var(--bg);
-        box-shadow: var(--shadow-extruded-small);
-        transition: box-shadow var(--transition), background var(--transition);
+        background: var(--card);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
       }
 
       .anagram-card.solved {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
-        box-shadow: var(--shadow-inset);
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .puzzle-words {
@@ -66,11 +71,12 @@
         background: var(--accent);
         color: #fff;
         padding: 5px 14px;
-        border-radius: 999px;
+        border-radius: var(--radius-full);
         font-weight: 700;
         font-size: 1rem;
         letter-spacing: 0.06em;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--accent) 45%, var(--border-strong));
       }
 
       .puzzle-input-row {
@@ -86,7 +92,9 @@
       }
 
       .puzzle-input.wrong {
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        border-color: var(--error);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong));
         animation: shake 0.4s ease;
       }
 
@@ -132,8 +140,9 @@
 
       .solved-answer {
         font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--success);
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
+        color: color-mix(in srgb, var(--success) 55%, var(--fg));
         letter-spacing: 0.06em;
       }
 
@@ -143,10 +152,11 @@
 
       .progress {
         text-align: center;
-        color: var(--muted);
+        color: var(--muted-fg);
         font-size: 0.9rem;
         margin-top: 20px;
-        font-weight: 600;
+        font-weight: 700;
+        font-family: "Outfit", system-ui, sans-serif;
       }
 
       @media (max-width: 520px) {
@@ -163,7 +173,7 @@
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="paw-print" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="paw-print" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Animal Anagrams</span>
           </h1>
           <p class="subtitle">Unscramble the letters to reveal the hidden animal</p>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Census-Taker Problem</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .header-row {
         display: flex;
@@ -39,12 +39,14 @@
       }
 
       .puzzle-text {
-        background: var(--bg);
-        border-radius: var(--radius-base);
+        background: var(--card);
+        border-radius: var(--radius-md);
         padding: 14px 16px;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
         font-size: 0.95rem;
         line-height: 1.6;
+        color: var(--fg);
       }
 
       .puzzle-text p + p {
@@ -52,10 +54,11 @@
       }
 
       .input-panel {
-        background: var(--bg);
-        border-radius: var(--radius-base);
+        background: var(--card);
+        border-radius: var(--radius-md);
         padding: 14px 16px 16px;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -63,6 +66,7 @@
 
       .input-panel h2 {
         font-size: 1rem;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--accent);
         margin-bottom: 2px;
       }
@@ -82,7 +86,7 @@
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: var(--muted);
+        color: var(--muted-fg);
         margin-bottom: 3px;
         font-weight: 700;
       }
@@ -113,6 +117,7 @@
         min-height: 1.2em;
         font-size: 0.86rem;
         margin-top: 2px;
+        font-weight: 700;
       }
 
       .feedback.error {
@@ -124,10 +129,11 @@
       }
 
       .rules-panel {
-        background: var(--bg);
-        border-radius: var(--radius-base);
+        background: var(--muted);
+        border-radius: var(--radius-md);
         padding: 14px 16px 16px;
-        box-shadow: var(--shadow-extruded-small);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
         position: sticky;
         top: 8px;
         align-self: flex-start;
@@ -135,6 +141,7 @@
 
       .rules-panel h2 {
         font-size: 0.98rem;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--fg);
         margin-bottom: 6px;
       }
@@ -144,6 +151,7 @@
         padding-left: 0;
         font-size: 0.86rem;
         line-height: 1.6;
+        color: var(--fg);
       }
 
       .rules-panel li::before {
@@ -160,13 +168,13 @@
       .rules-footnote {
         margin-top: 8px;
         font-size: 0.78rem;
-        color: var(--muted);
+        color: var(--muted-fg);
       }
 
       .solution {
         margin-top: 10px;
         font-size: 0.9rem;
-        color: var(--muted);
+        color: var(--muted-fg);
       }
 
       .solution strong {
@@ -212,7 +220,7 @@
         <div class="header-row">
           <header class="header">
             <h1 class="font-display">
-              <span class="icon-well icon-well-md"><i data-lucide="home" class="icon icon-md icon-themed"></i></span>
+              <span class="icon-well icon-well-md"><i data-lucide="home" class="icon icon-md icon-white"></i></span>
               <span class="title-text">Census-Taker Problem</span>
             </h1>
             <p class="subtitle">
