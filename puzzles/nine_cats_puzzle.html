@@ -4,15 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nine Cats Puzzle</title>
-    <link rel="stylesheet" href="../styles/old/neumorphic.css" />
+    <link rel="stylesheet" href="../styles/playful.css" />
     <style>
       .rules .cats-names {
         margin-top: 12px;
         padding: 10px 12px;
-        border-radius: var(--radius-inner);
-        background: var(--bg);
-        box-shadow: var(--shadow-inset-small);
-        font-weight: 600;
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--tertiary);
+        font-weight: 700;
         color: var(--fg);
       }
 
@@ -29,11 +30,12 @@
       .validation-feedback {
         padding: 15px 18px;
         margin: 0 auto 20px;
-        border-radius: var(--radius-base);
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
         display: none;
         max-width: 500px;
-        box-shadow: var(--shadow-inset);
-        background: var(--bg);
+        box-shadow: 4px 4px 0 0 var(--border);
+        background: var(--card);
       }
 
       .validation-feedback.show {
@@ -41,15 +43,20 @@
       }
 
       .validation-feedback.success {
-        background: color-mix(in srgb, var(--success) 12%, var(--bg));
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
       }
 
       .validation-feedback.error {
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        border-color: var(--error);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong));
       }
 
       .validation-feedback h4 {
         margin-bottom: 10px;
+        font-family: "Outfit", system-ui, sans-serif;
         color: var(--fg);
       }
 
@@ -63,7 +70,8 @@
       }
 
       .grid-cell.rule-violation {
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 50%, transparent), var(--shadow-extruded-small);
+        border-color: var(--error) !important;
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong)) !important;
         animation: pulse 1s ease-in-out;
       }
 
@@ -83,16 +91,18 @@
         gap: 10px;
         margin-bottom: 30px;
         padding: 20px;
-        background: var(--bg);
-        border-radius: var(--radius-base);
-        box-shadow: var(--shadow-inset);
+        background: var(--muted);
+        border: var(--border-width) solid var(--border-strong);
+        border-radius: var(--radius-md);
+        box-shadow: 4px 4px 0 0 var(--border);
       }
 
       .cat-chip {
         padding: 10px 15px;
         color: white;
         border-radius: 999px;
-        font-weight: 600;
+        border: var(--border-width) solid var(--border-strong);
+        font-weight: 700;
         cursor: grab;
         transition: transform var(--transition), box-shadow var(--transition);
         user-select: none;
@@ -100,13 +110,13 @@
         align-items: center;
         gap: 6px;
         font-size: 0.95em;
-        box-shadow: var(--shadow-extruded-small);
+        box-shadow: 3px 3px 0 0 var(--border-strong);
         min-height: 44px;
       }
 
       .cat-chip:hover {
-        transform: scale(1.05) translateY(-2px);
-        box-shadow: var(--shadow-extruded);
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 0 var(--border-strong);
       }
 
       .cat-chip.dragging {
@@ -118,13 +128,14 @@
         opacity: 1;
         cursor: not-allowed;
         background: var(--muted) !important;
+        color: var(--muted-fg);
         filter: grayscale(1);
-        box-shadow: var(--shadow-inset-small);
+        box-shadow: 2px 2px 0 0 var(--border);
       }
 
       .cat-chip.placed:hover {
         transform: none;
-        box-shadow: var(--shadow-inset-small);
+        box-shadow: 2px 2px 0 0 var(--border);
       }
 
       .chip-emoji {
@@ -144,15 +155,16 @@
 
       .grid-cell {
         aspect-ratio: 1;
-        border-radius: var(--radius-base);
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.2em;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--accent);
-        background: var(--bg);
-        box-shadow: var(--shadow-inset-small);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--border);
         transition: box-shadow var(--transition), transform var(--transition);
         cursor: pointer;
         position: relative;
@@ -160,7 +172,9 @@
       }
 
       .grid-cell.drag-over {
-        box-shadow: var(--shadow-inset-deep), 0 0 0 2px var(--accent);
+        box-shadow: 4px 4px 0 0 var(--accent);
+        border-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 12%, var(--card));
       }
 
       .grid-cell.filled {
@@ -168,30 +182,29 @@
         flex-direction: column;
         gap: 4px;
         font-size: 0.85em;
-        box-shadow: var(--shadow-extruded-small);
+        box-shadow: 4px 4px 0 0 var(--border-strong);
       }
 
       .cell-emoji {
         font-size: 2em;
         line-height: 1;
-        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
       }
 
       .cell-name {
-        font-weight: 700;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
         font-size: 0.85em;
         letter-spacing: 0.5px;
       }
 
       .grid-cell.correct {
-        box-shadow: 0 0 0 4px var(--success), var(--shadow-extruded-small);
-        filter: brightness(1.15);
+        border-color: var(--success) !important;
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong)) !important;
       }
 
       .grid-cell.incorrect {
-        box-shadow: 0 0 0 4px var(--error), var(--shadow-extruded-small);
-        filter: brightness(0.85);
+        border-color: var(--error) !important;
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong)) !important;
       }
 
       .remove-zone {
@@ -199,7 +212,8 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        border-radius: var(--radius-base);
+        border-radius: var(--radius-md);
+        border: var(--border-width) dashed transparent;
         color: var(--error);
         font-weight: 700;
         font-size: 1em;
@@ -215,13 +229,15 @@
         pointer-events: none;
         max-height: 0;
         overflow: hidden;
-        background: var(--bg);
-        box-shadow: var(--shadow-inset-small);
+        background: var(--card);
+        box-shadow: none;
         transition:
           max-height var(--transition),
           opacity var(--transition),
           padding var(--transition),
-          margin var(--transition);
+          margin var(--transition),
+          border-color var(--transition),
+          background var(--transition);
       }
 
       .remove-zone.visible {
@@ -231,11 +247,13 @@
         max-height: 60px;
         padding: 14px;
         margin: 0 auto 20px;
+        border-color: var(--error);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--error) 40%, var(--border));
       }
 
       .remove-zone.drag-over {
-        background: color-mix(in srgb, var(--error) 10%, var(--bg));
-        box-shadow: var(--shadow-inset), 0 0 0 2px var(--error);
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        box-shadow: 4px 4px 0 0 var(--error);
       }
 
       .controls {
@@ -248,10 +266,10 @@
 
       .completion-time {
         margin: 16px 0;
-        font-family: "Plus Jakarta Sans", sans-serif;
+        font-family: "Outfit", system-ui, sans-serif;
         font-size: 2.5rem;
         font-weight: 800;
-        color: var(--fg);
+        color: var(--accent);
       }
 
       @media (max-width: 600px) {
@@ -261,6 +279,12 @@
 
         .controls .btn {
           width: 100%;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .grid-cell.rule-violation {
+          animation: none;
         }
       }
     </style>
@@ -285,7 +309,7 @@
       <section class="card card-extruded">
         <header class="header">
           <h1 class="font-display">
-            <span class="icon-well icon-well-md"><i data-lucide="cat" class="icon icon-md icon-themed"></i></span>
+            <span class="icon-well icon-well-md"><i data-lucide="cat" class="icon icon-md icon-white"></i></span>
             <span class="title-text">Nine Cats Puzzle</span>
           </h1>
           <p class="subtitle">Position nine cats in a 3×3 grid following the rules below</p>
@@ -530,8 +554,9 @@
         ghost.style.zIndex = "9999"
         ghost.style.opacity = "0.85"
         ghost.style.transform = "scale(1.1)"
-        ghost.style.boxShadow = "var(--shadow-extruded-hover)"
-        ghost.style.borderRadius = "10px"
+        ghost.style.boxShadow = "4px 4px 0 0 #1e293b"
+        ghost.style.border = "2px solid #1e293b"
+        ghost.style.borderRadius = "16px"
         ghost.style.transition = "none"
         const rect = el.getBoundingClientRect()
         ghost.style.width = rect.width + "px"
@@ -718,7 +743,7 @@
         cell.innerHTML = `<span class="cell-emoji">${d.emoji}</span><span class="cell-name">${cat}</span>`
         cell.classList.add("filled")
         cell.style.background = d.color
-        cell.style.borderColor = d.color
+        cell.style.borderColor = "#1e293b"
         cell.draggable = true
 
         chip.classList.add("placed")
