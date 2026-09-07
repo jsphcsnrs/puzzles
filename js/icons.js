@@ -24,6 +24,7 @@
     "key-round": "#fbbf24",
     pyramid: "#fbbf24",
     "whole-word": "#34d399",
+    coins: "#f59e0b",
   }
 
   function toPascalCase(name) {

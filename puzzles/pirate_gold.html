@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pirate Gold</title>
+    <link rel="stylesheet" href="../styles/playful.css" />
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
+    <style>
+      .question-banner {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        padding: 16px 16px 16px 14px;
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
+        background: color-mix(in srgb, var(--theme-color) 16%, var(--card));
+        box-shadow: 4px 4px 0 0 var(--border-strong);
+      }
+
+      .question-banner p {
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      .question-kicker {
+        font-family: "Outfit", system-ui, sans-serif;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--fg);
+        margin-bottom: 4px;
+      }
+
+      .priorities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .priorities-label {
+        margin: 14px 0 0;
+        font-weight: 700;
+      }
+
+      .priority {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px 6px 6px;
+        border-radius: var(--radius-full);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .priority-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--theme-color);
+        color: #fff;
+        font-family: "Outfit", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 0.8rem;
+      }
+
+      .rules ol {
+        margin: 8px 0 0 1.15rem;
+      }
+
+      .rules li + li {
+        margin-top: 4px;
+      }
+
+      .crew-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .crew-chip {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        padding: 8px 4px;
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--border);
+      }
+
+      .crew-chip .letter {
+        display: block;
+        font-family: "Outfit", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+
+      .crew-chip .role {
+        display: block;
+        font-size: 0.68rem;
+        color: var(--muted-fg);
+        line-height: 1.2;
+      }
+
+      .crew-chip.is-dead {
+        opacity: 0.45;
+        background: var(--muted);
+        box-shadow: none;
+      }
+
+      .crew-chip.is-dead .letter {
+        text-decoration: line-through;
+      }
+
+      .crew-chip.is-proposer {
+        background: color-mix(in srgb, var(--theme-color) 28%, var(--card));
+        box-shadow: 3px 3px 0 0 var(--theme-color);
+      }
+
+      .step-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .step-kicker {
+        font-family: "Outfit", system-ui, sans-serif;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--theme-color);
+      }
+
+      .step-head h2 {
+        font-family: "Outfit", system-ui, sans-serif;
+        font-size: 1.35rem;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .threat {
+        margin-bottom: 14px;
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
+        border: var(--border-width) dashed var(--border-strong);
+        background: var(--muted);
+        line-height: 1.5;
+        font-size: 0.95rem;
+      }
+
+      .threat strong {
+        font-family: "Outfit", system-ui, sans-serif;
+      }
+
+      .need-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: var(--radius-full);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 2px 2px 0 0 var(--border-strong);
+        font-family: "Outfit", system-ui, sans-serif;
+        font-weight: 800;
+      }
+
+      .ledger {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .pirate-row {
+        display: grid;
+        grid-template-columns: minmax(108px, 1.1fr) minmax(92px, 0.85fr) minmax(168px, 1.3fr);
+        gap: 10px;
+        align-items: center;
+        padding: 12px;
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--border);
+      }
+
+      .pirate-row.is-proposer {
+        background: color-mix(in srgb, var(--theme-color) 14%, var(--card));
+        box-shadow: 3px 3px 0 0 var(--theme-color);
+      }
+
+      .pirate-row.is-cold {
+        grid-template-columns: minmax(108px, 1.1fr) minmax(168px, 1.3fr);
+      }
+
+      .who {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .letter-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--theme-color);
+        color: #fff;
+        font-family: "Outfit", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+      }
+
+      .who .role {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--muted-fg);
+      }
+
+      .who .tag {
+        display: inline-block;
+        margin-top: 2px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--fg);
+      }
+
+      .cell-label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted-fg);
+        margin-bottom: 2px;
+      }
+
+      .fallback-val {
+        font-family: "Outfit", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 1.15rem;
+      }
+
+      .fallback-val.is-plank {
+        font-size: 0.95rem;
+      }
+
+      .offer-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .stepper,
+      .offer-input {
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        color: var(--fg);
+        font-family: "Outfit", system-ui, sans-serif;
+        font-weight: 800;
+      }
+
+      .stepper {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-md);
+        box-shadow: 2px 2px 0 0 var(--border-strong);
+        cursor: pointer;
+        font-size: 1.25rem;
+        line-height: 1;
+      }
+
+      .stepper:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 3px 3px 0 0 var(--border-strong);
+      }
+
+      .stepper:active {
+        transform: translate(1px, 1px);
+        box-shadow: none;
+      }
+
+      .stepper:focus-visible,
+      .offer-input:focus-visible {
+        outline: none;
+        box-shadow: var(--focus-ring);
+      }
+
+      .offer-input {
+        width: 84px;
+        height: 44px;
+        border-radius: var(--radius-md);
+        text-align: center;
+        font-size: 1.15rem;
+      }
+
+      .offer-input::-webkit-outer-spin-button,
+      .offer-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .offer-input[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      .verdict {
+        grid-column: 1 / -1;
+        padding-top: 8px;
+        border-top: var(--border-width) dashed var(--border);
+        font-size: 0.9rem;
+        line-height: 1.45;
+      }
+
+      .vote-tag {
+        display: inline-block;
+        margin-right: 6px;
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        border: var(--border-width) solid var(--border-strong);
+        font-family: "Outfit", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 0.75rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .vote-yes {
+        background: color-mix(in srgb, var(--success) 35%, var(--card));
+      }
+
+      .vote-no {
+        background: color-mix(in srgb, var(--error) 30%, var(--card));
+      }
+
+      .vote-wait {
+        background: var(--muted);
+      }
+
+      .tally-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+
+      .coin-bank {
+        font-family: "Outfit", system-ui, sans-serif;
+        font-weight: 800;
+      }
+
+      .coin-bank.is-bad {
+        color: #b45309;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .feedback {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
+        line-height: 1.5;
+      }
+
+      .feedback h3 {
+        font-family: "Outfit", system-ui, sans-serif;
+        font-size: 1rem;
+        margin-bottom: 6px;
+      }
+
+      .chain {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 22px 0 8px;
+      }
+
+      .chain[hidden] {
+        display: none;
+      }
+
+      #chain {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .deal {
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--muted);
+      }
+
+      .deal.is-base {
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--border);
+      }
+
+      .deal.is-locked {
+        background: color-mix(in srgb, var(--success) 16%, var(--card));
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 55%, var(--border-strong));
+      }
+
+      .deal-title {
+        font-family: "Outfit", system-ui, sans-serif;
+        font-weight: 800;
+        font-size: 0.92rem;
+      }
+
+      .deal-split {
+        margin-top: 4px;
+        font-weight: 600;
+      }
+
+      .deal-why {
+        margin-top: 6px;
+        color: var(--muted-fg);
+        font-size: 0.9rem;
+        line-height: 1.45;
+      }
+
+      .solved-answer {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: var(--radius-md);
+        border: var(--border-width) solid var(--border-strong);
+        background: color-mix(in srgb, var(--theme-color) 18%, var(--card));
+        box-shadow: 4px 4px 0 0 var(--border-strong);
+        text-align: center;
+      }
+
+      .hint-note {
+        margin: 0;
+        max-width: 42ch;
+        color: var(--muted-fg);
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+
+      .hint-row {
+        margin-top: 18px;
+        align-items: center;
+      }
+
+      .solved-answer .amount {
+        font-family: "Outfit", system-ui, sans-serif;
+        font-size: 2.4rem;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+
+      .modal .split-recap {
+        margin-top: 8px;
+        font-weight: 600;
+        color: var(--fg);
+      }
+
+      @media (max-width: 640px) {
+        .pirate-row {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .offer-controls {
+          grid-column: 1 / -1;
+        }
+
+        .crew-chip .role {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="coins">
+    <div class="ambient-bg" aria-hidden="true"></div>
+    <main class="container container-narrow">
+      <a href="../index.html" class="back-nav">
+        <i data-lucide="arrow-left" class="icon icon-sm icon-themed"></i>
+        All Puzzles
+      </a>
+      <div class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md">
+              <i data-lucide="coins" class="icon icon-md icon-white"></i>
+            </span>
+            <span class="title-text">Pirate Gold</span>
+          </h1>
+          <p class="subtitle">
+            Propose the greediest split Pirate A can pass.
+          </p>
+          <div class="timer" id="timer" aria-live="polite">0:00</div>
+        </header>
+
+        <section class="rules" aria-label="Rules">
+          <h2>Rules of the chest</h2>
+          <ol>
+            <li>Pirates A through E find 100 gold coins. A is most senior, E most junior.</li>
+            <li>The most senior pirate alive proposes a split of every coin. All living pirates vote, including the proposer.</li>
+            <li>The proposal passes if at least half vote yes. In a tie, the proposer has the casting vote — exactly half is enough.</li>
+            <li>If it fails, the proposer is thrown overboard and the next senior proposes.</li>
+          </ol>
+          <p class="priorities-label">Every pirate’s goal, in order:</p>
+          <div class="priorities" aria-label="Every pirate’s goal, in order">
+            <span class="priority"><span class="priority-num">1</span> Survive</span>
+            <span class="priority"><span class="priority-num">2</span> Maximize coins</span>
+            <span class="priority"><span class="priority-num">3</span> Fewer pirates left alive</span>
+          </div>
+        </section>
+
+        <div class="question-banner">
+          <span class="icon-well icon-well-sm">
+            <i data-lucide="scale" class="icon icon-sm icon-white"></i>
+          </span>
+          <div>
+            <div class="question-kicker">The question</div>
+            <p id="question-copy">
+              What is the maximum number of gold coins Pirate A can keep while
+              ensuring the proposal is accepted?
+            </p>
+          </div>
+        </div>
+
+        <section class="chain" id="chain-section" aria-label="Walkthrough" hidden>
+          <div id="chain"></div>
+        </section>
+
+        <div id="play"></div>
+      </div>
+    </main>
+
+    <div class="modal-overlay" id="winner" role="dialog" aria-modal="true" aria-labelledby="win-title">
+      <div class="modal">
+        <div class="modal-icon">
+          <i data-lucide="party-popper" class="icon icon-lg"></i>
+        </div>
+        <h2 id="win-title">The vote holds</h2>
+        <p>A keeps the greediest share that still buys a passing vote.</p>
+        <div class="final-time" id="win-amount">98</div>
+        <p class="split-recap" id="win-split"></p>
+        <p>Completed in</p>
+        <div class="final-time" id="win-time">0:00</div>
+        <div class="modal-btns">
+          <button type="button" class="btn btn-secondary" id="close-win">Close</button>
+          <button type="button" class="btn btn-primary" id="reset-win">Reset &amp; Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const PIRATES = {
+        A: { role: "Captain", rank: "Most senior" },
+        B: { role: "First mate", rank: "Second" },
+        C: { role: "Navigator", rank: "Third" },
+        D: { role: "Boatswain", rank: "Fourth" },
+        E: { role: "Deckhand", rank: "Most junior" },
+      };
+
+      const ORDER = ["A", "B", "C", "D", "E"];
+
+      const STEPS = [
+        {
+          alive: ["D", "E"],
+          proposer: "D",
+          title: "Only D and E remain",
+          insight:
+            "D’s single yes is already half the crew, so the proposal passes even though E votes no. E would rather take the whole chest alone, but E cannot force that vote.",
+        },
+        {
+          alive: ["C", "D", "E"],
+          proposer: "C",
+          title: "C, D, and E remain",
+          insight:
+            "C needs one more yes. If C dies, D’s locked deal gives E nothing and D everything. One coin buys E. D will not accept less than 100, so D is not worth paying.",
+        },
+        {
+          alive: ["B", "C", "D", "E"],
+          proposer: "B",
+          title: "B, C, D, and E remain",
+          insight:
+            "B needs one more yes. Under C’s deal, only D gets nothing — that vote costs a single coin. C already expects 99 next, and E is better off with the 1 coin C would give them.",
+        },
+        {
+          alive: ["A", "B", "C", "D", "E"],
+          proposer: "A",
+          title: "All five — A proposes",
+          insight:
+            "A needs two more yes votes. Under B’s deal, C and E get nothing, so one coin each wins both. B and D are richer if A dies, and paying either of them would only shrink A’s share.",
+        },
+      ];
+
+      const BASE = { E: 100 };
+
+      const SOLUTION = [
+        { D: 100, E: 0 },
+        { C: 99, D: 0, E: 1 },
+        { B: 99, C: 0, D: 1, E: 0 },
+        { A: 98, B: 0, C: 1, D: 0, E: 1 },
+      ];
+
+      const DIRECT_QUESTION =
+        "What is the maximum number of gold coins Pirate A can keep while ensuring the proposal is accepted?";
+
+      const GUIDED_QUESTION =
+        "Work backward from the smallest crew. Each locked split is the threat behind the next proposal — that is how you reach the most coins A can keep.";
+
+      const playEl = document.getElementById("play");
+      const chainEl = document.getElementById("chain");
+      const timerEl = document.getElementById("timer");
+      const winnerEl = document.getElementById("winner");
+
+      let guided = false;
+      let stepIndex = STEPS.length - 1;
+      let solved = [];
+      let offers = blankOffers();
+      let attempts = [0, 0, 0, 0];
+      let feedback = null;
+      let won = false;
+      let started = Date.now();
+      let elapsed = 0;
+      let timerId = null;
+
+      function blankOffers() {
+        return { A: 0, B: 0, C: 0, D: 0, E: 0 };
+      }
+
+      function votesNeeded(n) {
+        return Math.ceil(n / 2);
+      }
+
+      function nextDeal(index) {
+        if (!guided) {
+          if (index === 0) return BASE;
+          return SOLUTION[index - 1];
+        }
+        if (index === 0) return BASE;
+        return solved[index - 1];
+      }
+
+      function fallbackOf(id, index) {
+        const step = STEPS[index];
+        if (id === step.proposer) return null;
+        const deal = nextDeal(index);
+        return deal[id] ?? 0;
+      }
+
+      function assignedSum(step) {
+        return step.alive.reduce((sum, id) => sum + (offers[id] || 0), 0);
+      }
+
+      function bankStatus(step) {
+        const remainder = 100 - assignedSum(step);
+        if (remainder === 0) {
+          return { className: "coin-bank", text: "All 100 coins assigned" };
+        }
+        if (remainder > 0) {
+          return {
+            className: "coin-bank is-bad",
+            text: remainder + " coins still in the chest — offers must total 100",
+          };
+        }
+        return {
+          className: "coin-bank is-bad",
+          text: Math.abs(remainder) + " coins over — offers must total 100",
+        };
+      }
+
+      function verdictHtml(id, index, ready) {
+        if (!ready) {
+          return '<span class="vote-tag vote-wait">Waiting</span> Assign every coin before this pirate commits.';
+        }
+        const vote = voteOf(id, index);
+        return (
+          '<span class="vote-tag ' +
+          (vote.yes ? "vote-yes" : "vote-no") +
+          '">' +
+          (vote.yes ? "Yes" : "No") +
+          "</span> " +
+          vote.reason
+        );
+      }
+
+      function syncVoteUi() {
+        const step = STEPS[stepIndex];
+        if (!step) return;
+        const need = votesNeeded(step.alive.length);
+        const sum = assignedSum(step);
+        const ready = sum === 100;
+        const bank = bankStatus(step);
+        const bankEl = document.getElementById("coin-bank");
+        if (bankEl) {
+          bankEl.className = bank.className;
+          bankEl.textContent = bank.text;
+        }
+        const tally = document.getElementById("vote-tally");
+        if (tally) {
+          const yesCount =
+            guided && ready
+              ? step.alive.filter((id) => voteOf(id, stepIndex).yes).length
+              : 0;
+          tally.hidden = !guided || !ready;
+          tally.textContent = yesCount + " yes · " + need + " needed";
+        }
+        const voteBtn = document.getElementById("vote-btn");
+        if (voteBtn) voteBtn.disabled = !ready;
+        if (!guided) return;
+        step.alive.forEach((id) => {
+          const cell = playEl.querySelector('[data-verdict="' + id + '"]');
+          if (cell) cell.innerHTML = verdictHtml(id, stepIndex, ready);
+        });
+      }
+
+      function formatSplit(deal, ids) {
+        return ids
+          .map((id) => id + " " + deal[id])
+          .join(" · ");
+      }
+
+      function threatSentence(index) {
+        const step = STEPS[index];
+        if (index === 0) {
+          return (
+            "If " +
+            step.proposer +
+            "’s proposal fails, " +
+            step.proposer +
+            " is thrown overboard. Only E remains, and that deal is already known: E keeps 100."
+          );
+        }
+        const prev = STEPS[index - 1];
+        const deal = nextDeal(index);
+        return (
+          "If " +
+          step.proposer +
+          "’s proposal fails, " +
+          step.proposer +
+          " is thrown overboard. " +
+          prev.proposer +
+          " then proposes the deal you locked in: " +
+          formatSplit(deal, prev.alive) +
+          "."
+        );
+      }
+
+      function voteOf(id, index) {
+        const step = STEPS[index];
+        const offer = offers[id] || 0;
+        const fallback = fallbackOf(id, index);
+        if (id === step.proposer) {
+          return {
+            yes: true,
+            reason:
+              "Votes yes. Rejection means the plank, and survival comes before coins.",
+          };
+        }
+        if (offer > fallback) {
+          return {
+            yes: true,
+            reason:
+              "Votes yes. " +
+              offer +
+              " coins beats the " +
+              fallback +
+              " they get if " +
+              step.proposer +
+              " dies.",
+          };
+        }
+        if (offer < fallback) {
+          return {
+            yes: false,
+            reason:
+              "Votes no. " +
+              offer +
+              " coins now, but " +
+              fallback +
+              " if " +
+              step.proposer +
+              " is thrown overboard.",
+          };
+        }
+        return {
+          yes: false,
+          reason:
+            "Votes no. " +
+            offer +
+            " coins either way, so they use the third priority and vote to shrink the crew.",
+        };
+      }
+
+      function cheapestBuys(index) {
+        const step = STEPS[index];
+        const extra = votesNeeded(step.alive.length) - 1;
+        const priced = step.alive
+          .filter((id) => id !== step.proposer)
+          .map((id) => ({ id: id, cost: fallbackOf(id, index) + 1 }))
+          .sort((a, b) => a.cost - b.cost || ORDER.indexOf(a.id) - ORDER.indexOf(b.id));
+        return priced.slice(0, extra);
+      }
+
+      function maxProposerCoins(index) {
+        const step = STEPS[index];
+        const spent = cheapestBuys(index).reduce((sum, buy) => sum + buy.cost, 0);
+        return 100 - spent;
+      }
+
+      function formatTime(ms) {
+        const total = Math.floor(ms / 1000);
+        const m = Math.floor(total / 60);
+        const s = total % 60;
+        return m + ":" + String(s).padStart(2, "0");
+      }
+
+      function tick() {
+        if (won) return;
+        elapsed = Date.now() - started;
+        timerEl.textContent = formatTime(elapsed);
+      }
+
+      function renderChain() {
+        if (!guided) {
+          chainEl.replaceChildren();
+          return;
+        }
+
+        const base = document.createElement("article");
+        base.className = "deal is-base";
+        base.innerHTML =
+          '<div class="deal-title">Starting fact · E alone</div>' +
+          '<div class="deal-split">E keeps 100</div>' +
+          '<p class="deal-why">No one left to vote. This is the floor every larger crew stands on.</p>';
+
+        const locked = solved.map((deal, i) => {
+          const step = STEPS[i];
+          const article = document.createElement("article");
+          article.className = "deal is-locked";
+          article.innerHTML =
+            '<div class="deal-title">Crew of ' +
+            step.alive.length +
+            " · " +
+            step.title +
+            "</div>" +
+            '<div class="deal-split">' +
+            formatSplit(deal, step.alive) +
+            "</div>" +
+            '<p class="deal-why">' +
+            step.insight +
+            "</p>";
+          return article;
+        });
+
+        chainEl.replaceChildren(base, ...locked);
+      }
+
+      function feedbackHtml() {
+        if (!feedback) return "";
+        return (
+          '<div class="feedback ' +
+          feedback.kind +
+          '" role="status"><h3>' +
+          feedback.title +
+          "</h3><p>" +
+          feedback.body +
+          "</p></div>"
+        );
+      }
+
+      function renderDirect(index) {
+        const step = STEPS[index];
+        const ready = assignedSum(step) === 100;
+        const bank = bankStatus(step);
+
+        const bar = ORDER.map((id) => {
+          const proposing = id === step.proposer;
+          return (
+            '<div class="crew-chip' +
+            (proposing ? " is-proposer" : "") +
+            '"><span class="letter">' +
+            id +
+            '</span><span class="role">' +
+            (proposing ? "Proposes" : PIRATES[id].role) +
+            "</span></div>"
+          );
+        }).join("");
+
+        const rows = step.alive
+          .map((id) => {
+            const proposer = id === step.proposer;
+            return (
+              '<div class="pirate-row is-cold' +
+              (proposer ? " is-proposer" : "") +
+              '">' +
+              '<div class="who"><span class="letter-badge">' +
+              id +
+              '</span><span><strong>' +
+              PIRATES[id].role +
+              "</strong><span class=\"role\">" +
+              PIRATES[id].rank +
+              "</span>" +
+              (proposer ? '<span class="tag">Proposing</span>' : "") +
+              "</span></div>" +
+              '<div><span class="cell-label">Offer</span><div class="offer-controls">' +
+              '<button type="button" class="stepper" data-act="dec" data-id="' +
+              id +
+              '" aria-label="Decrease ' +
+              id +
+              ' offer">−</button>' +
+              '<input class="offer-input" type="text" inputmode="numeric" autocomplete="off" data-id="' +
+              id +
+              '" value="' +
+              (offers[id] || 0) +
+              '" aria-label="Coins offered to ' +
+              id +
+              '" />' +
+              '<button type="button" class="stepper" data-act="inc" data-id="' +
+              id +
+              '" aria-label="Increase ' +
+              id +
+              ' offer">+</button>' +
+              "</div></div></div>"
+            );
+          })
+          .join("");
+
+        playEl.innerHTML =
+          '<div class="step-head"><div><div class="step-kicker">A proposes</div><h2>Split the chest</h2></div></div>' +
+          '<div class="crew-bar">' +
+          bar +
+          "</div>" +
+          '<p class="threat">Assign all 100 coins. The proposal has to pass, and A has to keep as many as the rules allow.</p>' +
+          '<div class="ledger">' +
+          rows +
+          "</div>" +
+          '<div class="tally-row"><div id="coin-bank" class="' +
+          bank.className +
+          '">' +
+          bank.text +
+          '</div><span class="pill" id="vote-tally" hidden></span></div>' +
+          '<div class="actions">' +
+          '<button type="button" class="btn btn-secondary" data-act="remainder">Give remainder to A</button>' +
+          '<button type="button" class="btn btn-primary" id="vote-btn" data-act="vote"' +
+          (ready ? "" : " disabled") +
+          ">Call the vote</button>" +
+          "</div>" +
+          '<div class="actions hint-row">' +
+          '<p class="hint-note">Stuck? This hint walks you through the logic, from the smallest crew up to A’s answer.</p>' +
+          '<button type="button" class="btn btn-secondary" data-act="guide">Hint: walk through the logic</button>' +
+          "</div>" +
+          feedbackHtml();
+      }
+
+      function renderPlay() {
+        if (won || stepIndex >= STEPS.length) {
+          const last = solved[solved.length - 1];
+          playEl.innerHTML =
+            '<div class="solved-answer">' +
+            '<div class="step-kicker">Answer</div>' +
+            '<div class="amount">' +
+            last.A +
+            "</div>" +
+            "<p>Pirate A keeps " +
+            last.A +
+            " coins. The proposal is " +
+            formatSplit(last, ORDER) +
+            ".</p>" +
+            "</div>";
+          return;
+        }
+
+        if (!guided) {
+          renderDirect(stepIndex);
+          return;
+        }
+
+        const step = STEPS[stepIndex];
+        const need = votesNeeded(step.alive.length);
+        const sum = assignedSum(step);
+        const remainder = 100 - sum;
+        const ready = remainder === 0;
+        const yesCount = ready
+          ? step.alive.filter((id) => voteOf(id, stepIndex).yes).length
+          : 0;
+
+        const bar = ORDER.map((id) => {
+          const dead = !step.alive.includes(id);
+          const proposing = id === step.proposer;
+          const cls =
+            "crew-chip" +
+            (dead ? " is-dead" : "") +
+            (proposing ? " is-proposer" : "");
+          return (
+            '<div class="' +
+            cls +
+            '"><span class="letter">' +
+            id +
+            '</span><span class="role">' +
+            (dead ? "Overboard" : proposing ? "Proposes" : PIRATES[id].role) +
+            "</span></div>"
+          );
+        }).join("");
+
+        const rows = step.alive
+          .map((id) => {
+            const proposer = id === step.proposer;
+            const fallback = fallbackOf(id, stepIndex);
+            const verdict = verdictHtml(id, stepIndex, ready);
+
+            return (
+              '<div class="pirate-row' +
+              (proposer ? " is-proposer" : "") +
+              '">' +
+              '<div class="who"><span class="letter-badge">' +
+              id +
+              '</span><span><strong>' +
+              PIRATES[id].role +
+              "</strong><span class=\"role\">" +
+              PIRATES[id].rank +
+              "</span>" +
+              (proposer ? '<span class="tag">Proposing</span>' : "") +
+              "</span></div>" +
+              '<div><span class="cell-label">If rejected</span><div class="fallback-val' +
+              (proposer ? " is-plank" : "") +
+              '">' +
+              (proposer ? "The plank" : fallback + " coins") +
+              "</div></div>" +
+              '<div><span class="cell-label">Offer</span><div class="offer-controls">' +
+              '<button type="button" class="stepper" data-act="dec" data-id="' +
+              id +
+              '" aria-label="Decrease ' +
+              id +
+              ' offer">−</button>' +
+              '<input class="offer-input" type="text" inputmode="numeric" autocomplete="off" data-id="' +
+              id +
+              '" value="' +
+              (offers[id] || 0) +
+              '" aria-label="Coins offered to ' +
+              id +
+              '" />' +
+              '<button type="button" class="stepper" data-act="inc" data-id="' +
+              id +
+              '" aria-label="Increase ' +
+              id +
+              ' offer">+</button>' +
+              "</div></div>" +
+              '<div class="verdict" data-verdict="' +
+              id +
+              '">' +
+              verdict +
+              "</div></div>"
+            );
+          })
+          .join("");
+
+        const bank = bankStatus(step);
+
+        const tieNote =
+          step.alive.length % 2 === 0
+            ? "Exactly half is enough. A tie goes to the proposer."
+            : "Need more than half. A tie cannot happen with an odd crew.";
+
+        let feedbackHtml = "";
+        if (feedback) {
+          feedbackHtml =
+            '<div class="feedback ' +
+            feedback.kind +
+            '" role="status"><h3>' +
+            feedback.title +
+            "</h3><p>" +
+            feedback.body +
+            "</p></div>";
+        }
+
+        const hintBtn =
+          attempts[stepIndex] >= 2 && !feedback?.solved
+            ? '<button type="button" class="btn btn-secondary" data-act="hint">Think about this</button>'
+            : "";
+
+        playEl.innerHTML =
+          '<div class="step-head"><div><div class="step-kicker">Step ' +
+          (stepIndex + 1) +
+          " of " +
+          STEPS.length +
+          " · working backward</div><h2>" +
+          step.title +
+          "</h2></div></div>" +
+          '<div class="crew-bar">' +
+          bar +
+          "</div>" +
+          '<p class="threat">' +
+          threatSentence(stepIndex) +
+          "</p>" +
+          '<div class="need-line"><span class="pill">Need ' +
+          need +
+          " yes of " +
+          step.alive.length +
+          "</span><span>" +
+          tieNote +
+          " " +
+          step.proposer +
+          " already votes yes, so buy " +
+          (need - 1) +
+          " more.</span></div>" +
+          '<div class="ledger">' +
+          rows +
+          "</div>" +
+          '<div class="tally-row"><div id="coin-bank" class="' +
+          bank.className +
+          '">' +
+          bank.text +
+          "</div>" +
+          '<span class="pill" id="vote-tally"' +
+          (ready ? "" : " hidden") +
+          ">" +
+          yesCount +
+          " yes · " +
+          need +
+          " needed</span></div>" +
+          '<div class="actions">' +
+          '<button type="button" class="btn btn-secondary" data-act="remainder">Give remainder to ' +
+          step.proposer +
+          "</button>" +
+          '<button type="button" class="btn btn-primary" id="vote-btn" data-act="vote"' +
+          (ready ? "" : " disabled") +
+          ">Call the vote</button>" +
+          hintBtn +
+          "</div>" +
+          feedbackHtml;
+      }
+
+      function explainFailure(index) {
+        const step = STEPS[stepIndex];
+        const need = votesNeeded(step.alive.length);
+        const yeses = step.alive.filter((id) => voteOf(id, index).yes);
+        const nos = step.alive.filter((id) => !voteOf(id, index).yes);
+
+        if (yeses.length < need) {
+          const why = nos
+            .map((id) => id + ": " + voteOf(id, index).reason.replace(/^Votes no\. /, ""))
+            .join(" ");
+          return {
+            kind: "state-incorrect",
+            title: "The proposal fails",
+            body:
+              yeses.length +
+              " yes, need " +
+              need +
+              ". " +
+              why +
+              " Compare each offer with the “if rejected” column — a pirate only says yes for strictly more coins than that.",
+          };
+        }
+
+        const buys = cheapestBuys(index);
+        const buyIds = new Set(buys.map((b) => b.id));
+        const overpaid = step.alive.filter((id) => {
+          if (id === step.proposer) return false;
+          const offer = offers[id] || 0;
+          const cost = fallbackOf(id, index) + 1;
+          return offer > cost && voteOf(id, index).yes;
+        });
+        const extraPaid = step.alive.filter((id) => {
+          if (id === step.proposer) return false;
+          return (offers[id] || 0) > 0 && !buyIds.has(id);
+        });
+
+        if (overpaid.length) {
+          const id = overpaid[0];
+          const cost = fallbackOf(id, index) + 1;
+          return {
+            kind: "state-incorrect",
+            title: "It passes, but not greedily",
+            body:
+              step.proposer +
+              " keeps " +
+              (offers[step.proposer] || 0) +
+              ". " +
+              id +
+              " would already prefer this deal at " +
+              cost +
+              " coin" +
+              (cost === 1 ? "" : "s") +
+              " — one more than their fallback. Extra coins come out of the proposer’s share.",
+          };
+        }
+
+        if (extraPaid.length) {
+          return {
+            kind: "state-incorrect",
+            title: "It passes, but not greedily",
+            body:
+              "You only need " +
+              (need - 1) +
+              " additional yes vote" +
+              (need - 1 === 1 ? "" : "s") +
+              ". Paying " +
+              extraPaid.join(" and ") +
+              " is wasted gold. Buy the pirates who get the least if this proposal dies, and only as many as the vote requires.",
+          };
+        }
+
+        return {
+          kind: "state-incorrect",
+          title: "It passes, but not greedily",
+          body:
+            step.proposer +
+            " keeps " +
+            (offers[step.proposer] || 0) +
+            ", and the greediest passing deal keeps more. Pay each required voter one coin more than their fallback, and no one else.",
+        };
+      }
+
+      function hintText(index) {
+        const step = STEPS[index];
+        const need = votesNeeded(step.alive.length) - 1;
+        if (need === 0) {
+          return "How many yes votes does this crew require, and whose vote is already enough? Anyone else can be left at 0, even if they hate the deal. Equal coins is still a no — but a no that cannot block the proposal does not need to be bought.";
+        }
+        return (
+          "You need " +
+          need +
+          " extra yes vote" +
+          (need === 1 ? "" : "s") +
+          " besides " +
+          step.proposer +
+          ". Look at the “if rejected” column. The cheapest votes are the lowest numbers — offer exactly one coin more than that amount, and ignore anyone who would cost more. " +
+          "The pirates standing at 0 in the next deal can be bought for a single coin. Do not pay anyone else."
+        );
+      }
+
+      function explainDirectFailure(yesCount, need) {
+        if (yesCount < need) {
+          return {
+            kind: "state-incorrect",
+            title: "The crew rejects it",
+            body: "This split does not pass. A needs a proposal the others will accept, while still keeping as many coins as possible.",
+          };
+        }
+        return {
+          kind: "state-incorrect",
+          title: "It passes, but A can keep more",
+          body: "The crew would accept this, yet A can hold onto more gold and still win the vote.",
+        };
+      }
+
+      function callVote() {
+        const step = STEPS[stepIndex];
+        if (assignedSum(step) !== 100) return;
+
+        const yeses = step.alive.filter((id) => voteOf(id, stepIndex).yes);
+        const need = votesNeeded(step.alive.length);
+        const proposerCoins = offers[step.proposer] || 0;
+        const maximal = proposerCoins === maxProposerCoins(stepIndex);
+
+        if (!guided) {
+          if (yeses.length >= need && maximal) {
+            const deal = {};
+            ORDER.forEach((id) => {
+              deal[id] = offers[id] || 0;
+            });
+            solved = [deal];
+            feedback = null;
+            finish();
+            renderPlay();
+            return;
+          }
+          feedback = explainDirectFailure(yeses.length, need);
+          renderPlay();
+          return;
+        }
+
+        if (yeses.length >= need && maximal) {
+          const deal = {};
+          step.alive.forEach((id) => {
+            deal[id] = offers[id] || 0;
+          });
+          solved.push(deal);
+          feedback = null;
+          stepIndex += 1;
+          offers = blankOffers();
+          renderChain();
+          renderPlay();
+          if (stepIndex >= STEPS.length) {
+            finish();
+          }
+          return;
+        }
+
+        attempts[stepIndex] += 1;
+        feedback = explainFailure(stepIndex);
+        renderPlay();
+      }
+
+      function finish() {
+        won = true;
+        clearInterval(timerId);
+        elapsed = Date.now() - started;
+        timerEl.textContent = formatTime(elapsed);
+        const last = solved[solved.length - 1];
+        document.getElementById("question-copy").textContent = guided
+          ? "Pirate A can keep " +
+            last.A +
+            " coins. The settled deals above are why that split survives."
+          : "Pirate A can keep " + last.A + " coins, and the proposal still passes.";
+        document.getElementById("win-amount").textContent = last.A;
+        document.getElementById("win-split").textContent = formatSplit(last, ORDER);
+        document.getElementById("win-time").textContent = formatTime(elapsed);
+        winnerEl.classList.add("active");
+        PuzzleIcons.initIcons(winnerEl);
+      }
+
+      function startGuide() {
+        guided = true;
+        stepIndex = 0;
+        solved = [];
+        offers = blankOffers();
+        attempts = [0, 0, 0, 0];
+        feedback = null;
+        document.getElementById("question-copy").textContent = GUIDED_QUESTION;
+        document.getElementById("chain-section").hidden = false;
+        renderChain();
+        renderPlay();
+      }
+
+      function resetAll() {
+        guided = false;
+        stepIndex = STEPS.length - 1;
+        solved = [];
+        offers = blankOffers();
+        attempts = [0, 0, 0, 0];
+        feedback = null;
+        won = false;
+        started = Date.now();
+        elapsed = 0;
+        winnerEl.classList.remove("active");
+        document.getElementById("question-copy").textContent = DIRECT_QUESTION;
+        document.getElementById("chain-section").hidden = true;
+        clearInterval(timerId);
+        timerId = setInterval(tick, 250);
+        tick();
+        renderChain();
+        renderPlay();
+      }
+
+      function setOffer(id, value) {
+        const step = STEPS[stepIndex];
+        if (!step || !step.alive.includes(id)) return;
+        const next = Math.max(0, value);
+        offers[id] = Number.isFinite(next) ? next : 0;
+        feedback = null;
+        renderPlay();
+      }
+
+      function commitOfferText(input) {
+        const start = input.selectionStart;
+        const raw = input.value;
+        const digits = raw.replace(/\D/g, "");
+        const next = digits.replace(/^0+(?=\d)/, "");
+        if (next !== raw) {
+          input.value = next;
+          const pos = Math.max(0, (start || 0) - (raw.length - next.length));
+          input.setSelectionRange(pos, pos);
+        }
+        const parsed = next === "" ? 0 : Number.parseInt(next, 10);
+        offers[input.dataset.id] = Number.isFinite(parsed) ? parsed : 0;
+        feedback = null;
+        const note = playEl.querySelector(".feedback");
+        if (note) note.remove();
+        syncVoteUi();
+      }
+
+      playEl.addEventListener("click", (event) => {
+        const btn = event.target.closest("[data-act]");
+        if (!btn || won || stepIndex >= STEPS.length) return;
+        const act = btn.dataset.act;
+        const step = STEPS[stepIndex];
+
+        if (act === "inc" || act === "dec") {
+          const id = btn.dataset.id;
+          const delta = act === "inc" ? 1 : -1;
+          setOffer(id, (offers[id] || 0) + delta);
+          return;
+        }
+
+        if (act === "remainder") {
+          const others = step.alive
+            .filter((id) => id !== step.proposer)
+            .reduce((sum, id) => sum + (offers[id] || 0), 0);
+          offers[step.proposer] = Math.max(0, 100 - others);
+          feedback = null;
+          renderPlay();
+          return;
+        }
+
+        if (act === "vote") {
+          callVote();
+          return;
+        }
+
+        if (act === "guide") {
+          startGuide();
+          return;
+        }
+
+        if (act === "hint") {
+          feedback = {
+            kind: "",
+            title: "Think about this",
+            body: hintText(stepIndex),
+          };
+          renderPlay();
+        }
+      });
+
+      playEl.addEventListener("focusin", (event) => {
+        const input = event.target.closest(".offer-input");
+        if (!input) return;
+        input.select();
+        const keepSelection = (mouseEvent) => {
+          mouseEvent.preventDefault();
+          input.removeEventListener("mouseup", keepSelection);
+        };
+        input.addEventListener("mouseup", keepSelection);
+      });
+
+      playEl.addEventListener("keydown", (event) => {
+        const input = event.target.closest(".offer-input");
+        if (!input || won) return;
+        if (event.ctrlKey || event.metaKey || event.altKey) return;
+        if (event.key.length === 1 && !/^\d$/.test(event.key)) {
+          event.preventDefault();
+          return;
+        }
+        if (!/^\d$/.test(event.key)) return;
+        const allSelected =
+          input.selectionStart === 0 && input.selectionEnd === input.value.length;
+        if (input.value !== "0" || allSelected) return;
+        event.preventDefault();
+        input.value = event.key;
+        input.setSelectionRange(1, 1);
+        commitOfferText(input);
+      });
+
+      playEl.addEventListener("input", (event) => {
+        const input = event.target.closest(".offer-input");
+        if (!input || won) return;
+        commitOfferText(input);
+      });
+
+      playEl.addEventListener("focusout", (event) => {
+        const input = event.target.closest(".offer-input");
+        if (!input) return;
+        if (input.value.trim() === "") input.value = "0";
+      });
+
+      document.getElementById("close-win").addEventListener("click", () => {
+        winnerEl.classList.remove("active");
+      });
+
+      document.getElementById("reset-win").addEventListener("click", resetAll);
+
+      renderChain();
+      renderPlay();
+      timerId = setInterval(tick, 250);
+      PuzzleIcons.initIcons();
+    </script>
+  </body>
+</html>

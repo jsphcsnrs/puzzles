@@ -172,6 +172,12 @@
   --theme-soft: #6ee7b7;
 }
 
+[data-theme="coins"] {
+  --theme-color: #f59e0b;
+  --theme-hue: 38;
+  --theme-soft: #fcd34d;
+}
+
 *,
 *::before,
 *::after {

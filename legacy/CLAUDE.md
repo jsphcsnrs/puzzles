@@ -20,7 +20,7 @@ When asked to create a new puzzle, produce both:
 1. A complete `puzzles/<puzzle_name>.html` file following the design system below.
 2. An entry for the `puzzles` array in `index.html` (inside the clearly marked `ADD NEW PUZZLES HERE` block).
 
-For `releaseDate`, default to the next Friday after the current latest `releaseDate` unless told otherwise.
+For `releaseDate`, default to the later of one week after the current latest `releaseDate`, or today. Puzzles must be at least one week apart. If that gap has already passed, release today. Never assign a date in the past. Override only if explicitly told otherwise.
 
 ## Design System
 

@@ -28,10 +28,10 @@ When asked to create a new puzzle, produce both:
 
 For `releaseDate`, default to the **later** of:
 
-- the Friday after the current latest `releaseDate`, or
-- the next Friday on or after today (if today is Friday, today counts).
+- one week after the current latest `releaseDate`, or
+- today.
 
-In other words: keep the weekly Friday cadence, but never assign a date in the past. Override only if explicitly told otherwise.
+Puzzles must be at least one week apart. If that gap has already passed, release today. Never assign a date in the past. Override only if explicitly told otherwise.
 
 # Shared Assets
 
