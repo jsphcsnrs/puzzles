@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Friday Rhyme Phrases</title>
+    <link rel="stylesheet" href="../styles/playful.css" />
+    <style>
+      .rules .example {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--tertiary);
+        font-size: 0.9rem;
+      }
+
+      .clue-row {
+        background: var(--card);
+        border-radius: var(--radius-md);
+        padding: 16px 16px 18px;
+        margin-bottom: 14px;
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
+      }
+
+      .clue-row.solved {
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0
+          color-mix(in srgb, var(--success) 45%, var(--border-strong));
+      }
+
+      .row-num {
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
+        color: var(--accent);
+        font-size: 0.78rem;
+        letter-spacing: 0.6px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .row-status {
+        color: var(--success);
+        font-size: 0.85rem;
+        font-weight: 700;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .clue-row.solved .row-status {
+        opacity: 1;
+      }
+
+      .clue-trio {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 10px;
+        margin-bottom: 14px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--fg);
+        line-height: 1.4;
+      }
+
+      .clue-word {
+        padding: 6px 12px;
+        border-radius: var(--radius-sm);
+        background: var(--muted);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 2px 2px 0 0 var(--border);
+      }
+
+      .clue-sep {
+        color: var(--muted-fg);
+        font-weight: 600;
+        user-select: none;
+      }
+
+      .answer-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .answer-row .input {
+        flex: 1 1 5.5rem;
+        min-width: 0;
+        min-height: 44px;
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .answer-row .join {
+        font-weight: 700;
+        color: var(--muted-fg);
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      .answer-row .input.correct {
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 3px 3px 0 0
+          color-mix(in srgb, var(--success) 45%, var(--border-strong));
+        color: color-mix(in srgb, var(--success) 55%, var(--fg));
+      }
+
+      @media (max-width: 480px) {
+        .answer-row {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        .answer-row .join {
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="calendar-days">
+    <div class="ambient-bg" aria-hidden="true"></div>
+    <main class="container container-narrow">
+      <a href="../index.html" class="back-nav">
+        <i data-lucide="arrow-left" class="icon icon-sm icon-themed"></i>
+        All Puzzles
+      </a>
+
+      <div class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md">
+              <i
+                data-lucide="calendar-days"
+                class="icon icon-md icon-white"
+              ></i>
+            </span>
+            <span class="title-text">Friday Rhyme Phrases</span>
+          </h1>
+          <div class="subtitle">
+            Swap rhymes for each trio to uncover familiar three-word phrases.
+          </div>
+          <div class="timer" id="timer" aria-live="polite">0:00</div>
+        </header>
+
+        <section class="rules" aria-label="Rules">
+          <strong>How to play:</strong> Each row lists three words. Find a
+          rhyme for each one so the trio forms a well-known phrase in the form
+          <em>__, __, and __.</em> Fill in all three blanks; a row locks in when
+          every word matches.
+          <div class="example">
+            <strong>Example:</strong> <em>Cook, wine, drinker</em> →
+            <strong>Hook</strong>, <strong>line</strong>, and
+            <strong>sinker</strong>
+          </div>
+        </section>
+
+        <div id="puzzle" aria-label="Puzzle clues"></div>
+      </div>
+    </main>
+
+    <div
+      class="modal-overlay"
+      id="winModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="winTitle"
+    >
+      <div class="modal">
+        <div class="modal-icon">
+          <i data-lucide="trophy" class="icon icon-xl icon-themed"></i>
+        </div>
+        <h2 id="winTitle" class="font-display">All five phrases found!</h2>
+        <div class="final-time" id="finalTime">0:00</div>
+        <p class="text-muted">Your time</p>
+        <div class="modal-btns">
+          <button type="button" class="btn btn-secondary" id="closeBtn">
+            Close
+          </button>
+          <button type="button" class="btn btn-primary" id="resetBtn">
+            Reset &amp; Play Again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
+    <script>
+      const PUZZLES = [
+        {
+          clues: ["Palm", "pool", "protected"],
+          words: ["calm", "cool", "collected"],
+        },
+        {
+          clues: ["Deer", "chose", "goat"],
+          words: ["ear", "nose", "throat"],
+        },
+        {
+          clues: ["Pup", "cup", "convey"],
+          words: ["up", "up", "away"],
+        },
+        {
+          clues: ["Tap", "shackle", "cop"],
+          words: ["snap", "crackle", "pop"],
+        },
+        {
+          clues: ["Flood", "threat", "beers"],
+          words: ["blood", "sweat", "tears"],
+        },
+      ];
+
+      let startTime = Date.now();
+      let timerId = null;
+      let solved = false;
+      const inputs = [];
+
+      function fmt(ms) {
+        const total = Math.max(0, Math.floor(ms / 1000));
+        const m = Math.floor(total / 60);
+        const s = total % 60;
+        return m + ":" + s.toString().padStart(2, "0");
+      }
+
+      function tick() {
+        document.getElementById("timer").textContent = fmt(
+          Date.now() - startTime,
+        );
+      }
+
+      function startTimer() {
+        startTime = Date.now();
+        tick();
+        if (timerId) clearInterval(timerId);
+        timerId = setInterval(tick, 500);
+      }
+
+      function stopTimer() {
+        if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+      }
+
+      function norm(value) {
+        return value.trim().toLowerCase().replace(/\s+/g, " ");
+      }
+
+      function buildPuzzle() {
+        const root = document.getElementById("puzzle");
+        root.innerHTML = "";
+        inputs.length = 0;
+
+        PUZZLES.forEach((p, i) => {
+          const row = document.createElement("div");
+          row.className = "clue-row";
+          row.dataset.idx = String(i);
+
+          const trio = p.clues
+            .map(
+              (w) =>
+                '<span class="clue-word">' +
+                w.replace(/</g, "&lt;") +
+                "</span>",
+            )
+            .join('<span class="clue-sep">,</span>');
+
+          row.innerHTML =
+            '<div class="row-num">' +
+            "<span>Clue " +
+            (i + 1) +
+            "</span>" +
+            '<span class="row-status" aria-hidden="true">' +
+            '<i data-lucide="check" class="icon icon-sm"></i> Solved' +
+            "</span>" +
+            "</div>" +
+            '<div class="clue-trio">' +
+            trio +
+            "</div>" +
+            '<div class="answer-row">' +
+            '<input class="input phrase-input" data-idx="' +
+            i +
+            '" data-slot="0" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="First word for clue ' +
+            (i + 1) +
+            '" placeholder="?" />' +
+            '<span class="join">,</span>' +
+            '<input class="input phrase-input" data-idx="' +
+            i +
+            '" data-slot="1" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Second word for clue ' +
+            (i + 1) +
+            '" placeholder="?" />' +
+            '<span class="join">, and</span>' +
+            '<input class="input phrase-input" data-idx="' +
+            i +
+            '" data-slot="2" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Third word for clue ' +
+            (i + 1) +
+            '" placeholder="?" />' +
+            "</div>";
+
+          root.appendChild(row);
+        });
+
+        PuzzleIcons.initIcons(root);
+
+        document.querySelectorAll(".phrase-input").forEach((el) => {
+          inputs.push(el);
+          el.addEventListener("input", onInput);
+        });
+      }
+
+      function onInput(e) {
+        const el = e.target;
+        const idx = Number(el.dataset.idx);
+        const rowInputs = document.querySelectorAll(
+          '.phrase-input[data-idx="' + idx + '"]',
+        );
+        const expected = PUZZLES[idx].words;
+
+        const allMatch = Array.from(rowInputs).every((input) => {
+          const slot = Number(input.dataset.slot);
+          return norm(input.value) === expected[slot];
+        });
+
+        rowInputs.forEach((input) =>
+          input.classList.toggle("correct", allMatch),
+        );
+        const row = document.querySelector(
+          '.clue-row[data-idx="' + idx + '"]',
+        );
+        row.classList.toggle("solved", allMatch);
+
+        checkWin();
+      }
+
+      function checkWin() {
+        if (solved) return;
+        const allCorrect = inputs.every((el) =>
+          el.classList.contains("correct"),
+        );
+        if (allCorrect && inputs.length > 0) {
+          solved = true;
+          stopTimer();
+          document.getElementById("finalTime").textContent =
+            document.getElementById("timer").textContent;
+          document.getElementById("winModal").classList.add("active");
+          PuzzleIcons.initIcons(document.getElementById("winModal"));
+        }
+      }
+
+      function reset() {
+        solved = false;
+        document.getElementById("winModal").classList.remove("active");
+        buildPuzzle();
+        startTimer();
+      }
+
+      document.getElementById("closeBtn").addEventListener("click", () => {
+        document.getElementById("winModal").classList.remove("active");
+      });
+      document.getElementById("resetBtn").addEventListener("click", reset);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        PuzzleIcons.initIcons();
+        buildPuzzle();
+        startTimer();
+      });
+    </script>
+  </body>
+</html>
