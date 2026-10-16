@@ -178,6 +178,12 @@
   --theme-soft: #fcd34d;
 }
 
+[data-theme="calendar-days"] {
+  --theme-color: #3b82f6;
+  --theme-hue: 217;
+  --theme-soft: #93c5fd;
+}
+
 *,
 *::before,
 *::after {
