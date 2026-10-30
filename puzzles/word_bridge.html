@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Bridge</title>
+    <link rel="stylesheet" href="../styles/playful.css" />
+    <style>
+      .puzzles {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .puzzle-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: var(--radius-md);
+        background: var(--card);
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 4px 4px 0 0 var(--border);
+        transition: box-shadow var(--transition), background var(--transition),
+          border-color var(--transition);
+      }
+
+      .puzzle-row.correct {
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
+      }
+
+      .puzzle-row.wrong {
+        background: color-mix(in srgb, var(--error) 16%, var(--card));
+        border-color: var(--error);
+        box-shadow: 4px 4px 0 0 color-mix(in srgb, var(--error) 45%, var(--border-strong));
+      }
+
+      .row-num {
+        background: var(--theme-color);
+        color: #fff;
+        min-width: 30px;
+        height: 30px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        font-weight: 800;
+        font-family: "Outfit", system-ui, sans-serif;
+        flex-shrink: 0;
+        border: var(--border-width) solid var(--border-strong);
+        box-shadow: 2px 2px 0 0 var(--border-strong);
+      }
+
+      .puzzle-row.correct .row-num {
+        background: var(--success);
+      }
+
+      .bridge-display {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        flex-wrap: wrap;
+      }
+
+      .word-chunk {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
+
+      .bridge-slot {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        border: 2px dashed var(--theme-soft);
+        background: color-mix(in srgb, var(--theme-color) 6%, var(--card));
+        transition: border-color var(--transition), background var(--transition);
+      }
+
+      .puzzle-row.correct .bridge-slot {
+        border-style: solid;
+        border-color: var(--success);
+        background: color-mix(in srgb, var(--success) 14%, var(--card));
+      }
+
+      .lc {
+        width: 34px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        font-weight: 700;
+        font-family: "Outfit", system-ui, sans-serif;
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--muted);
+        box-shadow: 2px 2px 0 0 var(--border);
+        transition: background var(--transition), box-shadow var(--transition),
+          color var(--transition), border-color var(--transition);
+      }
+
+      .lc.known {
+        background: var(--muted);
+        color: var(--fg);
+      }
+
+      .lc.bridge-letter {
+        background: color-mix(in srgb, var(--theme-color) 14%, var(--card));
+        border-color: var(--theme-color);
+        box-shadow: 2px 2px 0 0 color-mix(in srgb, var(--theme-color) 45%, var(--border-strong));
+        color: var(--theme-color);
+        font-weight: 800;
+      }
+
+      .lc.bridge-letter.preview {
+        background: color-mix(in srgb, var(--theme-color) 24%, var(--card));
+      }
+
+      .puzzle-row.correct .lc.bridge-letter {
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 2px 2px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
+        color: color-mix(in srgb, var(--success) 55%, var(--fg));
+      }
+
+      .revealed-words {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted-fg);
+        font-family: "Outfit", system-ui, sans-serif;
+        margin-left: 6px;
+        display: none;
+      }
+
+      .puzzle-row.correct .revealed-words {
+        display: inline-block;
+        color: color-mix(in srgb, var(--success) 65%, var(--fg));
+      }
+
+      .answer-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .answer-input {
+        width: 76px;
+        height: 38px;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        font-family: monospace;
+      }
+
+      .answer-input:disabled {
+        background: color-mix(in srgb, var(--success) 18%, var(--card));
+        border-color: var(--success);
+        box-shadow: 3px 3px 0 0 color-mix(in srgb, var(--success) 45%, var(--border-strong));
+        color: color-mix(in srgb, var(--success) 50%, var(--fg));
+        cursor: default;
+      }
+
+      .row-check {
+        display: none;
+        flex-shrink: 0;
+      }
+
+      .puzzle-row.correct .row-check {
+        display: block;
+      }
+
+      .row-check .icon {
+        stroke: var(--success);
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .rules .example {
+        margin-top: 10px;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        border: var(--border-width) solid var(--border-strong);
+        background: var(--card);
+        box-shadow: 3px 3px 0 0 var(--tertiary);
+        font-size: 0.92rem;
+        color: var(--fg);
+        line-height: 1.5;
+      }
+
+      .rules .example strong {
+        color: var(--theme-color);
+      }
+
+      .rules .example .eg-words {
+        font-weight: 700;
+        color: var(--muted-fg);
+      }
+
+      .final-time {
+        font-family: "Outfit", system-ui, sans-serif;
+        color: var(--theme-color);
+      }
+
+      .wrong-shake {
+        animation: shake 0.4s ease;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-6px);
+        }
+        40% {
+          transform: translateX(6px);
+        }
+        60% {
+          transform: translateX(-4px);
+        }
+        80% {
+          transform: translateX(4px);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .lc {
+          width: 28px;
+          height: 32px;
+          font-size: 0.95rem;
+        }
+
+        .answer-input {
+          width: 62px;
+          font-size: 0.95rem;
+          letter-spacing: 2px;
+        }
+
+        .puzzle-row {
+          padding: 10px 12px;
+          gap: 8px;
+        }
+
+        .bridge-display {
+          gap: 5px;
+        }
+
+        .revealed-words {
+          width: 100%;
+          margin-left: 0;
+          margin-top: 2px;
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="link">
+    <div class="ambient-bg" aria-hidden="true"></div>
+    <main class="container container-narrow">
+      <a href="../index.html" class="back-nav"><i data-lucide="arrow-left" class="icon icon-sm icon-themed"></i> All Puzzles</a>
+      <section class="card card-extruded">
+        <header class="header">
+          <h1 class="font-display">
+            <span class="icon-well icon-well-md"><i data-lucide="link" class="icon icon-md icon-white"></i></span>
+            <span class="title-text">Word Bridge</span>
+          </h1>
+          <p class="subtitle">Find the 3-letter word connecting both ends</p>
+          <div class="timer" id="timer">00:00</div>
+        </header>
+
+        <section class="rules" aria-labelledby="rules-heading">
+          <h2 id="rules-heading">How to Play</h2>
+          <p>
+            Write a <strong>three-letter word</strong> in the blank spaces to complete a word on the left and begin a separate word on the right.
+          </p>
+          <div class="example">
+            Example: <strong>FOR _ _ _ AWAY</strong> &rarr; type <strong>GET</strong> &rarr; <span class="eg-words">(FOR<strong>GET</strong>, <strong>GET</strong>AWAY)</span>
+          </div>
+        </section>
+
+        <div class="puzzles" id="puzzles"></div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-secondary" onclick="resetPuzzle()">Reset</button>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal-overlay" id="winModal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle">
+      <div class="modal">
+        <div class="modal-icon"><i data-lucide="party-popper" class="icon icon-xl icon-themed"></i></div>
+        <h2 id="winnerTitle" class="font-display">Congrats!</h2>
+        <p>You completed the puzzle in</p>
+        <div class="final-time" id="finalTime">00:00</div>
+        <div class="modal-btns">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+          <button type="button" class="btn btn-primary" onclick="resetPuzzle()">Reset &amp; Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/lucide.min.js"></script>
+    <script src="../js/icons.js"></script>
+    <script>
+      const PUZZLES = [
+        {
+          left: "FEAT",
+          right: "OIC",
+          answer: "HER",
+          words: ["FEATHER", "HEROIC"]
+        },
+        {
+          left: "COUR",
+          right: "NDA",
+          answer: "AGE",
+          words: ["COURAGE", "AGENDA"]
+        },
+        {
+          left: "DISP",
+          right: "OVER",
+          answer: "LAY",
+          words: ["DISPLAY", "LAYOVER"]
+        },
+        {
+          left: "KEE",
+          right: "SIST",
+          answer: "PER",
+          words: ["KEEPER", "PERSIST"]
+        },
+        {
+          left: "HEL",
+          right: "EOR",
+          answer: "MET",
+          words: ["HELMET", "METEOR"]
+        },
+        {
+          left: "APP",
+          right: "RING",
+          answer: "EAR",
+          words: ["APPEAR", "EARRING"]
+        },
+        {
+          left: "SPAR",
+          right: "BOAT",
+          answer: "ROW",
+          words: ["SPARROW", "ROWBOAT"]
+        },
+        {
+          left: "VI",
+          right: "ROT",
+          answer: "CAR",
+          words: ["VICAR", "CARROT"]
+        }
+      ]
+
+      let solved = []
+      let timerInterval, startTime
+
+      const pad = (n) => String(n).padStart(2, "0")
+      const formatTime = (ms) => {
+        const s = Math.floor(ms / 1000)
+        return pad(Math.floor(s / 60)) + ":" + pad(s % 60)
+      }
+
+      function startTimer() {
+        startTime = Date.now()
+        clearInterval(timerInterval)
+        timerInterval = setInterval(() => {
+          document.getElementById("timer").textContent = formatTime(Date.now() - startTime)
+        }, 500)
+      }
+
+      function stopTimer() {
+        clearInterval(timerInterval)
+      }
+
+      function renderPuzzles() {
+        const container = document.getElementById("puzzles")
+        container.innerHTML = ""
+        solved = PUZZLES.map(() => false)
+
+        PUZZLES.forEach((puz, pi) => {
+          const row = document.createElement("div")
+          row.className = "puzzle-row"
+          row.id = "row-" + pi
+
+          const num = document.createElement("div")
+          num.className = "row-num"
+          num.textContent = pi + 1
+          row.appendChild(num)
+
+          const bd = document.createElement("div")
+          bd.className = "bridge-display"
+          bd.id = "bridge-" + pi
+
+          // Left letters
+          const leftWrap = document.createElement("div")
+          leftWrap.className = "word-chunk"
+          puz.left.split("").forEach((ch) => {
+            const cell = document.createElement("div")
+            cell.className = "lc known"
+            cell.textContent = ch
+            leftWrap.appendChild(cell)
+          })
+          bd.appendChild(leftWrap)
+
+          // 3-letter bridge slot
+          const slot = document.createElement("div")
+          slot.className = "bridge-slot"
+          for (let i = 0; i < 3; i++) {
+            const cell = document.createElement("div")
+            cell.className = "lc bridge-letter"
+            cell.dataset.slotIndex = i
+            slot.appendChild(cell)
+          }
+          bd.appendChild(slot)
+
+          // Right letters
+          const rightWrap = document.createElement("div")
+          rightWrap.className = "word-chunk"
+          puz.right.split("").forEach((ch) => {
+            const cell = document.createElement("div")
+            cell.className = "lc known"
+            cell.textContent = ch
+            rightWrap.appendChild(cell)
+          })
+          bd.appendChild(rightWrap)
+
+          // Solved full words badge
+          const revealed = document.createElement("div")
+          revealed.className = "revealed-words"
+          revealed.textContent = `(${puz.words[0]}, ${puz.words[1]})`
+          bd.appendChild(revealed)
+
+          row.appendChild(bd)
+
+          const wrap = document.createElement("div")
+          wrap.className = "answer-wrap"
+
+          const input = document.createElement("input")
+          input.type = "text"
+          input.maxLength = 3
+          input.className = "input answer-input"
+          input.placeholder = "···"
+          input.autocomplete = "off"
+          input.autocorrect = "off"
+          input.autocapitalize = "characters"
+          input.spellcheck = false
+          input.dataset.pi = pi
+          input.setAttribute("aria-label", `Row ${pi + 1} bridge word`)
+          input.addEventListener("input", () => onInput(pi, input))
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              const next = PUZZLES.findIndex((_, i) => i > pi && !solved[i])
+              if (next >= 0) document.querySelector(`input[data-pi="${next}"]`)?.focus()
+            }
+          })
+          wrap.appendChild(input)
+
+          const chk = document.createElement("span")
+          chk.className = "row-check"
+          chk.innerHTML = '<i data-lucide="check-circle" class="icon icon-md"></i>'
+          wrap.appendChild(chk)
+
+          row.appendChild(wrap)
+          container.appendChild(row)
+        })
+
+        PuzzleIcons.initIcons()
+      }
+
+      function onInput(pi, input) {
+        let val = input.value.toUpperCase().replace(/[^A-Z]/g, "")
+        if (val.length > 3) val = val.slice(0, 3)
+        input.value = val
+
+        const row = document.getElementById("row-" + pi)
+        row.classList.remove("wrong")
+
+        updatePreview(pi, val)
+
+        if (val.length === 3) {
+          autoCheck(pi, val, row, input)
+        }
+      }
+
+      function updatePreview(pi, val) {
+        const bd = document.getElementById("bridge-" + pi)
+        const blanks = bd.querySelectorAll(".bridge-letter")
+        blanks.forEach((cell, i) => {
+          if (i < val.length) {
+            cell.textContent = val[i]
+            cell.classList.add("preview")
+          } else {
+            cell.textContent = ""
+            cell.classList.remove("preview")
+          }
+        })
+      }
+
+      function autoCheck(pi, val, row, input) {
+        const puz = PUZZLES[pi]
+        if (val === puz.answer) {
+          markSolved(pi, puz, row, input)
+          if (solved.every(Boolean)) {
+            setTimeout(checkWin, 300)
+          }
+        } else {
+          row.classList.add("wrong")
+          shake(row)
+          setTimeout(() => row.classList.remove("wrong"), 1500)
+        }
+      }
+
+      function markSolved(pi, puz, row, input) {
+        solved[pi] = true
+        row.classList.add("correct")
+        input.disabled = true
+        const bd = document.getElementById("bridge-" + pi)
+        const blanks = bd.querySelectorAll(".bridge-letter")
+        blanks.forEach((cell, i) => {
+          cell.textContent = puz.answer[i]
+          cell.classList.remove("preview")
+        })
+      }
+
+      function checkWin() {
+        stopTimer()
+        document.getElementById("finalTime").textContent = formatTime(Date.now() - startTime)
+        document.getElementById("winModal").classList.add("active")
+        PuzzleIcons.initIcons()
+      }
+
+      function closeModal() {
+        document.getElementById("winModal").classList.remove("active")
+      }
+
+      function resetPuzzle() {
+        closeModal()
+        document.getElementById("timer").textContent = "00:00"
+        renderPuzzles()
+        startTimer()
+      }
+
+      function shake(el) {
+        el.classList.remove("wrong-shake")
+        void el.offsetWidth
+        el.classList.add("wrong-shake")
+        setTimeout(() => el.classList.remove("wrong-shake"), 450)
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        PuzzleIcons.initIcons()
+        renderPuzzles()
+        startTimer()
+      })
+    </script>
+  </body>
+</html>
